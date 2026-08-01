@@ -1,0 +1,47 @@
+name: social-cybernetics
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+
+  # Scientific stack
+  - numpy
+  - pandas
+  - scipy
+  - matplotlib
+  - seaborn
+  - plotly
+  - altair
+  - networkx
+  - scikit-learn
+  - statsmodels
+
+  # Notebook workflow
+  - jupyterlab
+  - notebook
+  - ipykernel
+  - jupytext
+  - nbformat
+  - nbclient
+
+  # Code quality
+  - pytest
+  - pytest-cov
+  - ruff
+  - pyright
+  - pre-commit
+  - debugpy
+
+  # CLI / experiment helpers
+  - rich
+  - typer
+  - pyyaml
+  - tqdm
+  - visidata
+
+  # Later sensitivity analysis
+  - salib
+
+  - pip:
+      - "mesa[rec]>=3.3,<4"
