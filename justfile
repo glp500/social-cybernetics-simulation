@@ -30,3 +30,12 @@ lock:
 clean:
     find . -type d -name "__pycache__" -prune -exec rm -rf {} +
     find . -type d -name ".pytest_cache" -prune -exec rm -rf {} +
+
+obsidian:
+    xdg-open "obsidian://open?path=$(pwd)/docs/00-dashboard.md"
+
+literature:
+    xdg-open "obsidian://open?path=$(pwd)/docs/literature/literature_matrix.md"
+
+mechanisms:
+    xdg-open "obsidian://open?path=$(pwd)/docs/modeling/mechanism_backlog.md"

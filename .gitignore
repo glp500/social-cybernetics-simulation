@@ -1,0 +1,19 @@
+# Obsidian local state
+.obsidian/workspace*
+.obsidian/cache/
+.obsidian/plugins/*/data.json
+.trash/
+
+# PDFs and large private files
+*.pdf
+*.epub
+
+# Python
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Results can get large
+results/*
+!results/.gitkeep
