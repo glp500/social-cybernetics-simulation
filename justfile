@@ -2,34 +2,42 @@ default:
     just --list
 
 install:
-    python -m pip install -e .
+    conda-lock install --name social-cybernetics conda-lock.yml
+    conda run -n social-cybernetics python -m pip install -e . --no-deps
 
 test:
-    pytest
+    conda run -n social-cybernetics pytest
+
+coverage:
+    conda run -n social-cybernetics pytest --cov=social_cybernetics --cov-report=term-missing --cov-fail-under=90
 
 lint:
-    ruff check .
-    pyright
+    conda run -n social-cybernetics ruff check .
+
+typecheck:
+    conda run -n social-cybernetics pyright
 
 format:
-    ruff format .
-    ruff check --fix .
+    conda run -n social-cybernetics ruff format .
+    conda run -n social-cybernetics ruff check --fix .
 
-lab:
-    jupyter lab
+check:
+    conda run -n social-cybernetics ruff format --check .
+    conda run -n social-cybernetics ruff check .
+    conda run -n social-cybernetics pyright
+    conda run -n social-cybernetics pytest --cov=social_cybernetics --cov-report=term-missing --cov-fail-under=90
 
 viz:
-    solara run scripts/launch_viz.py
+    conda run -n social-cybernetics solara run src/social_cybernetics/runtime/mesa/app.py
 
 run:
-    python scripts/run_baseline.py --config configs/baseline.yml
+    conda run -n social-cybernetics scs run --config configs/baseline.yml
+
+validate:
+    conda run -n social-cybernetics scs validate --config configs/baseline.yml
 
 lock:
     conda-lock -f environment.yml -p linux-64
-
-clean:
-    find . -type d -name "__pycache__" -prune -exec rm -rf {} +
-    find . -type d -name ".pytest_cache" -prune -exec rm -rf {} +
 
 obsidian:
     xdg-open "obsidian://open?path=$(pwd)/docs/00-dashboard.md"

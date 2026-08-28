@@ -1,7 +1,0 @@
-README.md
-pyproject.toml
-src/social_cybernetics/__init__.py
-src/social_cybernetics_sugarscape.egg-info/PKG-INFO
-src/social_cybernetics_sugarscape.egg-info/SOURCES.txt
-src/social_cybernetics_sugarscape.egg-info/dependency_links.txt
-src/social_cybernetics_sugarscape.egg-info/top_level.txt

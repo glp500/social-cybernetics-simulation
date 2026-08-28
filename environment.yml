@@ -1,14 +1,22 @@
 name: social-cybernetics
 channels:
   - conda-forge
+platforms:
+  - linux-64
 dependencies:
   - python=3.12
   - pip
 
-  # Scientific stack
+  # Current runtime and the committed research roadmap
   - numpy
+  - pydantic>=2.10,<3
+  - pyyaml>=6,<7
+  - typer>=0.16,<1
   - pandas
   - scipy
+  - pyarrow
+  - xarray
+  - netcdf4
   - matplotlib
   - seaborn
   - plotly
@@ -16,6 +24,7 @@ dependencies:
   - networkx
   - scikit-learn
   - statsmodels
+  - salib
 
   # Notebook workflow
   - jupyterlab
@@ -28,6 +37,7 @@ dependencies:
   # Code quality
   - pytest
   - pytest-cov
+  - hypothesis
   - ruff
   - pyright
   - pre-commit
@@ -35,13 +45,8 @@ dependencies:
 
   # CLI / experiment helpers
   - rich
-  - typer
-  - pyyaml
   - tqdm
   - visidata
 
-  # Later sensitivity analysis
-  - salib
-
   - pip:
-      - "mesa[rec]>=3.3,<4"
+      - "mesa[rec]==3.5.1"

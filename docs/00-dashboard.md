@@ -1,16 +1,28 @@
 # Social Cybernetics Sugarscape Dashboard
 
-## Current implementation status
+## Canonical model documents
+
+- [[model_specification|Scientific specification (ODD+D)]]
+- [[architecture|Software architecture]]
+- [[model_rules|Non-negotiable model rules]]
+- [[assumptions|Assumptions and limitations]]
+- [[research_roadmap|Dependency-ordered roadmap]]
+- [[adr/README|Architecture decisions]]
+
+## Version 0.1 implementation status
 
 - [ ] Environment
 - [ ] Agent state
-- [ ] Movement policy
-- [ ] Mesa wrapper
-- [ ] Baseline experiment
-- [ ] Visualization
-- [ ] Communication layer
-- [ ] Cognitive tool layer
-- [ ] Particle/statistical-physics toy model
+- [ ] Observation and belief boundaries
+- [ ] Action intents and simultaneous resolution
+- [ ] Metabolism and mortality
+- [ ] Mesa runtime
+- [ ] CLI and in-memory records
+- [ ] Debugging visualization
+- [ ] Verification ladder
+
+Later communication, cognitive-tool, institution, and economic layers are specified in the roadmap,
+not counted as unfinished version 0.1 work.
 
 ## Active reading queue
 
@@ -34,6 +46,6 @@ SORT file.mtime DESC
 
 ```dataview
 LIST
-FROM "docs/implementation"
+FROM "docs/adr"
 SORT file.mtime DESC
 ```

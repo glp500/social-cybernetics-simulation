@@ -1,5 +1,8 @@
 # Model Decisions
 
+Canonical architecture decisions now live in [[adr/README|Architecture Decision Records]]. This file
+retains the earlier historical note only.
+
 ## 2026-08-01 — Start with metrics before agents
 
 I implemented the Gini coefficient before building agents or the Mesa model. The reason is that the project depends on observing inequality, welfare, and collective outcomes. Starting with metrics makes later changes measurable instead of purely visual or intuitive.

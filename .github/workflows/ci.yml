@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          auto-activate-base: true
+          activate-environment: ""
+
+      - name: Install conda-lock
+        run: python -m pip install "conda-lock==4.0.2"
+
+      - name: Create locked environment
+        run: conda-lock install --name social-cybernetics conda-lock.yml
+
+      - name: Install project
+        run: conda run -n social-cybernetics python -m pip install -e . --no-deps
+
+      - name: Quality gate
+        run: just check

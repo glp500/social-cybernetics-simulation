@@ -6,8 +6,41 @@ build-backend = "setuptools.build_meta"
 name = "social-cybernetics-sugarscape"
 version = "0.1.0"
 description = "Sugarscape-inspired simulations of cognitive tools, feedback, welfare, and collective intelligence."
-requires-python = ">=3.12"
-dependencies = []
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "mesa[rec]==3.5.1",
+    "numpy>=2.0,<3",
+    "pydantic>=2.10,<3",
+    "PyYAML>=6,<7",
+    "typer>=0.16,<1",
+]
+
+[project.scripts]
+scs = "social_cybernetics.cli:app"
+
+[project.optional-dependencies]
+research = [
+    "SALib>=1.5,<2",
+    "matplotlib>=3.10,<4",
+    "netCDF4>=1.7,<2",
+    "networkx>=3.4,<4",
+    "pandas>=2.2,<3",
+    "pyarrow>=19,<24",
+    "scikit-learn>=1.6,<2",
+    "scipy>=1.15,<2",
+    "seaborn>=0.13,<1",
+    "xarray>=2025.1,<2027",
+]
+dev = [
+    "hypothesis>=6.120,<7",
+    "pre-commit>=4,<5",
+    "pyright>=1.1.400,<2",
+    "pytest>=9,<10",
+    "pytest-cov>=6,<8",
+    "ruff>=0.12,<1",
+]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -15,7 +48,7 @@ where = ["src"]
 [tool.ruff]
 line-length = 100
 target-version = "py312"
-src = ["src", "tests", "scripts", "notebooks"]
+src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "N", "SIM"]
@@ -28,13 +61,18 @@ indent-style = "space"
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
-addopts = "-q"
+addopts = "-q --strict-markers"
+
+[tool.coverage.run]
+branch = true
+source = ["social_cybernetics"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
 
 [tool.pyright]
-include = ["src", "scripts", "tests", "notebooks"]
-typeCheckingMode = "basic"
+include = ["src", "tests"]
+typeCheckingMode = "standard"
 reportMissingImports = true
 reportMissingTypeStubs = false
-
-[tool.jupytext]
-formats = "ipynb,py:percent"

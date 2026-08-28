@@ -10,9 +10,24 @@
 
 # Python
 __pycache__/
+*.py[cod]
+*.egg-info/
+.coverage
+coverage.xml
+htmlcov/
+.mypy_cache/
+.pyright/
+.venv/
 .pytest_cache/
 .ruff_cache/
 .ipynb_checkpoints/
+
+# Local environments and secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
 
 # Results can get large
 results/*
