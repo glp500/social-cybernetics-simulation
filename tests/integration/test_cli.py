@@ -297,3 +297,97 @@ runs:
     assert result.exit_code == 2
     assert json.loads(result.stderr)["error"] == "invalid_batch_specification"
     assert not destination.exists()
+
+
+def test_sensitivity_command_executes_generated_runs_through_batch_boundary(
+    tmp_path: Path,
+) -> None:
+    base = tmp_path / "base.yml"
+    base.write_text(
+        """schema_version: "0.2.0"
+duration: 0
+world: {width: 1, height: 1}
+agents: {count: 0, initial_positions: []}
+shock: {kind: none}
+""",
+        encoding="utf-8",
+    )
+    specification = tmp_path / "sensitivity.yml"
+    specification.write_text(
+        """schema_version: "0.1.0"
+base_config: base.yml
+design:
+  kind: morris
+  seed: 42
+  num_levels: 4
+  candidate_trajectories: 4
+  selected_trajectories: 2
+  local_optimization: true
+model_seeds: [11]
+max_runs: 4
+scopes:
+  - kind: independent
+    fixed_overrides:
+      shock:
+        kind: independent
+        event_probability: 0.5
+        stock_loss_fraction: 0.0
+        capacity_loss_fraction: 0.0
+        regeneration_suppression_fraction: 0.0
+        recovery_ticks: 1
+    factors:
+      - path: shock.event_probability
+        kind: float
+        lower: 0.0
+        upper: 1.0
+""",
+        encoding="utf-8",
+    )
+    destination = tmp_path / "sensitivity-output"
+
+    result = runner.invoke(
+        app,
+        ["sensitivity", "--spec", str(specification), "--output", str(destination)],
+    )
+
+    assert result.exit_code == 0
+    assert json.loads(result.stdout) == {
+        "schema_version": "scs-batch-summary/v0.1.0",
+        "status": "completed",
+        "total_runs": 4,
+        "completed_runs": 4,
+        "failed_runs": 0,
+    }
+    assert validate_batch_bundle(destination)["completed_runs"] == 4
+
+
+def test_sensitivity_command_rejects_invalid_design_before_creating_output(
+    tmp_path: Path,
+) -> None:
+    specification = tmp_path / "invalid-sensitivity.yml"
+    specification.write_text(
+        """schema_version: "0.1.0"
+base_config: missing.yml
+design:
+  kind: morris
+  seed: 42
+  num_levels: 3
+  candidate_trajectories: 4
+  selected_trajectories: 2
+  local_optimization: true
+model_seeds: [11]
+max_runs: 4
+scopes: []
+""",
+        encoding="utf-8",
+    )
+    destination = tmp_path / "sensitivity-output"
+
+    result = runner.invoke(
+        app,
+        ["sensitivity", "--spec", str(specification), "--output", str(destination)],
+    )
+
+    assert result.exit_code == 2
+    assert json.loads(result.stderr)["error"] == "invalid_sensitivity_specification"
+    assert not destination.exists()

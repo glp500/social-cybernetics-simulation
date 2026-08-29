@@ -18,6 +18,7 @@ from social_cybernetics.persistence import (
 )
 from social_cybernetics.runtime.mesa import SugarscapeModel
 from social_cybernetics.runtime.mesa.model import SpatialSnapshotSink
+from social_cybernetics.sensitivity import ResolvedSensitivityDesign, load_sensitivity_design
 
 app = typer.Typer(
     help="Validate and run the Social Cybernetics Sugarscape model.",
@@ -59,6 +60,17 @@ def _read_batch_specification(path: Path) -> ResolvedBatchSpecification:
     except (OSError, UnicodeError, ValueError, yaml.YAMLError) as error:
         typer.echo(
             _json_line({"error": "invalid_batch_specification", "message": str(error)}),
+            err=True,
+        )
+        raise typer.Exit(code=2) from error
+
+
+def _read_sensitivity_design(path: Path) -> ResolvedSensitivityDesign:
+    try:
+        return load_sensitivity_design(path)
+    except (OSError, UnicodeError, ValueError, yaml.YAMLError) as error:
+        typer.echo(
+            _json_line({"error": "invalid_sensitivity_specification", "message": str(error)}),
             err=True,
         )
         raise typer.Exit(code=2) from error
@@ -145,13 +157,34 @@ def batch(
     """Execute ordered runs sequentially and publish JSON and Parquet indexes."""
 
     validated = _read_batch_specification(specification)
+    _execute_batch(validated, output)
+
+
+def _execute_batch(specification: ResolvedBatchSpecification, output: Path) -> None:
     try:
-        result = execute_batch(validated, output)
+        result = execute_batch(specification, output)
     except Exception as error:  # pragma: no cover - defensive aggregate-output boundary
         _output_error(error)
     typer.echo(_json_line(result.summary()))
     if result.failed_runs:
         raise typer.Exit(code=1)
+
+
+@app.command()
+def sensitivity(
+    specification: Annotated[
+        Path,
+        typer.Option("--spec", help="Seeded Morris sensitivity YAML to execute."),
+    ],
+    output: Annotated[
+        Path,
+        typer.Option("--output", help="Publish the generated batch attempt."),
+    ],
+) -> None:
+    """Generate validated sensitivity runs and execute them as one ordinary batch."""
+
+    design = _read_sensitivity_design(specification)
+    _execute_batch(design.batch, output)
 
 
 if __name__ == "__main__":  # pragma: no cover
