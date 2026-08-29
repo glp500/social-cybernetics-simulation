@@ -39,14 +39,14 @@ not counted as unfinished version 0.1 work.
 - [x] Seeded sensitivity workflow
 - [x] Ecological verification experiments
 - [x] Shock-aware debugging visualization
-- [ ] Final release reconciliation
+- [x] Final release reconciliation
 
 Work is dependency-ordered in [[../tasks/plan|tasks/plan.md]] and tracked in
 [[../tasks/todo|tasks/todo.md]]. The shock literature, design, implementation, and runtime gates are
 complete; persistent Parquet and streamed NetCDF output are also implemented. Deterministic,
 failure-isolated batch publication, the three-scope paired-seed Morris workflow, and published
-ecological verification experiments and shock-aware browser debugging are complete; final release
-reconciliation is next.
+ecological verification experiments, shock-aware browser debugging, documentation reconciliation,
+and the clean locked-environment gate are complete. Version 0.2 is verified.
 
 ## Active reading queue
 

@@ -17,7 +17,7 @@ Add heterogeneous capacity landscapes, independent/correlated/system shocks, con
 bundles, Parquet event/cohort/model tables, complete NetCDF arrays, batch execution, and sensitivity
 analysis.
 
-**Status:** active implementation. Explicit realized matrices, three independent damage channels,
+**Status:** implemented and verified. Explicit realized matrices, three independent damage channels,
 finite cell-local recovery, concurrent stochastic wavefronts, normalized immutable evidence, and
 isolated RNG substreams are implemented in the pure core and Mesa runtime. Validated atomic Parquet
 bundles now persist configuration, provenance, summaries, and all immutable record types. Complete
@@ -28,7 +28,7 @@ workflow now validates explicit active factor paths, generates three paired-seed
 executes them only through that batch boundary. Published sham, mortality, and three-scope
 verification experiments now pass. The debugging page renders the heterogeneous resource field and
 live damage, recovery, and event counts without introducing alternate transitions. Final release
-reconciliation is next.
+reconciliation and a clean locked-environment gate passed on 2026-08-30.
 
 **Question:** how much inequality and mortality arise from ecology and energetic constraints alone?
 

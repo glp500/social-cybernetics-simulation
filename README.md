@@ -71,10 +71,9 @@ recoverable ecological shocks, but still excludes adaptive learning, communicati
 diffusion, institutions, exchange, debt, and births. The literal policy intentionally has no energy
 cap, so a surviving agent's energy may grow without bound.
 
-Version 0.2 is in implementation. Its domain, runtime shock, persistent-output, deterministic batch,
-seeded sensitivity-design, ecological-verification, and shock-aware visualization slices are
-complete. Sensing, policy, gating, competition, and physiology stay fixed; final release
-reconciliation is next. See the active
+Version 0.2 is implemented and verified. Its domain, runtime shock, persistent-output, deterministic
+batch, seeded sensitivity-design, ecological-verification, and shock-aware visualization slices are
+complete. Sensing, policy, gating, competition, and physiology stay fixed. See the completed
 [implementation plan](tasks/plan.md) and [task list](tasks/todo.md).
 
 The v0.2 debugging page is exercised in isolated Chromium and captured in the

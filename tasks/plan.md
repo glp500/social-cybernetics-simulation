@@ -144,6 +144,11 @@ resource intensity, and reads public records/arrays for recovery, active-event, 
 metrics. The isolated browser verifier allocates a free loopback port, steps the real page, checks the
 console, and captures `docs/solara-v0.2.png`.
 
+Tasks 20–21 are complete. Canonical status documents agree that v0.2 is verified. A fresh temporary
+prefix installed directly from `conda-lock.yml`, accepted the editable package without dependency
+resolution, and passed baseline validation plus focused baseline, sensitivity-design, and published
+verification regressions. `just check` and isolated browser verification also pass.
+
 ## Task sizing and likely files
 
 Each numbered task is limited to five files. Focused tasks normally touch one production module, its

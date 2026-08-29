@@ -381,7 +381,7 @@ features remain the primary evidence.
 | Version | Added mechanism | Status |
 | --- | --- | --- |
 | v0.1 | deterministic ecology, material agents, explicit cognition/action boundaries | implemented and verified |
-| v0.2 | heterogeneous ecology, recoverable shocks, persistent outputs, batch/sensitivity runs | implementing: mechanisms, experiment workflow, and debugging visualization verified; final release gate next |
+| v0.2 | heterogeneous ecology, recoverable shocks, persistent outputs, batch/sensitivity runs | implemented and verified |
 | v0.3 | fixed local/shared/unequal information capabilities | specified |
 | v0.4 | private tabular Q-learning | specified |
 | v0.5 | tool diffusion and coevolving communication network | specified |
@@ -402,3 +402,8 @@ tiny-trajectory and CLI regressions, death retention, deterministic order checks
 stage trace all passed. The isolated browser verifier rendered and stepped the debugging page. See
 `docs/experiment_log.md` for the exact environment, commands, and the single upstream visualization
 warning that remains outside application code.
+
+Version 0.2 passed its gate on 2026-08-30: a clean locked environment, pure shock/property tests,
+fixed stochastic regressions, recursive run/batch validation, the 12-run artifact-only verification
+set, canonical sensitivity-design resolution, exact scheduler tests, and isolated-browser stepping all
+passed. The experiment log records commands, versions, outputs, and the remaining upstream warning.

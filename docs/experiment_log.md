@@ -1,5 +1,24 @@
 # Experiment Log
 
+## 2026-08-30 — Stochastic ecological baseline v0.2 release gate
+
+**Status:** v0.2 implementation and verification complete
+
+Installed `conda-lock.yml` into a new temporary prefix, then installed the repository editable with
+`--no-deps --no-build-isolation`. In that clean prefix, `scs validate --config configs/baseline.yml`
+passed, as did the byte-for-byte baseline CLI regression, canonical 600-run sensitivity-design
+resolution, and artifact-only 12-run verification regression.
+
+The clean environment reported Python 3.12.14, Mesa 3.5.1, Solara 1.61.0, NumPy 2.5.2, Pydantic
+2.13.5, SALib 1.5.2, PyArrow 25.0.0, netCDF4 1.7.4, conda-lock 4.0.2, pytest 9.1.1, Ruff 0.16.5,
+and Pyright 1.1.411.
+
+The normal environment also passed `just check`: 217 tests, 91.08% branch-aware coverage, formatting,
+lint, Pyright standard, dependency synchronization, and lock input consistency. Isolated Chromium
+loaded and stepped the v0.2 page, preserved usable controls, captured `docs/solara-v0.2.png`, and
+reported no application errors or warnings. The sole known upstream Vue fallback warning remains.
+Executable scheduler/order regressions continue to agree with the ODD+D sequence.
+
 ## 2026-08-30 — Stochastic-ecology visualization checkpoint
 
 **Status:** Phase F Task 19 implemented and browser-verified

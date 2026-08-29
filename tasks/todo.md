@@ -154,5 +154,11 @@
     and living-agent energy, and reports recovery, active-event, and damage counters from public
     runtime evidence. Unit tests and isolated Chromium stepping pass; `docs/solara-v0.2.png` is the
     reference screenshot.
-- [ ] Reconcile all status documentation and record the v0.2 experiment environment.
-- [ ] Pass clean lock installation, `just check`, browser verification, and scheduler agreement.
+- [x] Reconcile all status documentation and record the v0.2 experiment environment.
+  - Evidence: specification, assumptions, architecture, roadmap, dashboard, README, plan, task list,
+    and experiment log identify v0.2 as verified and retain its limitations and project choices.
+- [x] Pass clean lock installation, `just check`, browser verification, and scheduler agreement.
+  - Evidence: a new `/tmp` prefix installed from `conda-lock.yml`; the editable package, baseline
+    validation/regression, 600-run design resolution, and published verification regression passed.
+    `just check` passes 217 tests at 91.08% coverage, and isolated Chromium captures the stepped v0.2
+    page with only the documented upstream warning. Stage-order agreement remains regression-tested.
