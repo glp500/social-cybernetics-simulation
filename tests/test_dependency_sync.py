@@ -53,3 +53,12 @@ def test_persistent_bundle_writers_are_runtime_dependencies() -> None:
 
     assert "pyarrow" in runtime_names
     assert "netcdf4" in runtime_names
+
+
+def test_sensitivity_sampler_is_a_runtime_dependency() -> None:
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text())
+    runtime_names = {
+        _dependency_name(specification) for specification in pyproject["project"]["dependencies"]
+    }
+
+    assert "salib" in runtime_names

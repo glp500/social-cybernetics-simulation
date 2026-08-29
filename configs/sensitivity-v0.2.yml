@@ -1,0 +1,114 @@
+schema_version: "0.1.0"
+base_config: ecology-v0.2.yml
+design:
+  kind: morris
+  seed: 42
+  num_levels: 4
+  candidate_trajectories: 100
+  selected_trajectories: 10
+  local_optimization: true
+model_seeds: [101, 202, 303]
+max_runs: 600
+scopes:
+  - kind: independent
+    fixed_overrides:
+      shock:
+        kind: independent
+        event_probability: 0.5
+        stock_loss_fraction: 0.5
+        capacity_loss_fraction: 0.5
+        regeneration_suppression_fraction: 0.5
+        recovery_ticks: 4
+    factors:
+      - path: shock.event_probability
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.stock_loss_fraction
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.capacity_loss_fraction
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.regeneration_suppression_fraction
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.recovery_ticks
+        kind: integer
+        lower: 1
+        upper: 10
+
+  - kind: correlated
+    fixed_overrides:
+      shock:
+        kind: correlated
+        event_probability: 0.5
+        stock_loss_fraction: 0.5
+        capacity_loss_fraction: 0.5
+        regeneration_suppression_fraction: 0.5
+        recovery_ticks: 4
+        spread_probability: 0.5
+        max_spread_ticks: 2
+    factors:
+      - path: shock.event_probability
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.stock_loss_fraction
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.capacity_loss_fraction
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.regeneration_suppression_fraction
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.recovery_ticks
+        kind: integer
+        lower: 1
+        upper: 10
+      - path: shock.spread_probability
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.max_spread_ticks
+        kind: integer
+        lower: 0
+        upper: 3
+
+  - kind: system
+    fixed_overrides:
+      shock:
+        kind: system
+        event_probability: 0.5
+        stock_loss_fraction: 0.5
+        capacity_loss_fraction: 0.5
+        regeneration_suppression_fraction: 0.5
+        recovery_ticks: 4
+    factors:
+      - path: shock.event_probability
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.stock_loss_fraction
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.capacity_loss_fraction
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.regeneration_suppression_fraction
+        kind: float
+        lower: 0.0
+        upper: 1.0
+      - path: shock.recovery_ticks
+        kind: integer
+        lower: 1
+        upper: 10

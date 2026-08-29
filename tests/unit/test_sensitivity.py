@@ -1,9 +1,12 @@
+from collections import Counter
 from pathlib import Path
 
 import pytest
 
 from social_cybernetics.config import IndependentShockConfig
 from social_cybernetics.sensitivity import load_sensitivity_design
+
+CHECKED_SENSITIVITY = Path("configs/sensitivity-v0.2.yml")
 
 
 def _write_base(path: Path) -> None:
@@ -167,3 +170,18 @@ def test_sensitivity_design_rejects_scope_kind_that_differs_from_fixed_configura
 
     with pytest.raises(ValueError, match="must activate independent shock"):
         load_sensitivity_design(path)
+
+
+def test_checked_sensitivity_design_has_the_accepted_scope_coverage_and_run_budget() -> None:
+    design = load_sensitivity_design(CHECKED_SENSITIVITY)
+
+    assert [scope.kind for scope in design.specification.scopes] == [
+        "independent",
+        "correlated",
+        "system",
+    ]
+    assert design.specification.model_seeds == (101, 202, 303)
+    assert design.specification.max_runs == 600
+    assert len(design.batch.runs) == 600
+    counts = Counter(run.run_id.split("-", maxsplit=1)[0] for run in design.batch.runs)
+    assert counts == {"independent": 180, "correlated": 240, "system": 180}
