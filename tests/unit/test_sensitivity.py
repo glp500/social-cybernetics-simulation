@@ -147,6 +147,21 @@ def test_sensitivity_design_rejects_duplicate_model_seeds_and_factor_paths(
         load_sensitivity_design(duplicate_factors)
 
 
+@pytest.mark.parametrize("model_seeds", ["[true]", "[1.5]", '["11"]', "[-1]"])
+def test_sensitivity_design_requires_explicit_nonnegative_integer_model_seeds(
+    tmp_path: Path, model_seeds: str
+) -> None:
+    _write_base(tmp_path / "base.yml")
+    path = tmp_path / "sensitivity.yml"
+    path.write_text(
+        _independent_spec().replace("model_seeds: [11, 22]", f"model_seeds: {model_seeds}"),
+        encoding="utf-8",
+    )
+
+    with pytest.raises(ValueError, match="non-negative integers"):
+        load_sensitivity_design(path)
+
+
 def test_sensitivity_design_fails_closed_when_run_budget_is_exceeded(tmp_path: Path) -> None:
     _write_base(tmp_path / "base.yml")
     path = tmp_path / "sensitivity.yml"

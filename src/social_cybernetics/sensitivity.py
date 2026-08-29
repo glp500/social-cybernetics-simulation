@@ -99,10 +99,17 @@ class SensitivitySpecification(_StrictSensitivityModel):
     max_runs: int = Field(ge=1)
     scopes: tuple[SensitivityScopeSpecification, ...] = Field(min_length=1)
 
+    @field_validator("model_seeds", mode="before")
+    @classmethod
+    def validate_model_seeds(cls, value: object) -> object:
+        if not isinstance(value, (list, tuple)) or any(
+            isinstance(seed, bool) or not isinstance(seed, int) or seed < 0 for seed in value
+        ):
+            raise ValueError("model seeds must be non-negative integers")
+        return value
+
     @model_validator(mode="after")
     def validate_unique_identifiers(self) -> Self:
-        if any(isinstance(seed, bool) or seed < 0 for seed in self.model_seeds):
-            raise ValueError("model seeds must be non-negative integers")
         if len(set(self.model_seeds)) != len(self.model_seeds):
             raise ValueError("model seeds must be unique")
         kinds = tuple(scope.kind for scope in self.scopes)
@@ -130,11 +137,10 @@ def _path_value(configuration: dict[str, Any], path: str) -> object:
 
 
 def _path_override(path: str, value: int | float) -> dict[str, Any]:
-    nested: int | float | dict[str, Any] = value
-    for component in reversed(path.split(".")):
+    components = path.split(".")
+    nested: dict[str, Any] = {components[-1]: value}
+    for component in reversed(components[:-1]):
         nested = {component: nested}
-    if not isinstance(nested, dict):  # pragma: no cover - path validation guarantees a component
-        raise AssertionError("factor path did not produce an override mapping")
     return nested
 
 
@@ -167,9 +173,7 @@ def _factor_value(factor: SensitivityFactorSpecification, sampled: float) -> int
     return int(rounded)
 
 
-def _scope_payload(
-    scope: SensitivityScopeSpecification, *, base_payload: dict[str, Any]
-) -> dict[str, Any]:
+def _validate_scope(scope: SensitivityScopeSpecification, *, base_payload: dict[str, Any]) -> None:
     payload = deep_merge_configuration(base_payload, scope.fixed_overrides)
     config = SimulationConfig.model_validate(payload)
     if config.shock.kind != scope.kind:
@@ -177,7 +181,6 @@ def _scope_payload(
     normalized = config.model_dump(mode="json")
     for factor in scope.factors:
         _validate_factor(factor, scope_payload=normalized)
-    return normalized
 
 
 def _expected_run_count(specification: SensitivitySpecification) -> int:
@@ -220,7 +223,7 @@ def _generated_runs(
 ) -> list[dict[str, object]]:
     runs: list[dict[str, object]] = []
     for scope in specification.scopes:
-        _scope_payload(scope, base_payload=base_payload)
+        _validate_scope(scope, base_payload=base_payload)
         for point_ordinal, point in enumerate(_sample_scope(scope, design=specification.design)):
             sampled_overrides: dict[str, Any] = {}
             for factor, value in zip(scope.factors, point, strict=True):
