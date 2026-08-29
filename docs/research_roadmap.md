@@ -26,7 +26,9 @@ Deterministic sequential batches now retain ordered resolved configuration prove
 child bundles, and equivalent JSON/Parquet indexes under one atomic publication. The seeded Morris
 workflow now validates explicit active factor paths, generates three paired-seed scope designs, and
 executes them only through that batch boundary. Published sham, mortality, and three-scope
-verification experiments now pass; shock-aware visualization and release reconciliation are next.
+verification experiments now pass. The debugging page renders the heterogeneous resource field and
+live damage, recovery, and event counts without introducing alternate transitions. Final release
+reconciliation is next.
 
 **Question:** how much inequality and mortality arise from ecology and energetic constraints alone?
 

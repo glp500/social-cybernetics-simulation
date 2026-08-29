@@ -139,6 +139,11 @@ resource outcomes without accessing live model objects.
 20. Reconcile specification, assumptions, architecture, roadmap, dashboard, README, and experiment log.
 21. Repeat clean lock installation, `just check`, browser verification, and exact regression checks.
 
+Task 19 is complete. SolaraViz uses a checked heterogeneous correlated-shock fixture, auto-scales
+resource intensity, and reads public records/arrays for recovery, active-event, and current-damage
+metrics. The isolated browser verifier allocates a free loopback port, steps the real page, checks the
+console, and captures `docs/solara-v0.2.png`.
+
 ## Task sizing and likely files
 
 Each numbered task is limited to five files. Focused tasks normally touch one production module, its

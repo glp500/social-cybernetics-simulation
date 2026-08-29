@@ -1,5 +1,20 @@
 # Experiment Log
 
+## 2026-08-30 — Stochastic-ecology visualization checkpoint
+
+**Status:** Phase F Task 19 implemented and browser-verified
+
+Replaced the uniform no-shock page fixture with a checked 3×2 heterogeneous correlated-shock
+configuration. Resource colors now auto-scale to realized heterogeneous data. The read-only metrics
+panel adds recovering cells, active shock events, and cells damaged on the current tick, derived from
+public arrays and immutable records rather than private orchestration state.
+
+The verifier now allocates an available loopback port instead of assuming 8765 is unused. In isolated
+headless Chromium it loaded the page, rendered the grid/agent/metrics, stepped once, observed the
+resource and energy changes, retained usable controls, and captured `docs/solara-v0.2.png`. There
+were no application console errors or warnings; the single previously documented upstream Vue
+fallback warning remains. `just check` passed 217 tests with 91.08% branch-aware coverage.
+
 ## 2026-08-30 — Ecological verification experiment set
 
 **Status:** Phase E complete; shock-aware visualization next

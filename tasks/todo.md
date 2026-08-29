@@ -149,6 +149,10 @@
 
 ## Phase F — Release reconciliation
 
-- [ ] Update SolaraViz for heterogeneous landscapes and shock events.
+- [x] Update SolaraViz for heterogeneous landscapes and shock events.
+  - Evidence: the page uses `configs/visualization-v0.2.yml`, renders the heterogeneous stock field
+    and living-agent energy, and reports recovery, active-event, and damage counters from public
+    runtime evidence. Unit tests and isolated Chromium stepping pass; `docs/solara-v0.2.png` is the
+    reference screenshot.
 - [ ] Reconcile all status documentation and record the v0.2 experiment environment.
 - [ ] Pass clean lock installation, `just check`, browser verification, and scheduler agreement.

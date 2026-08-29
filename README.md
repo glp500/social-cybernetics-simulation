@@ -72,13 +72,15 @@ diffusion, institutions, exchange, debt, and births. The literal policy intentio
 cap, so a surviving agent's energy may grow without bound.
 
 Version 0.2 is in implementation. Its domain, runtime shock, persistent-output, deterministic batch,
-seeded sensitivity-design, and small ecological-verification slices are complete. Sensing, policy,
-gating, competition, and physiology stay fixed; shock-aware visualization is next. See the active
+seeded sensitivity-design, ecological-verification, and shock-aware visualization slices are
+complete. Sensing, policy, gating, competition, and physiology stay fixed; final release
+reconciliation is next. See the active
 [implementation plan](tasks/plan.md) and [task list](tasks/todo.md).
 
-The debugging page is exercised in isolated Chromium and captured in the
-[version 0.1 reference screenshot](docs/solara-v0.1.png). Installing Chromium is a one-time local step;
-the browser binary is not stored in the repository.
+The v0.2 debugging page is exercised in isolated Chromium and captured in the
+[stochastic-ecology reference screenshot](docs/solara-v0.2.png). It displays the heterogeneous
+resource field, living agents, energy, recovering cells, active shock events, and current damage.
+Installing Chromium is a one-time local step; the browser binary is not stored in the repository.
 
 ## Reproducibility
 

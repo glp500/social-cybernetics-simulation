@@ -57,6 +57,8 @@
 - Paired seeds reduce comparison noise but do not remove stochastic uncertainty. Analysis must retain
   replicate identity and cannot interpret Morris screening statistics as causal effects or variance
   shares.
+- SolaraViz is a read-only debugging adapter. Its shock counters are derived from public immutable
+  event/damage records and recovery arrays; the page cannot mutate or bypass model transitions.
 
 ## Known limitations
 

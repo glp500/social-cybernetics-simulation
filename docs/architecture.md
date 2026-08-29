@@ -183,7 +183,9 @@ derived from records, not from transient UI state.
 
 SolaraViz is a debugging adapter. It reads the same property layers and records as the CLI and cannot
 invoke alternative model transitions. It shows resource intensity, living agents, energy, total
-resources, alive population, and cohort mean energy. It is not an analytical evidence pipeline.
+resources, alive population, cohort mean energy, recovering-cell count, active shock events, and
+cells damaged on the current tick. The checked page uses an explicit heterogeneous correlated-shock
+fixture. It is not an analytical evidence pipeline.
 
 ## Package layout
 
