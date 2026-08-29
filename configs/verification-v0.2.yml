@@ -1,0 +1,103 @@
+schema_version: "0.1.0"
+base_config: ecology-v0.2.yml
+runs:
+  - id: no-shock-r00
+    overrides:
+      seed: 101
+      duration: 3
+      shock:
+        kind: none
+
+  - id: sham-shock-r00
+    overrides:
+      seed: 101
+      duration: 3
+      shock:
+        kind: system
+        event_probability: 1.0
+        stock_loss_fraction: 0.0
+        capacity_loss_fraction: 0.0
+        regeneration_suppression_fraction: 0.0
+        recovery_ticks: 2
+
+  - id: scarcity-r00
+    overrides:
+      seed: 101
+      duration: 2
+      resources:
+        kind: explicit
+        capacity:
+          - [0.0, 0.0]
+          - [0.0, 0.0]
+          - [0.0, 0.0]
+        initial_stock:
+          - [0.0, 0.0]
+          - [0.0, 0.0]
+          - [0.0, 0.0]
+        regeneration_rate: 0.0
+      agents:
+        initial_energy: 1.0
+      shock:
+        kind: none
+
+  - id: independent-r00
+    overrides: &independent-r00
+      seed: 101
+      duration: 5
+      shock:
+        kind: independent
+        event_probability: 0.5
+        stock_loss_fraction: 0.5
+        capacity_loss_fraction: 0.25
+        regeneration_suppression_fraction: 0.25
+        recovery_ticks: 3
+  - id: independent-r01
+    overrides:
+      <<: *independent-r00
+      seed: 202
+  - id: independent-r02
+    overrides:
+      <<: *independent-r00
+      seed: 303
+
+  - id: correlated-r00
+    overrides: &correlated-r00
+      seed: 101
+      duration: 5
+      shock:
+        kind: correlated
+        event_probability: 0.5
+        stock_loss_fraction: 0.5
+        capacity_loss_fraction: 0.25
+        regeneration_suppression_fraction: 0.25
+        recovery_ticks: 3
+        spread_probability: 0.75
+        max_spread_ticks: 2
+  - id: correlated-r01
+    overrides:
+      <<: *correlated-r00
+      seed: 202
+  - id: correlated-r02
+    overrides:
+      <<: *correlated-r00
+      seed: 303
+
+  - id: system-r00
+    overrides: &system-r00
+      seed: 101
+      duration: 5
+      shock:
+        kind: system
+        event_probability: 0.5
+        stock_loss_fraction: 0.5
+        capacity_loss_fraction: 0.25
+        regeneration_suppression_fraction: 0.25
+        recovery_ticks: 3
+  - id: system-r01
+    overrides:
+      <<: *system-r00
+      seed: 202
+  - id: system-r02
+    overrides:
+      <<: *system-r00
+      seed: 303

@@ -7,7 +7,8 @@ import pytest
 from netCDF4 import Dataset
 from typer.testing import CliRunner
 
-from social_cybernetics.batch import validate_batch_bundle
+from social_cybernetics.batch import execute_batch, validate_batch_bundle
+from social_cybernetics.batch_config import load_batch_specification
 from social_cybernetics.cli import app
 from social_cybernetics.domain import InvariantViolationError
 from social_cybernetics.persistence import validate_run_bundle
@@ -16,6 +17,7 @@ from social_cybernetics.runtime.mesa import SugarscapeModel
 runner = CliRunner()
 BASELINE = Path("configs/baseline.yml")
 ECOLOGY_V02 = Path("configs/ecology-v0.2.yml")
+VERIFICATION_V02 = Path("configs/verification-v0.2.yml")
 
 
 def test_validate_reports_a_schema_versioned_success() -> None:
@@ -391,3 +393,48 @@ scopes: []
     assert result.exit_code == 2
     assert json.loads(result.stderr)["error"] == "invalid_sensitivity_specification"
     assert not destination.exists()
+
+
+def test_checked_verification_batch_reproduces_controls_from_published_artifacts(
+    tmp_path: Path,
+) -> None:
+    destination = tmp_path / "verification-output"
+
+    result = execute_batch(load_batch_specification(VERIFICATION_V02), destination)
+    manifest = validate_batch_bundle(destination)
+    rows = pq.read_table(destination / "runs.parquet").to_pylist()
+    by_id = {row["run_id"]: row for row in rows}
+
+    assert result.failed_runs == 0
+    assert manifest["completed_runs"] == 12
+    assert len(rows) == 12
+    assert by_id["no-shock-r00"]["total_resources"] == by_id["sham-shock-r00"]["total_resources"]
+    assert (
+        by_id["no-shock-r00"]["cohort_mean_energy"] == by_id["sham-shock-r00"]["cohort_mean_energy"]
+    )
+    assert by_id["scarcity-r00"]["alive_count"] == 0
+    assert by_id["scarcity-r00"]["dead_count"] == 1
+
+    for scope in ("independent", "correlated", "system"):
+        scope_rows = [by_id[f"{scope}-r{replicate:02d}"] for replicate in range(3)]
+        assert [row["seed"] for row in scope_rows] == [101, 202, 303]
+        assert all(row["total_resources"] is not None for row in scope_rows)
+
+    expected_scope_resources = {
+        "independent-r00": 8.715809716438953,
+        "independent-r01": 7.073722154063787,
+        "independent-r02": 4.539701105364262,
+        "correlated-r00": 6.276785011574074,
+        "correlated-r01": 4.9083322916666665,
+        "correlated-r02": 7.2462439597800925,
+        "system-r00": 2.66325649911386,
+        "system-r01": 4.84471103515625,
+        "system-r02": 2.4621169144241897,
+    }
+    assert {
+        run_id: by_id[run_id]["total_resources"] for run_id in expected_scope_resources
+    } == expected_scope_resources
+
+    with Dataset(destination / "runs/correlated-r00/spatial.nc", "r") as spatial:
+        np.testing.assert_array_equal(spatial.variables["tick"][:], np.arange(6))
+        assert spatial.variables["resource_stock"].shape == (6, 3, 2)
