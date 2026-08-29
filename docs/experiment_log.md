@@ -1,5 +1,24 @@
 # Experiment Log
 
+## 2026-08-30 — Batch validation simplification checkpoint
+
+**Status:** behavior-preserving maintainability refactor verified
+
+Reviewed the active plan and task checklist before starting sensitivity work. Phases A–D and Phase E
+Task 16 remain supported by executable evidence; sensitivity design and verification experiments are
+the next incomplete tasks. A focused Ruff complexity audit identified batch validation—not the
+explicit scientific scheduler—as the clearest recent readability hotspot.
+
+Split normalized-batch and published-bundle validation into named sequential checks for root layout,
+manifest schema, artifact descriptors, resolved configuration provenance, JSON index, Parquet index,
+aggregate counts, and child bundles. This retains the same fail-closed checks and their order while
+making the public validator read as the artifact contract. No tests or expected artifacts changed.
+
+`just check` passed 197 tests with 90.98% branch-aware coverage, Ruff formatting/lint, Pyright
+standard, dependency synchronization, and lockfile consistency. Focused C901 analysis reports no
+remaining violation in `batch.py`; the previous normalized-batch and full-bundle validators measured
+17 and 28 respectively.
+
 ## 2026-08-29 — Stochastic ecological baseline begins
 
 **Status:** Phases A–D and Phase E batch execution verified; sensitivity design next

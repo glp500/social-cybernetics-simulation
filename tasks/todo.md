@@ -105,8 +105,35 @@
     bundles, normalized provenance/configuration hashes, equivalent JSON/Parquet indexes, recursive
     bundle validation, deterministic complete-tree digests, and atomic no-overwrite publication.
   - Interface: `scs batch --spec configs/batch-v0.2.yml --output results/batch-v0.2`.
-- [ ] Add validated, seeded sensitivity designs after confirming method and ranges.
+- [x] Simplify batch validation before adding sensitivity behavior.
+  - Acceptance: `validate_batch_bundle` and normalized-run validation read as named sequential checks;
+    focused C901 reports no batch violations; schemas, error ordering, and published bytes are
+    unchanged.
+  - Verify: existing batch/config tests pass without modification, deterministic bundle-digest tests
+    remain exact, and `just check` passes.
+  - Evidence: both prior batch C901 violations (17 and 28) are eliminated; 197 unchanged tests pass
+    with 90.98% branch-aware coverage, clean Ruff/Pyright checks, and a consistent Conda lock.
+  - Files: `src/social_cybernetics/batch.py`, `tasks/plan.md`, `tasks/todo.md`.
+- [ ] Complete the sensitivity evidence and decision gate.
+  - Decisions required: screening method, shock-scope treatment, parameter paths/ranges, design seed,
+    model-seed pairing/replication, and maximum run budget.
+  - Acceptance: a paired literature note distinguishes support, counterevidence, stochastic-model
+    boundaries, and project choices; specification/assumptions record every selected semantic.
+  - Files: `docs/literature/items/<sensitivity-note>.md`, `docs/literature/literature_matrix.md`,
+    `docs/model_specification.md`, `docs/assumptions.md`, `tasks/plan.md`.
+- [ ] Add validated, seeded sensitivity designs after the decision gate.
+  - Acceptance: declared scalar paths and ranges reject unknown, categorical, inactive, or invalid
+    fields; the design is reproducible from its own recorded seed and emits ordered batch runs with
+    explicit model seeds and configuration provenance.
+  - Verify: focused unit/property tests cover bounds, determinism, run counts, seed pairing, and full
+    `SimulationConfig` validation; generated designs execute through the existing batch boundary.
+  - Files: one sensitivity configuration module, its tests, one CLI/config integration, and at most
+    two reconciled documentation/configuration files.
 - [ ] Add verification experiments for ecological inequality and mortality controls.
+  - Acceptance: no-shock, sham-shock, scarcity/mortality, and scope-comparison fixtures retain raw
+    outcomes and separate parameter effects from replicate-seed variation.
+  - Verify: analysis smoke tests read only published JSON/Parquet/NetCDF evidence and reproduce fixed
+    small-design results.
 
 ## Phase F — Release reconciliation
 

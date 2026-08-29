@@ -94,7 +94,12 @@ it.
 ### Phase E — Batch and sensitivity workflows
 
 16. Add deterministic sequential batch execution with per-run directories and an aggregate index.
-17. Add declared parameter-range validation and a seeded sensitivity design.
+16a. Simplify batch validation into named schema, index, and child-bundle checks without changing
+    accepted artifacts, error ordering, or publication behavior.
+17a. Add paired sensitivity-method evidence and confirm the screening method, shock-scope treatment,
+     stochastic seed/replication policy, factor ranges, and run budget through decision rounds.
+17b. Add declared parameter-range validation and generate the selected seeded sensitivity design as
+     an ordered batch specification without bypassing `SimulationConfig`.
 18. Add small verification experiments and analysis smoke tests.
 
 ### Checkpoint E
@@ -107,6 +112,10 @@ Task 16 is implemented. Ordered YAML specifications resolve one validated base p
 seed-bearing overrides; complete attempts publish equivalent JSON/Parquet indexes and successful
 child bundles atomically. Per-run failures are retained without stopping later runs. Tasks 17–18
 remain dependent on this stable batch contract.
+
+Task 16a is complete. Batch validation now reads as named root, manifest, artifact, provenance,
+JSON-index, Parquet-index, count, and child-bundle checks. Public schemas and failure ordering are
+unchanged; the existing tests pass without modification and focused C901 reports no batch violations.
 
 ### Phase F — Release reconciliation
 
@@ -130,10 +139,15 @@ more than five files, split it before editing.
 | persistence leaks framework objects | medium | serialize immutable domain records and normalized mappings |
 | partial bundle writes look complete | high | stage output and publish only after validation succeeds |
 | sensitivity scope expands prematurely | medium | begin with declared scalar paths and a small seeded design |
+| output validation becomes difficult to review | medium | keep validators as named sequential checks and monitor focused C901 complexity |
 
 ## Open design checkpoints
 
 - Confirm the initial sensitivity method and parameter ranges before Phase E Task 17. Morris screening
   is the recommended first method; Sobol analysis should follow only for narrowed parameters.
+- Confirm whether shock scopes receive separate sensitivity designs or correlated shocks form the
+  first screening target; a categorical `shock.kind` cannot be treated as an ordinary Morris factor.
+- Confirm how replicated model seeds pair across parameter points so intrinsic stochasticity is not
+  mistaken for parameter influence.
 - Confirm whether long batch runs should add process-level parallelism after deterministic sequential
   semantics are verified.

@@ -42,6 +42,59 @@ NORMALIZED_BATCH_SCHEMA_VERSION = "scs-normalized-batch/v0.1.0"
 BATCH_INDEX_SCHEMA_VERSION = "scs-batch-run-index/v0.1.0"
 BATCH_SUMMARY_SCHEMA_VERSION = "scs-batch-summary/v0.1.0"
 _MAX_JSON_BYTES = 64 * 1024 * 1024
+_BATCH_ROOT_ENTRIES = {
+    "batch_manifest.json",
+    "batch_specification.json",
+    "runs.json",
+    "runs.parquet",
+    "runs",
+}
+_BATCH_MANIFEST_FIELDS = {
+    "schema_version",
+    "status",
+    "total_runs",
+    "completed_runs",
+    "failed_runs",
+    "files",
+    "runs",
+}
+_NORMALIZED_BATCH_FIELDS = {
+    "schema_version",
+    "source_schema_version",
+    "base_config_source",
+    "base_configuration",
+    "runs",
+}
+_NORMALIZED_RUN_FIELDS = {
+    "ordinal",
+    "run_id",
+    "overrides",
+    "configuration_sha256",
+    "configuration",
+}
+_INDEX_RECORD_FIELDS = {
+    "ordinal",
+    "run_id",
+    "status",
+    "seed",
+    "configuration_sha256",
+    "bundle_path",
+    "summary",
+    "error",
+}
+_RUN_DESCRIPTOR_FIELDS = {
+    "ordinal",
+    "run_id",
+    "status",
+    "bundle_path",
+    "run_bundle_schema_version",
+    "manifest_sha256",
+}
+_ARTIFACT_SCHEMAS = {
+    "batch_specification.json": NORMALIZED_BATCH_SCHEMA_VERSION,
+    "runs.json": BATCH_INDEX_SCHEMA_VERSION,
+    "runs.parquet": BATCH_INDEX_SCHEMA_VERSION,
+}
 
 _INDEX_SCHEMA = pa.schema(
     [
@@ -297,14 +350,8 @@ def _require_mapping(value: object, *, name: str) -> Mapping[str, Any]:
     return value
 
 
-def _validate_normalized_batch(payload: Mapping[str, Any]) -> list[Mapping[str, Any]]:
-    if set(payload) != {
-        "schema_version",
-        "source_schema_version",
-        "base_config_source",
-        "base_configuration",
-        "runs",
-    }:
+def _validate_normalized_header(payload: Mapping[str, Any]) -> Mapping[str, Any]:
+    if set(payload) != _NORMALIZED_BATCH_FIELDS:
         raise BundleValidationError("normalized batch fields differ from its schema")
     if payload.get("schema_version") != NORMALIZED_BATCH_SCHEMA_VERSION:
         raise BundleValidationError("normalized batch schema is unsupported")
@@ -319,6 +366,50 @@ def _validate_normalized_batch(payload: Mapping[str, Any]) -> list[Mapping[str, 
         raise BundleValidationError("base configuration is invalid") from error
     if base_config.model_dump(mode="json") != base_mapping:
         raise BundleValidationError("base configuration is not normalized")
+    return base_mapping
+
+
+def _parse_normalized_run(
+    item: object, *, ordinal: int, seen: set[str]
+) -> tuple[Mapping[str, Any], BatchRunSpecification]:
+    run = _require_mapping(item, name="normalized run")
+    if set(run) != _NORMALIZED_RUN_FIELDS:
+        raise BundleValidationError("normalized run fields differ from their schema")
+    try:
+        parsed = BatchRunSpecification.model_validate(
+            {"id": run.get("run_id"), "overrides": run.get("overrides")}
+        )
+    except ValueError as error:
+        raise BundleValidationError("normalized run identity or overrides are invalid") from error
+    if parsed.id in seen:
+        raise BundleValidationError("normalized run IDs are not unique")
+    seen.add(parsed.id)
+    if run.get("ordinal") != ordinal:
+        raise BundleValidationError("normalized run order is not canonical")
+    return run, parsed
+
+
+def _validate_resolved_configuration(
+    run: Mapping[str, Any],
+    *,
+    base_mapping: Mapping[str, Any],
+    overrides: Mapping[str, Any],
+) -> None:
+    configuration = _require_mapping(run.get("configuration"), name="run configuration")
+    try:
+        config = SimulationConfig.model_validate(configuration)
+    except ValueError as error:
+        raise BundleValidationError("resolved run configuration is invalid") from error
+    if config.model_dump(mode="json") != configuration:
+        raise BundleValidationError("resolved run configuration is not normalized")
+    if deep_merge_configuration(base_mapping, overrides) != configuration:
+        raise BundleValidationError("resolved run configuration differs from its overrides")
+    if run.get("configuration_sha256") != _configuration_digest(configuration):
+        raise BundleValidationError("resolved run configuration digest differs")
+
+
+def _validate_normalized_batch(payload: Mapping[str, Any]) -> list[Mapping[str, Any]]:
+    base_mapping = _validate_normalized_header(payload)
 
     runs = payload.get("runs")
     if not isinstance(runs, list) or not runs:
@@ -326,55 +417,18 @@ def _validate_normalized_batch(payload: Mapping[str, Any]) -> list[Mapping[str, 
     seen: set[str] = set()
     validated_runs: list[Mapping[str, Any]] = []
     for ordinal, item in enumerate(runs):
-        run = _require_mapping(item, name="normalized run")
-        if set(run) != {
-            "ordinal",
-            "run_id",
-            "overrides",
-            "configuration_sha256",
-            "configuration",
-        }:
-            raise BundleValidationError("normalized run fields differ from their schema")
-        run_id = run.get("run_id")
-        overrides = run.get("overrides")
-        try:
-            parsed = BatchRunSpecification.model_validate({"id": run_id, "overrides": overrides})
-        except ValueError as error:
-            raise BundleValidationError(
-                "normalized run identity or overrides are invalid"
-            ) from error
-        if parsed.id in seen:
-            raise BundleValidationError("normalized run IDs are not unique")
-        seen.add(parsed.id)
-        if run.get("ordinal") != ordinal:
-            raise BundleValidationError("normalized run order is not canonical")
-        configuration = _require_mapping(run.get("configuration"), name="run configuration")
-        try:
-            config = SimulationConfig.model_validate(configuration)
-        except ValueError as error:
-            raise BundleValidationError("resolved run configuration is invalid") from error
-        if config.model_dump(mode="json") != configuration:
-            raise BundleValidationError("resolved run configuration is not normalized")
-        merged = deep_merge_configuration(base_mapping, parsed.overrides)
-        if merged != configuration:
-            raise BundleValidationError("resolved run configuration differs from its overrides")
-        if run.get("configuration_sha256") != _configuration_digest(configuration):
-            raise BundleValidationError("resolved run configuration digest differs")
+        run, parsed = _parse_normalized_run(item, ordinal=ordinal, seen=seen)
+        _validate_resolved_configuration(
+            run,
+            base_mapping=base_mapping,
+            overrides=parsed.overrides,
+        )
         validated_runs.append(run)
     return validated_runs
 
 
 def _validate_index_record(record: Mapping[str, Any], normalized: Mapping[str, Any]) -> None:
-    if set(record) != {
-        "ordinal",
-        "run_id",
-        "status",
-        "seed",
-        "configuration_sha256",
-        "bundle_path",
-        "summary",
-        "error",
-    }:
+    if set(record) != _INDEX_RECORD_FIELDS:
         raise BundleValidationError("batch index record fields differ from their schema")
     configuration = _require_mapping(normalized.get("configuration"), name="run configuration")
     if (
@@ -416,51 +470,35 @@ def _validate_summary(summary: object, *, expected_seed: object) -> None:
         raise BundleValidationError("indexed run summary seed differs")
 
 
-def validate_batch_bundle(bundle: Path) -> dict[str, Any]:
-    """Validate aggregate schemas, digests, indexes, provenance, and child run bundles."""
-
-    bundle = Path(bundle)
+def _validate_batch_root(bundle: Path) -> Path:
     if not bundle.is_dir():
         raise BundleValidationError(f"batch bundle is not a directory: {bundle}")
     for path in bundle.rglob("*"):
         if path.is_symlink():
             raise BundleValidationError(f"batch bundle cannot contain symbolic links: {path.name}")
-    if {path.name for path in bundle.iterdir()} != {
-        "batch_manifest.json",
-        "batch_specification.json",
-        "runs.json",
-        "runs.parquet",
-        "runs",
-    }:
+    if {path.name for path in bundle.iterdir()} != _BATCH_ROOT_ENTRIES:
         raise BundleValidationError("batch bundle root entries differ from its schema")
     runs_directory = bundle / "runs"
     if not runs_directory.is_dir():
         raise BundleValidationError("batch runs entry must be a directory")
+    return runs_directory
 
+
+def _read_batch_manifest(bundle: Path) -> dict[str, Any]:
     manifest = read_json_object(bundle / "batch_manifest.json", max_bytes=_MAX_JSON_BYTES)
     if (
-        set(manifest)
-        != {
-            "schema_version",
-            "status",
-            "total_runs",
-            "completed_runs",
-            "failed_runs",
-            "files",
-            "runs",
-        }
+        set(manifest) != _BATCH_MANIFEST_FIELDS
         or manifest.get("schema_version") != BATCH_BUNDLE_SCHEMA_VERSION
     ):
         raise BundleValidationError("batch manifest differs from its schema")
+    return manifest
+
+
+def _validate_manifest_files(bundle: Path, manifest: Mapping[str, Any]) -> None:
     files = _require_mapping(manifest.get("files"), name="batch manifest files")
-    expected_schemas = {
-        "batch_specification.json": NORMALIZED_BATCH_SCHEMA_VERSION,
-        "runs.json": BATCH_INDEX_SCHEMA_VERSION,
-        "runs.parquet": BATCH_INDEX_SCHEMA_VERSION,
-    }
-    if set(files) != set(expected_schemas):
+    if set(files) != set(_ARTIFACT_SCHEMAS):
         raise BundleValidationError("batch manifest file set is incomplete or unknown")
-    for relative_path, schema_version in expected_schemas.items():
+    for relative_path, schema_version in _ARTIFACT_SCHEMAS.items():
         descriptor = _require_mapping(files[relative_path], name="batch file descriptor")
         if set(descriptor) != {"schema_version", "byte_count", "sha256"}:
             raise BundleValidationError(f"artifact descriptor is malformed: {relative_path}")
@@ -472,9 +510,10 @@ def validate_batch_bundle(bundle: Path) -> dict[str, Any]:
         if sha256_file(path) != descriptor.get("sha256"):
             raise BundleValidationError(f"digest mismatch for {relative_path}")
 
-    normalized_runs = _validate_normalized_batch(
-        read_json_object(bundle / "batch_specification.json", max_bytes=_MAX_JSON_BYTES)
-    )
+
+def _read_index_records(
+    bundle: Path, normalized_runs: list[Mapping[str, Any]]
+) -> list[Mapping[str, Any]]:
     index_payload = read_json_object(bundle / "runs.json", max_bytes=_MAX_JSON_BYTES)
     if (
         set(index_payload) != {"schema_version", "runs"}
@@ -489,7 +528,10 @@ def validate_batch_bundle(bundle: Path) -> dict[str, Any]:
         mapping = _require_mapping(record, name="batch index record")
         _validate_index_record(mapping, normalized)
         typed_index.append(mapping)
+    return typed_index
 
+
+def _validate_parquet_index(bundle: Path, typed_index: list[Mapping[str, Any]]) -> None:
     try:
         table = pq.read_table(bundle / "runs.parquet")
     except Exception as error:
@@ -502,6 +544,10 @@ def validate_batch_bundle(bundle: Path) -> dict[str, Any]:
     if not table.equals(expected_table, check_metadata=True):
         raise BundleValidationError("JSON and Parquet batch indexes differ")
 
+
+def _validate_manifest_counts(
+    manifest: Mapping[str, Any], typed_index: list[Mapping[str, Any]]
+) -> None:
     completed = sum(record["status"] == "completed" for record in typed_index)
     failed = len(typed_index) - completed
     expected_status = "completed" if failed == 0 else "completed_with_failures"
@@ -513,6 +559,62 @@ def validate_batch_bundle(bundle: Path) -> dict[str, Any]:
     ):
         raise BundleValidationError("batch manifest counts or status differ from indexes")
 
+
+def _validate_completed_child(
+    bundle: Path,
+    descriptor: Mapping[str, Any],
+    record: Mapping[str, Any],
+    normalized: Mapping[str, Any],
+) -> str:
+    run_id = record["run_id"]
+    if not isinstance(run_id, str):
+        raise BundleValidationError("completed run ID is malformed")
+    child = bundle / "runs" / run_id
+    child_manifest = validate_run_bundle(child)
+    child_configuration = read_json_object(
+        child / "configuration.json", max_bytes=_MAX_JSON_BYTES
+    ).get("configuration")
+    if (
+        descriptor.get("run_bundle_schema_version") != BUNDLE_SCHEMA_VERSION
+        or descriptor.get("manifest_sha256") != sha256_file(child / "manifest.json")
+        or child_manifest.get("seed") != record.get("seed")
+        or child_configuration != normalized.get("configuration")
+        or read_json_object(child / "summary.json", max_bytes=_MAX_JSON_BYTES)
+        != record.get("summary")
+    ):
+        raise BundleValidationError("child run bundle differs from its batch index")
+    return run_id
+
+
+def _validate_run_descriptor(
+    bundle: Path,
+    descriptor_value: object,
+    record: Mapping[str, Any],
+    normalized: Mapping[str, Any],
+) -> str | None:
+    descriptor = _require_mapping(descriptor_value, name="run bundle descriptor")
+    identity_fields = ("ordinal", "run_id", "status", "bundle_path")
+    if set(descriptor) != _RUN_DESCRIPTOR_FIELDS or any(
+        descriptor.get(name) != record.get(name) for name in identity_fields
+    ):
+        raise BundleValidationError("run bundle descriptor differs from the batch index")
+    if record["status"] == "completed":
+        return _validate_completed_child(bundle, descriptor, record, normalized)
+    if (
+        descriptor.get("run_bundle_schema_version") is not None
+        or descriptor.get("manifest_sha256") is not None
+    ):
+        raise BundleValidationError("failed run cannot declare a child bundle")
+    return None
+
+
+def _validate_child_bundles(
+    bundle: Path,
+    runs_directory: Path,
+    manifest: Mapping[str, Any],
+    typed_index: list[Mapping[str, Any]],
+    normalized_runs: list[Mapping[str, Any]],
+) -> None:
     descriptors = manifest.get("runs")
     if not isinstance(descriptors, list) or len(descriptors) != len(typed_index):
         raise BundleValidationError("batch manifest run descriptors are malformed")
@@ -520,46 +622,34 @@ def validate_batch_bundle(bundle: Path) -> dict[str, Any]:
     for descriptor_value, record, normalized in zip(
         descriptors, typed_index, normalized_runs, strict=True
     ):
-        descriptor = _require_mapping(descriptor_value, name="run bundle descriptor")
-        if set(descriptor) != {
-            "ordinal",
-            "run_id",
-            "status",
-            "bundle_path",
-            "run_bundle_schema_version",
-            "manifest_sha256",
-        } or any(
-            descriptor.get(name) != record.get(name)
-            for name in ("ordinal", "run_id", "status", "bundle_path")
-        ):
-            raise BundleValidationError("run bundle descriptor differs from the batch index")
-        if record["status"] == "completed":
-            run_id = record["run_id"]
-            if not isinstance(run_id, str):
-                raise BundleValidationError("completed run ID is malformed")
+        run_id = _validate_run_descriptor(bundle, descriptor_value, record, normalized)
+        if run_id is not None:
             completed_ids.add(run_id)
-            child = bundle / "runs" / run_id
-            child_manifest = validate_run_bundle(child)
-            child_configuration = read_json_object(
-                child / "configuration.json", max_bytes=_MAX_JSON_BYTES
-            ).get("configuration")
-            if (
-                descriptor.get("run_bundle_schema_version") != BUNDLE_SCHEMA_VERSION
-                or descriptor.get("manifest_sha256") != sha256_file(child / "manifest.json")
-                or child_manifest.get("seed") != record.get("seed")
-                or child_configuration != normalized.get("configuration")
-                or read_json_object(child / "summary.json", max_bytes=_MAX_JSON_BYTES)
-                != record.get("summary")
-            ):
-                raise BundleValidationError("child run bundle differs from its batch index")
-        elif (
-            descriptor.get("run_bundle_schema_version") is not None
-            or descriptor.get("manifest_sha256") is not None
-        ):
-            raise BundleValidationError("failed run cannot declare a child bundle")
     actual_ids = {path.name for path in runs_directory.iterdir()}
     if actual_ids != completed_ids or any(
         not (bundle / "runs" / run_id).is_dir() for run_id in actual_ids
     ):
         raise BundleValidationError("batch child directory set differs from completed runs")
+
+
+def validate_batch_bundle(bundle: Path) -> dict[str, Any]:
+    """Validate aggregate schemas, digests, indexes, provenance, and child run bundles."""
+
+    bundle = Path(bundle)
+    runs_directory = _validate_batch_root(bundle)
+    manifest = _read_batch_manifest(bundle)
+    _validate_manifest_files(bundle, manifest)
+    normalized_runs = _validate_normalized_batch(
+        read_json_object(bundle / "batch_specification.json", max_bytes=_MAX_JSON_BYTES)
+    )
+    typed_index = _read_index_records(bundle, normalized_runs)
+    _validate_parquet_index(bundle, typed_index)
+    _validate_manifest_counts(manifest, typed_index)
+    _validate_child_bundles(
+        bundle,
+        runs_directory,
+        manifest,
+        typed_index,
+        normalized_runs,
+    )
     return manifest
