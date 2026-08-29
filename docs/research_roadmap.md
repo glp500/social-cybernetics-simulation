@@ -23,8 +23,9 @@ isolated RNG substreams are implemented in the pure core and Mesa runtime. Valid
 bundles now persist configuration, provenance, summaries, and all immutable record types. Complete
 spatial NetCDF history now streams tick zero and every completed tick with bounded Python memory.
 Deterministic sequential batches now retain ordered resolved configuration provenance, failure-isolated
-child bundles, and equivalent JSON/Parquet indexes under one atomic publication. Seeded sensitivity
-design is the next slice.
+child bundles, and equivalent JSON/Parquet indexes under one atomic publication. The seeded Morris
+workflow now validates explicit active factor paths, generates three paired-seed scope designs, and
+executes them only through that batch boundary. Small verification experiments are the next slice.
 
 **Question:** how much inequality and mortality arise from ecology and energetic constraints alone?
 

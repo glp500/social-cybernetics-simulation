@@ -7,8 +7,8 @@ The executable target now includes the verified deterministic material control p
 ecological core: explicit heterogeneous landscapes, recoverable independent/correlated/system shocks,
 normalized event evidence, local observation, simultaneous harvest competition, metabolism, and
 mortality. It can also publish validated provenance-rich run bundles with Parquet records and complete
-streamed NetCDF spatial history and deterministic sequential batches. Sensitivity workflows remain a
-later v0.2 slice.
+streamed NetCDF spatial history, deterministic sequential batches, and validated paired-seed Morris
+sensitivity designs.
 
 ## Quick start
 
@@ -21,6 +21,7 @@ conda run -n social-cybernetics scs run --config configs/baseline.yml
 mkdir -p results
 conda run -n social-cybernetics scs run --config configs/baseline.yml --output results/run-001
 conda run -n social-cybernetics scs batch --spec configs/batch-v0.2.yml --output results/batch-v0.2
+conda run -n social-cybernetics scs sensitivity --spec configs/sensitivity-v0.2.yml --output results/sensitivity-v0.2
 ```
 
 Output directories must not already exist. Run and batch bundles are validated in hidden sibling
@@ -29,6 +30,10 @@ results. A batch continues after individual run failures, publishes their typed 
 partial child bundles, and exits 1 if any run failed. Generated `results/` remain local and are
 ignored by Git.
 
+The checked sensitivity command is intentionally broad: it validates and then sequentially executes
+600 runs (180 independent, 240 correlated, and 180 system). Use its small test fixtures when checking
+the interface; run the canonical design only when the full experiment cost is intended.
+
 After `conda activate social-cybernetics`, the `just` recipes wrap the same commands:
 
 ```bash
@@ -36,6 +41,7 @@ just test
 just check
 just run
 just batch
+just sensitivity
 just viz
 just browser-check
 ```
@@ -63,9 +69,9 @@ recoverable ecological shocks, but still excludes adaptive learning, communicati
 diffusion, institutions, exchange, debt, and births. The literal policy intentionally has no energy
 cap, so a surviving agent's energy may grow without bound.
 
-Version 0.2 is in implementation. Its domain, runtime shock, persistent-output, and deterministic
-batch slices are complete. Sensing, policy, gating, competition, and physiology stay fixed; seeded
-sensitivity design is next. See the active
+Version 0.2 is in implementation. Its domain, runtime shock, persistent-output, deterministic batch,
+and seeded sensitivity-design slices are complete. Sensing, policy, gating, competition, and
+physiology stay fixed; verification experiments are next. See the active
 [implementation plan](tasks/plan.md) and [task list](tasks/todo.md).
 
 The debugging page is exercised in isolated Chromium and captured in the
@@ -84,6 +90,8 @@ the browser binary is not stored in the repository.
   record tables, plus tick-zero and every completed tick of ecological spatial state.
 - Each published batch retains its normalized base, explicit overrides, complete resolved
   configurations, configuration hashes, ordered JSON/Parquet indexes, and successful child bundles.
+- The canonical sensitivity specification records the Morris design seed, factor ranges, and paired
+  model seeds; generated runs retain every realized configuration through the ordinary batch format.
 
 ## License
 

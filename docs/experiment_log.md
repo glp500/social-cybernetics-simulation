@@ -1,5 +1,28 @@
 # Experiment Log
 
+## 2026-08-30 — Scope-stratified Morris sensitivity workflow
+
+**Status:** Phase E Task 17 implemented and verified; verification experiments next
+
+Recorded paired primary evidence and ADR 0011 before implementation. The accepted broad screen uses
+separate independent, correlated, and system designs rather than assigning an artificial numeric
+order to shock scope. Each design uses four levels, 100 candidate and 10 locally optimized selected
+trajectories under design seed 42. Common shock factors span `[0, 1]`; recovery ticks span `[1, 10]`;
+correlated spread rounds span `[0, 3]`. Model seeds 101, 202, and 303 repeat at every point. All values
+are project controls, not empirical calibration.
+
+Added a strict sensitivity YAML boundary and `scs sensitivity --spec ... --output ...`. Unknown,
+categorical, inactive, duplicate, invalid, and non-integral factor paths fail before execution. YAML
+booleans, strings, floats, and negative values cannot be coerced into model seeds. The canonical
+configuration resolves deterministically to 600 fully validated runs: 180 independent, 240
+correlated, and 180 system. A tiny end-to-end fixture confirms generated runs publish through the
+existing batch contract; sensitivity introduces no second runner or artifact format.
+
+The code-simplification pass kept factor lookup, exact-grid conversion, scope preflight, sampling,
+and run generation as named linear steps. Focused C901 reports no sensitivity-module violations.
+`just check` passed 214 tests with 90.90% branch-aware coverage, Ruff formatting/lint, Pyright
+standard, dependency synchronization, and the existing Linux-64 lock input hash.
+
 ## 2026-08-30 — Batch validation simplification checkpoint
 
 **Status:** behavior-preserving maintainability refactor verified

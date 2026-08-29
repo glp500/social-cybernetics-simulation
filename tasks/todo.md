@@ -125,12 +125,16 @@
     and final inference.
   - Files: `docs/literature/items/<sensitivity-note>.md`, `docs/literature/literature_matrix.md`,
     `docs/model_specification.md`, `docs/assumptions.md`, `tasks/plan.md`.
-- [ ] Add validated, seeded sensitivity designs after the decision gate.
+- [x] Add validated, seeded sensitivity designs after the decision gate.
   - Acceptance: declared scalar paths and ranges reject unknown, categorical, inactive, or invalid
     fields; the design is reproducible from its own recorded seed and emits ordered batch runs with
     explicit model seeds and configuration provenance.
   - Verify: focused unit/property tests cover bounds, determinism, run counts, seed pairing, and full
     `SimulationConfig` validation; generated designs execute through the existing batch boundary.
+  - Evidence: the canonical specification resolves deterministically to 600 validated runs (180
+    independent, 240 correlated, 180 system); a tiny CLI design publishes through the ordinary batch
+    validator; explicit seed-type regression tests reject YAML coercion; `just check` passes 214 tests
+    with 90.90% branch-aware coverage.
   - Files: one sensitivity configuration module, its tests, one CLI/config integration, and at most
     two reconciled documentation/configuration files.
 - [ ] Add verification experiments for ecological inequality and mortality controls.

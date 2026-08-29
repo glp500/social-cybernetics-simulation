@@ -381,7 +381,7 @@ features remain the primary evidence.
 | Version | Added mechanism | Status |
 | --- | --- | --- |
 | v0.1 | deterministic ecology, material agents, explicit cognition/action boundaries | implemented and verified |
-| v0.2 | heterogeneous ecology, recoverable shocks, persistent outputs, batch/sensitivity runs | implementing: shock core/runtime, complete bundles, deterministic batches, and sensitivity design specified |
+| v0.2 | heterogeneous ecology, recoverable shocks, persistent outputs, batch/sensitivity runs | implementing: shock core/runtime, complete bundles, deterministic batches, and sensitivity workflow verified; experiments next |
 | v0.3 | fixed local/shared/unequal information capabilities | specified |
 | v0.4 | private tabular Q-learning | specified |
 | v0.5 | tool diffusion and coevolving communication network | specified |

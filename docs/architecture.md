@@ -91,6 +91,7 @@ scs validate --config configs/baseline.yml
 scs run --config configs/baseline.yml
 scs run --config configs/baseline.yml --output results/run-001
 scs batch --spec configs/batch-v0.2.yml --output results/batch-v0.2
+scs sensitivity --spec configs/sensitivity-v0.2.yml --output results/sensitivity-v0.2
 just viz
 ```
 
@@ -105,6 +106,12 @@ entire attempt beside an absent destination. Individual invariant, runtime, or c
 are retained in the aggregate index without a partial child directory; later runs continue. The
 validated batch is published even with run failures and the command exits 1. Aggregate-output failure
 publishes nothing and also exits 1.
+
+`scs sensitivity` validates a seeded Morris specification, resolves every numeric factor path against
+an active shock configuration, generates stable point/replicate IDs, and validates every realized
+configuration before execution. Invalid design input exits 2. The command then calls the same batch
+executor, so ordering, failure isolation, child bundles, aggregate indexes, and atomic publication do
+not have a sensitivity-specific implementation.
 
 ## Persistent-output boundary
 
@@ -185,6 +192,7 @@ src/social_cybernetics/
   config.py                 validated external configuration
   batch_config.py           ordered batch schema, recursive overrides, and resolution
   batch.py                  sequential execution, aggregate indexes, and batch validation
+  sensitivity.py            Morris specification, factor validation, and batch generation
   cli.py                    command-line boundary
   metrics.py                pure public metrics
   persistence.py            run-bundle staging, manifests, Parquet, and atomic publication

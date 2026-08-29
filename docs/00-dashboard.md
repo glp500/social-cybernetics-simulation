@@ -36,13 +36,14 @@ not counted as unfinished version 0.1 work.
 - [x] Provenance-rich fail-closed Parquet bundles
 - [x] Complete streamed NetCDF spatial history
 - [x] Deterministic batch execution
-- [ ] Seeded sensitivity workflow
+- [x] Seeded sensitivity workflow
 - [ ] Visualization and release reconciliation
 
 Work is dependency-ordered in [[../tasks/plan|tasks/plan.md]] and tracked in
 [[../tasks/todo|tasks/todo.md]]. The shock literature, design, implementation, and runtime gates are
 complete; persistent Parquet and streamed NetCDF output are also implemented. Deterministic,
-failure-isolated batch publication is complete; seeded sensitivity design is next.
+failure-isolated batch publication and the three-scope paired-seed Morris workflow are complete;
+verification experiments are next.
 
 ## Active reading queue
 

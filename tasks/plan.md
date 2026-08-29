@@ -110,8 +110,8 @@ it.
 
 Task 16 is implemented. Ordered YAML specifications resolve one validated base plus explicit
 seed-bearing overrides; complete attempts publish equivalent JSON/Parquet indexes and successful
-child bundles atomically. Per-run failures are retained without stopping later runs. Tasks 17–18
-remain dependent on this stable batch contract.
+child bundles atomically. Per-run failures are retained without stopping later runs. Sensitivity and
+verification work depend on this stable batch contract.
 
 Task 16a is complete. Batch validation now reads as named root, manifest, artifact, provenance,
 JSON-index, Parquet-index, count, and child-bundle checks. Public schemas and failure ordering are
@@ -122,6 +122,11 @@ screens, four levels, 100 candidate and 10 locally optimized selected trajectori
 seed 42, paired model seeds 101/202/303, explicit broad ranges, and a 600-run fail-closed cap. The
 literature note records the stochastic-model limitations and identifies every number as a project
 choice rather than calibration.
+
+Task 17b is complete. `scs sensitivity` validates explicit numeric shock paths and ranges, rejects
+inactive/categorical fields and inexact integer grids, generates stable point/replicate ordering from
+the recorded design seed, validates all 600 realized configurations, and delegates execution and
+publication to the existing batch boundary.
 
 ### Phase F — Release reconciliation
 

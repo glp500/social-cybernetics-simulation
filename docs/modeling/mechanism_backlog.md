@@ -7,6 +7,7 @@
 | Relaxation resource regrowth | @kremerHerman2024ReplacingSugarscape | ABM | domain/ecology.py | verified v0.1 |
 | Explicit heterogeneous landscape | @kremerHerman2024ReplacingSugarscape | ABM | config.py + domain/ecology.py | verified v0.2 |
 | Independent/correlated/system shocks | @turnerEtAl1989LandscapeDisturbance; @massieEtAl2015EnhancedMoran | disturbance ecology | domain/ecology.py | verified v0.2 core/runtime |
+| Scope-stratified Morris screening | @morris1991FactorialSampling; @campolongoEtAl2007EffectiveScreening; @stoutEtAl2009CommonRandomNumbers | sensitivity analysis / stochastic simulation | sensitivity.py + configs/sensitivity-v0.2.yml | verified v0.2 workflow |
 | Gini inequality | @epstein1996GrowingArtificialSocieties | ABM | metrics.py | verified v0.1 |
 | Direct observation and copied belief | project specification | ABM | domain/cognition.py | verified v0.1 |
 | Simultaneous proportional harvest | project specification | ABM | domain/actions.py | verified v0.1 |
