@@ -10,10 +10,15 @@ readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "ipyvue>=1.12,<2",
+    "ipyvuetify>=1.11,<2",
     "mesa[rec]==3.5.1",
+    "netCDF4>=1.7,<2",
     "numpy>=2.0,<3",
     "pydantic>=2.10,<3",
+    "pyarrow>=25,<26",
     "PyYAML>=6,<7",
+    "solara>=1.61,<2",
     "typer>=0.16,<1",
 ]
 
@@ -24,16 +29,15 @@ scs = "social_cybernetics.cli:app"
 research = [
     "SALib>=1.5,<2",
     "matplotlib>=3.10,<4",
-    "netCDF4>=1.7,<2",
     "networkx>=3.4,<4",
     "pandas>=2.2,<3",
-    "pyarrow>=19,<24",
     "scikit-learn>=1.6,<2",
     "scipy>=1.15,<2",
     "seaborn>=0.13,<1",
     "xarray>=2025.1,<2027",
 ]
 dev = [
+    "conda-lock==4.0.2",
     "hypothesis>=6.120,<7",
     "pre-commit>=4,<5",
     "pyright>=1.1.400,<2",
@@ -49,6 +53,7 @@ where = ["src"]
 line-length = 100
 target-version = "py312"
 src = ["src", "tests"]
+extend-exclude = ["docs/ideas"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "N", "SIM"]
@@ -76,3 +81,4 @@ include = ["src", "tests"]
 typeCheckingMode = "standard"
 reportMissingImports = true
 reportMissingTypeStubs = false
+venv = "social-cybernetics"

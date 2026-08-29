@@ -14,7 +14,7 @@ dependencies:
   - typer>=0.16,<1
   - pandas
   - scipy
-  - pyarrow
+  - pyarrow>=25,<26
   - xarray
   - netcdf4
   - matplotlib
@@ -38,9 +38,12 @@ dependencies:
   - pytest
   - pytest-cov
   - hypothesis
+  - playwright
+  - just
   - ruff
   - pyright
   - pre-commit
+  - conda-lock=4.0.2
   - debugpy
 
   # CLI / experiment helpers
@@ -49,4 +52,7 @@ dependencies:
   - visidata
 
   - pip:
+      - "ipyvue>=1.12,<2"
+      - "ipyvuetify>=1.11,<2"
       - "mesa[rec]==3.5.1"
+      - "solara>=1.61,<2"

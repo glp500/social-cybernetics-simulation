@@ -1,37 +1,115 @@
-# Deterministic Core Task List
+# Stochastic Ecological Baseline v0.2 Task List
 
-- [x] Write canonical scientific specification and architecture documents.
-  - Acceptance: ODD+D concerns, assumptions, roadmap, and non-negotiable rules are explicit.
-  - Verify: every approved design-source concept is mapped in `docs/source_synthesis.md`.
-- [x] Record architecture decisions.
-  - Acceptance: model/runtime, Mesa, schedule, RNG, environment, and competition choices have ADRs.
-  - Verify: ADR index links resolve.
-- [ ] Reconcile environment and package tooling.
-  - Acceptance: Python/Mesa pins, full research environment, CLI entry points, Just recipes, and CI agree.
-  - Verify: dependency-sync and lockfile checks pass.
-- [ ] Implement validated configuration.
-  - Acceptance: baseline validates and malformed/unsupported variants fail.
-  - Verify: focused configuration tests and `scs validate` pass.
-- [ ] Implement pure ecology and state contracts.
-  - Acceptance: regeneration bounds/convergence and immutable stage records are proven.
-  - Verify: unit and Hypothesis tests pass.
-- [ ] Implement cognition, action, gate, and physical resolution.
-  - Acceptance: agents cannot bypass interfaces; scarce harvest is proportional and order-independent.
-  - Verify: unit, property, and architecture tests pass.
-- [ ] Implement metabolism, mortality, records, and metrics.
-  - Acceptance: energy accounting is finite; dead agents remain in cohort/event records.
-  - Verify: mortality and survivor-bias tests pass.
-- [ ] Implement Mesa runtime and explicit schedule.
-  - Acceptance: V0–V4 scenarios and fixed-seed traces pass with documented stage order.
-  - Verify: integration and regression tests pass without deprecation warnings.
-- [ ] Implement CLI and JSON summary.
-  - Acceptance: validation exits 0/2 correctly; run output is deterministic and schema-versioned.
-  - Verify: CLI integration and byte-for-byte regression tests pass.
-- [ ] Implement and verify minimal SolaraViz debugger.
-  - Acceptance: resources, agents, energy, and core metrics render and update through normal model steps.
-  - Verify: import smoke test and isolated-browser verification pass with a clean console.
-- [ ] Run final quality and documentation gate.
-  - Acceptance: at least 90% coverage, clean Ruff/Pyright/tests, dependency sync, lock consistency, and ODD
-    reconciliation.
-  - Verify: `just check` succeeds from the locked environment.
+## Completed prerequisite
 
+- [x] Complete and verify deterministic material control v0.1.
+  - Evidence: 56 tests, 97.02% branch-aware coverage, clean lock install, exact CLI regression, and
+    isolated-browser verification recorded in `docs/experiment_log.md`.
+- [x] Audit primary literature for the committed causal sequence using paired evidence.
+  - Evidence: reviewed notes distinguish support, counterevidence/boundaries, justified commitments,
+    and uncalibrated choices for learning, diffusion, networks, enforcement, governance, and regime
+    discovery.
+  - Files: `docs/literature/items/`, `docs/literature/literature_matrix.md`,
+    `docs/modeling/mechanism_backlog.md`, `docs/experiment_log.md`.
+
+## Phase A — Documentation and ecological contracts
+
+- [x] Reconcile canonical documents for active v0.2 work and add ADR 0007.
+  - Acceptance: scope, implemented landscape representation, proposed shock alternatives,
+    compatibility, and exclusions agree.
+  - Verify: documentation links resolve and no canonical page calls v0.2 merely future work.
+  - Files: `docs/model_specification.md`, `docs/architecture.md`, `docs/assumptions.md`,
+    `docs/adr/0007-stochastic-ecological-variants.md`, `docs/adr/README.md`.
+- [x] Add backward-compatible v0.2 landscape configuration contracts.
+  - Acceptance: v0.1 accepts only uniform/no-shock; v0.2 accepts implemented variants and rejects
+    malformed matrices or unsupported kinds.
+  - Verify: focused configuration tests pass; baseline JSON remains byte-identical.
+  - Files: `src/social_cybernetics/config.py`, `tests/unit/test_config.py`,
+    `tests/integration/test_cli.py`, `configs/baseline.yml`, `configs/ecology-v0.2.yml`.
+- [x] Construct resource arrays from validated landscape configuration.
+  - Acceptance: uniform and asymmetric explicit fixtures produce correctly oriented, independent
+    float arrays satisfying `0 <= stock <= capacity`.
+  - Verify: unit and property tests cover shape and bounds.
+  - Files: `src/social_cybernetics/domain/ecology.py`, `src/social_cybernetics/domain/__init__.py`,
+    `tests/unit/test_domain.py`, `tests/property/test_domain_properties.py`.
+
+## Phase B — Pure shock mechanisms
+
+- [x] Add the required shock-mechanism literature note and relevance statement.
+  - Acceptance: primary evidence supports the abstraction or clearly identifies it as a controlled
+    experimental simplification.
+  - Verify: literature matrix and mechanism backlog link to the note and executable target.
+  - Files: `docs/literature/items/<shock-note>.md`, `docs/literature/literature_matrix.md`,
+    `docs/modeling/mechanism_backlog.md`.
+- [x] Confirm shock semantics before adding a domain contract.
+  - Acceptance: the user selects the loss model, event clock, correlated footprint, duration/recovery,
+    and minimum event evidence after reviewing alternatives and tradeoffs.
+  - Verify: specification, assumptions, ADR 0007, plan, and task wording agree with the selection.
+  - Files: `docs/model_specification.md`, `docs/assumptions.md`,
+    `docs/adr/0007-stochastic-ecological-variants.md`, `tasks/plan.md`, `tasks/todo.md`.
+- [x] Define immutable shock-result evidence.
+  - Acceptance: recovery state, event snapshots, event-cell exposures, and simultaneous cell-damage
+    applications cannot alias mutable inputs or double-count physical changes.
+  - Verify: contract isolation and invariant tests pass.
+  - Files: `src/social_cybernetics/domain/types.py`, `src/social_cybernetics/domain/__init__.py`,
+    `tests/unit/test_domain.py`.
+- [x] Implement independent, correlated, and system shocks.
+  - Acceptance: pure functions implement finite recovery, signed relaxation, scope-specific hazards,
+    concurrent synchronous wavefronts, simultaneous compounding, and explicit hierarchical RNGs.
+  - Verify: focused deterministic examples, sham controls, and repeated-hit cases pass.
+  - Files: `src/social_cybernetics/domain/ecology.py`, `tests/unit/test_domain.py`.
+- [x] Prove stochastic ecology properties.
+  - Acceptance: removal accounting, bounds, seed reproducibility, and mask geometry hold.
+  - Verify: Hypothesis suite passes without flaky examples.
+  - Files: `tests/property/test_domain_properties.py`, `tests/architecture/test_domain_boundaries.py`.
+
+## Phase C — Runtime integration and records
+
+- [x] Initialize Mesa property layers from configured resource arrays.
+  - Acceptance: asymmetric arrays keep documented `(x, y)` orientation and tick-zero measurement.
+  - Verify: focused runtime tests pass for uniform and explicit landscapes.
+  - Files: `src/social_cybernetics/runtime/mesa/model.py`, `tests/integration/test_mesa_runtime.py`.
+- [x] Execute shocks in the explicit shock stage and retain event evidence.
+  - Acceptance: shocks occur after regeneration and before observation; no other stage draws them.
+  - Verify: stage trace and fixed-seed event regressions pass.
+  - Files: `src/social_cybernetics/runtime/mesa/model.py`, `src/social_cybernetics/domain/types.py`,
+    `tests/integration/test_mesa_runtime.py`.
+- [x] Add complete v0.2 trajectory and CLI regressions.
+  - Acceptance: same seed reproduces records; the canonical v0.1 JSON remains unchanged while
+    stochastic v0.1 trajectories intentionally migrate to policy stream `(1,)`.
+  - Verify: regression suite compares records and JSON byte-for-byte.
+  - Files: `tests/integration/test_mesa_runtime.py`, `tests/integration/test_cli.py`,
+    `tests/fixtures/ecology_v0.2_summary.json`.
+
+## Phase D — Persistent run bundles
+
+- [x] Define provenance and persistent table schemas.
+  - Evidence: normalized configuration, software/RNG provenance, JSON summary, manifest, and six
+    explicit Arrow table schemas validate and round-trip, including empty tables.
+- [x] Write fail-closed atomic Parquet bundles.
+  - Evidence: sibling staging, digest/schema/value validation, Linux atomic no-replace publication,
+    collision preservation, and cleanup-on-failure tests pass. See ADR 0008.
+- [x] Expose `scs run --output` with stable failure behavior.
+  - Evidence: the CLI preserves JSON stdout, rejects an existing destination before execution, and
+    persists real runtime shock and damage evidence.
+- [x] Stream complete NetCDF spatial history.
+  - Evidence: tick zero and every completed tick use exact `(tick, x, y)` coordinates; four dynamic
+    ecological variables and two static baselines validate against configuration and completed ticks.
+    Runtime failures remove staging, and successful CLI bundles publish NetCDF and Parquet together.
+
+## Phase E — Batch and sensitivity workflows
+
+- [x] Add deterministic sequential batch execution and aggregate indexes.
+  - Evidence: relative base configuration plus ordered recursive overrides, explicit per-run seeds,
+    duplicate-seed controls, full preflight validation, sequential failure isolation, exact child
+    bundles, normalized provenance/configuration hashes, equivalent JSON/Parquet indexes, recursive
+    bundle validation, deterministic complete-tree digests, and atomic no-overwrite publication.
+  - Interface: `scs batch --spec configs/batch-v0.2.yml --output results/batch-v0.2`.
+- [ ] Add validated, seeded sensitivity designs after confirming method and ranges.
+- [ ] Add verification experiments for ecological inequality and mortality controls.
+
+## Phase F — Release reconciliation
+
+- [ ] Update SolaraViz for heterogeneous landscapes and shock events.
+- [ ] Reconcile all status documentation and record the v0.2 experiment environment.
+- [ ] Pass clean lock installation, `just check`, browser verification, and scheduler agreement.

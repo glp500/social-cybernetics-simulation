@@ -16,6 +16,8 @@ def apply_metabolism(
     basal_cost: float,
     movement_cost: float,
 ) -> tuple[AgentState, bool]:
+    if not state.alive:
+        raise InvariantViolationError("dead agents cannot be metabolized")
     values = (state.energy, harvested, conversion_efficiency, basal_cost, movement_cost)
     if not all(math.isfinite(value) and value >= 0 for value in values):
         raise InvariantViolationError("energy flows and costs must be finite and nonnegative")

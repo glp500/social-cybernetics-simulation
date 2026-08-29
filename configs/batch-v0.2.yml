@@ -1,0 +1,9 @@
+schema_version: "0.1.0"
+base_config: ecology-v0.2.yml
+runs:
+  - id: ecology-seed-42
+    overrides:
+      seed: 42
+  - id: ecology-seed-43
+    overrides:
+      seed: 43

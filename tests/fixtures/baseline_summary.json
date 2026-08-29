@@ -1,0 +1,1 @@
+{"alive_count":1,"cohort_mean_energy":16.565938,"completed_ticks":100,"dead_count":0,"inequality":{"energy_gini":0.0,"harvest_gini":0.0,"unmet_need_gini":0.0},"schema_version":"scs-run-summary/v0.1.0","seed":42,"total_harvest":106.565938,"total_resources":240.0,"unmet_need":0.0}

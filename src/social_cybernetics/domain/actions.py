@@ -33,6 +33,13 @@ def literal_local_policy(
 
     if belief.agent_id != snapshot.agent_id:
         raise InvariantViolationError("belief and snapshot agent identifiers differ")
+    policy_values = (
+        belief.believed_local_stock,
+        harvest_threshold,
+        harvest_capacity,
+    )
+    if not all(math.isfinite(value) and value >= 0 for value in policy_values):
+        raise InvariantViolationError("policy stocks, threshold, and capacity must be nonnegative")
     if belief.believed_local_stock >= harvest_threshold:
         return ActionIntent.harvest(snapshot.agent_id, snapshot.position, harvest_capacity)
     if not neighbors:
@@ -49,11 +56,17 @@ def allow_all(intent: ActionIntent) -> GateDecision:
 def _validate_intent(intent: ActionIntent, shape: tuple[int, ...]) -> None:
     x, y = intent.position
     if not (0 <= x < shape[0] and 0 <= y < shape[1]):
-        raise InvariantViolationError(f"intent position {intent.position} is outside resource array")
+        raise InvariantViolationError(
+            f"intent position {intent.position} is outside resource array"
+        )
     if not math.isfinite(intent.amount) or intent.amount < 0:
         raise InvariantViolationError("requested amount must be finite and nonnegative")
     if intent.kind is ActionKind.MOVE and intent.destination is None:
         raise InvariantViolationError("movement intent requires a destination")
+    if intent.destination is not None:
+        destination_x, destination_y = intent.destination
+        if not (0 <= destination_x < shape[0] and 0 <= destination_y < shape[1]):
+            raise InvariantViolationError("movement destination is outside resource array")
 
 
 def resolve_actions(
@@ -66,11 +79,13 @@ def resolve_actions(
         raise InvariantViolationError("resource stock must be a finite nonnegative 2D array")
 
     by_agent: dict[int, ActionResolution] = {}
+    seen_agents: set[int] = set()
     requests: dict[Position, list[ActionIntent]] = defaultdict(list)
     for decision in sorted(decisions, key=lambda item: item.agent_id):
         intent = decision.intent
-        if decision.agent_id != intent.agent_id or intent.agent_id in by_agent:
+        if decision.agent_id != intent.agent_id or intent.agent_id in seen_agents:
             raise InvariantViolationError("each gate decision must identify one unique agent")
+        seen_agents.add(intent.agent_id)
         _validate_intent(intent, updated.shape)
         if not decision.allowed:
             by_agent[intent.agent_id] = ActionResolution(

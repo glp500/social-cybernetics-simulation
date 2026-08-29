@@ -11,7 +11,7 @@ permissions:
 jobs:
   quality:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -27,7 +27,7 @@ jobs:
         run: conda-lock install --name social-cybernetics conda-lock.yml
 
       - name: Install project
-        run: conda run -n social-cybernetics python -m pip install -e . --no-deps
+        run: conda run -n social-cybernetics python -m pip install -e . --no-deps --no-build-isolation
 
       - name: Quality gate
-        run: just check
+        run: conda run -n social-cybernetics just check

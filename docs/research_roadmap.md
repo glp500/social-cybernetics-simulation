@@ -14,8 +14,17 @@ debugging visualisation.
 ## v0.2 — Stochastic ecological baseline
 
 Add heterogeneous capacity landscapes, independent/correlated/system shocks, configuration-provenance
-bundles, Parquet event/cohort/model tables, optional NetCDF arrays, batch execution, and sensitivity
+bundles, Parquet event/cohort/model tables, complete NetCDF arrays, batch execution, and sensitivity
 analysis.
+
+**Status:** active implementation. Explicit realized matrices, three independent damage channels,
+finite cell-local recovery, concurrent stochastic wavefronts, normalized immutable evidence, and
+isolated RNG substreams are implemented in the pure core and Mesa runtime. Validated atomic Parquet
+bundles now persist configuration, provenance, summaries, and all immutable record types. Complete
+spatial NetCDF history now streams tick zero and every completed tick with bounded Python memory.
+Deterministic sequential batches now retain ordered resolved configuration provenance, failure-isolated
+child bundles, and equivalent JSON/Parquet indexes under one atomic publication. Seeded sensitivity
+design is the next slice.
 
 **Question:** how much inequality and mortality arise from ecology and energetic constraints alone?
 
@@ -73,4 +82,3 @@ runs without an explicit demographic decomposition.
 After the final mechanism version is chosen, feature development stops. Work shifts to verification,
 sensitivity, replications, phase diagrams, trade-off surfaces, figures, ODD+D reconciliation, and a
 tagged reproducible release.
-

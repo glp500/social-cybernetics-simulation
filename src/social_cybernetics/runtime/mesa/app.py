@@ -1,0 +1,87 @@
+"""Minimal read-only SolaraViz debugging page for the canonical baseline."""
+
+from pathlib import Path
+
+import solara
+from mesa.discrete_space import PropertyLayer
+from mesa.visualization import SolaraViz, SpaceRenderer
+from mesa.visualization.components import AgentPortrayalStyle, PropertyLayerStyle
+
+from social_cybernetics.config import load_config
+from social_cybernetics.runtime.mesa.agent import ForagerAgent
+from social_cybernetics.runtime.mesa.model import SugarscapeModel
+
+
+def agent_portrayal(agent: ForagerAgent) -> AgentPortrayalStyle:
+    cell = agent.cell
+    if cell is None:
+        raise ValueError("only living spatial agents may be portrayed")
+    energy = agent.state.energy
+    return AgentPortrayalStyle(
+        x=cell.coordinate[0],
+        y=cell.coordinate[1],
+        color="#1565c0",
+        marker="o",
+        size=min(140.0, 25.0 + 4.0 * energy),
+        zorder=2,
+        edgecolors="#0d2f4f",
+    )
+
+
+def property_layer_portrayal(layer: PropertyLayer) -> PropertyLayerStyle | None:
+    if layer.name != "resource_stock":
+        return None
+    return PropertyLayerStyle(
+        colormap="YlGn",
+        alpha=0.85,
+        colorbar=True,
+        vmin=0,
+        vmax=10,
+    )
+
+
+def metric_values(model: SugarscapeModel) -> dict[str, float | int]:
+    latest = model.model_records[-1]
+    return {
+        "Total resources": latest.total_resources,
+        "Alive": latest.alive_count,
+        "Mean cohort energy": latest.cohort_mean_energy,
+    }
+
+
+@solara.component  # pyright: ignore[reportPrivateImportUsage]
+def _model_metrics_view(values: dict[str, float | int]) -> None:
+    with solara.Card("Current state"), solara.ColumnsResponsive(12, large=4):
+        for label, value in values.items():
+            shown = f"{value:.3f}" if isinstance(value, float) else str(value)
+            solara.Markdown(f"**{label}**  \n{shown}")
+
+
+def model_metrics(model: SugarscapeModel):
+    """Return a fresh metrics element so Mesa's render counter refreshes it."""
+
+    return _model_metrics_view(metric_values(model))
+
+
+REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
+baseline_config = load_config(REPOSITORY_ROOT / "configs" / "baseline.yml")
+model = SugarscapeModel(baseline_config)
+
+renderer = (
+    SpaceRenderer(model, backend="matplotlib")
+    .setup_agents(agent_portrayal)
+    .setup_propertylayer(property_layer_portrayal)
+)
+renderer.draw_propertylayer()
+renderer.draw_agents()
+
+page = SolaraViz(
+    model,
+    renderer,
+    components=[(model_metrics, 0)],  # pyright: ignore[reportArgumentType]
+    model_params={"config": baseline_config},
+    name="Social Cybernetics Sugarscape — deterministic v0.1",
+    play_interval=300,
+)
+
+_ = page

@@ -1,0 +1,8 @@
+{
+  "pip": {
+    "conda_name": "pip",
+    "import_name": "pip",
+    "mapping_source": "project",
+    "pypi_name": "pip"
+  }
+}

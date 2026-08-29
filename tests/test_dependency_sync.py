@@ -19,8 +19,7 @@ def test_runtime_dependencies_exist_in_research_environment() -> None:
     environment = yaml.safe_load((ROOT / "environment.yml").read_text())
 
     runtime_names = {
-        _dependency_name(specification)
-        for specification in pyproject["project"]["dependencies"]
+        _dependency_name(specification) for specification in pyproject["project"]["dependencies"]
     }
     environment_names: set[str] = set()
     for dependency in environment["dependencies"]:
@@ -38,4 +37,19 @@ def test_runtime_pins_supported_python_and_mesa_versions() -> None:
 
     assert pyproject["project"]["requires-python"] == ">=3.12,<3.13"
     assert "python=3.12" in environment["dependencies"]
-    assert {"pip": ["mesa[rec]==3.5.1"]} in environment["dependencies"]
+    pip_dependencies = next(
+        dependency["pip"]
+        for dependency in environment["dependencies"]
+        if isinstance(dependency, dict) and "pip" in dependency
+    )
+    assert "mesa[rec]==3.5.1" in pip_dependencies
+
+
+def test_persistent_bundle_writers_are_runtime_dependencies() -> None:
+    pyproject = tomllib.loads((ROOT / "pyproject.toml").read_text())
+    runtime_names = {
+        _dependency_name(specification) for specification in pyproject["project"]["dependencies"]
+    }
+
+    assert "pyarrow" in runtime_names
+    assert "netcdf4" in runtime_names
