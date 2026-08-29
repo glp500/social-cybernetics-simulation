@@ -15,3 +15,4 @@ supersedes the old one rather than rewriting history.
 | [0008](0008-fail-closed-run-bundles.md) | Publish validated run bundles atomically without overwrite | Accepted |
 | [0009](0009-stream-complete-spatial-history.md) | Stream complete spatial history into staged run bundles | Accepted |
 | [0010](0010-sequential-failure-isolated-batches.md) | Publish sequential failure-isolated batch attempts | Accepted |
+| [0011](0011-scope-stratified-morris-screening.md) | Screen shock scopes with separate paired-seed Morris designs | Accepted |

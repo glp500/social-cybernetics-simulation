@@ -344,6 +344,30 @@ complete attempt is atomically published with normalized base/override/resolved 
 configuration hashes, equivalent JSON and Parquet indexes, and complete child bundles for successful
 runs. A failed run remains an indexed observation with no partial child and does not stop later runs.
 
+### Version 0.2 sensitivity-screen design
+
+The first global screen uses three separate ungrouped Morris designs in fixed order: independent,
+correlated, and system shocks. `shock.kind` is never treated as a numeric factor. All scopes vary
+`event_probability`, the three damage fractions, and `recovery_ticks`; only the correlated scope
+varies `spread_probability` and `max_spread_ticks`.
+
+Each scope uses four levels, 100 candidate trajectories, 10 locally optimized selected trajectories,
+and design seed 42. Probability and fraction ranges are `[0, 1]`, recovery ticks use the integer range
+`[1, 10]`, and maximum spread ticks use `[0, 3]`. Integer factors must land exactly on an integer grid;
+generated values are never silently rounded.
+
+Every design point is repeated with model seeds `101`, `202`, and `303` in that order. This common
+seed block pairs comparisons while retaining three stochastic realizations. Point order from the
+sampler and seed order are preserved in stable run IDs and full resolved configuration provenance.
+The design contains 600 runs: 180 independent, 240 correlated, and 180 system runs. A configured
+maximum of 600 fails closed if generation would exceed that budget.
+
+Sensitivity execution resolves into the existing validated sequential batch contract and persistent
+batch bundle; it does not define a parallel model runner or a second result format. Morris statistics
+are screening evidence, not causal effects or variance shares. Raw continuous outcomes and
+replicate-seed variation remain primary evidence. See the paired evidence in
+`docs/literature/items/morris-screening-stochastic-simulators.md` and ADR 0011.
+
 ## 9. Institutional-regime analysis
 
 Later analyses standardise rolling-window features for rule adoption, spatial connectivity, boundary
@@ -357,7 +381,7 @@ features remain the primary evidence.
 | Version | Added mechanism | Status |
 | --- | --- | --- |
 | v0.1 | deterministic ecology, material agents, explicit cognition/action boundaries | implemented and verified |
-| v0.2 | heterogeneous ecology, recoverable shocks, persistent outputs, batch/sensitivity runs | implementing: shock core/runtime, complete bundles, and deterministic batches verified; sensitivity next |
+| v0.2 | heterogeneous ecology, recoverable shocks, persistent outputs, batch/sensitivity runs | implementing: shock core/runtime, complete bundles, deterministic batches, and sensitivity design specified |
 | v0.3 | fixed local/shared/unequal information capabilities | specified |
 | v0.4 | private tabular Q-learning | specified |
 | v0.5 | tool diffusion and coevolving communication network | specified |

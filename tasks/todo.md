@@ -114,11 +114,15 @@
   - Evidence: both prior batch C901 violations (17 and 28) are eliminated; 197 unchanged tests pass
     with 90.98% branch-aware coverage, clean Ruff/Pyright checks, and a consistent Conda lock.
   - Files: `src/social_cybernetics/batch.py`, `tasks/plan.md`, `tasks/todo.md`.
-- [ ] Complete the sensitivity evidence and decision gate.
+- [x] Complete the sensitivity evidence and decision gate.
   - Decisions required: screening method, shock-scope treatment, parameter paths/ranges, design seed,
     model-seed pairing/replication, and maximum run budget.
   - Acceptance: a paired literature note distinguishes support, counterevidence, stochastic-model
     boundaries, and project choices; specification/assumptions record every selected semantic.
+  - Evidence: ADR 0011 specifies three separate scope designs, four levels, 100 candidate and 10
+    selected trajectories, design seed 42, paired model seeds 101/202/303, broad explicit ranges, and
+    a 600-run fail-closed cap. The literature note distinguishes screening evidence from calibration
+    and final inference.
   - Files: `docs/literature/items/<sensitivity-note>.md`, `docs/literature/literature_matrix.md`,
     `docs/model_specification.md`, `docs/assumptions.md`, `tasks/plan.md`.
 - [ ] Add validated, seeded sensitivity designs after the decision gate.

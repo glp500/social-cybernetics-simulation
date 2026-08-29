@@ -48,6 +48,15 @@
   not stop later runs; aggregate-output failures publish no batch.
 - A batch is one atomic attempt: successful children are complete run bundles, failed runs have no
   child directory, and JSON/Parquet indexes retain raw continuous summary outcomes.
+- Sensitivity screening uses separate independent, correlated, and system Morris designs because the
+  scopes have different semantics and active inputs; `shock.kind` is not assigned a numeric order.
+- The first screen uses four levels, 100 candidate and 10 locally optimized selected trajectories,
+  design seed 42, and three paired model seeds (`101`, `202`, `303`) at every point.
+- The `[0, 1]` probability/fraction ranges, recovery range `[1, 10]`, spread-round range `[0, 3]`, and
+  600-run cap are broad experimental controls, not empirically calibrated distributions.
+- Paired seeds reduce comparison noise but do not remove stochastic uncertainty. Analysis must retain
+  replicate identity and cannot interpret Morris screening statistics as causal effects or variance
+  shares.
 
 ## Known limitations
 
@@ -62,6 +71,8 @@
 - Multiplicative damage and linear recovery are controlled ecological stress mechanisms, not an
   empirically calibrated hazard process. Alternative recovery curves, press disturbances, and
   permanent capacity damage require later variants.
+- Three model seeds are sufficient for a broad screening pass, not for precise uncertainty intervals
+  or final scientific inference. Important factors require a later, narrower replicated experiment.
 
 ## Protected extensions from early design work
 

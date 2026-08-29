@@ -117,6 +117,12 @@ Task 16a is complete. Batch validation now reads as named root, manifest, artifa
 JSON-index, Parquet-index, count, and child-bundle checks. Public schemas and failure ordering are
 unchanged; the existing tests pass without modification and focused C901 reports no batch violations.
 
+Task 17a is complete. The accepted design uses separate independent, correlated, and system Morris
+screens, four levels, 100 candidate and 10 locally optimized selected trajectories per scope, design
+seed 42, paired model seeds 101/202/303, explicit broad ranges, and a 600-run fail-closed cap. The
+literature note records the stochastic-model limitations and identifies every number as a project
+choice rather than calibration.
+
 ### Phase F — Release reconciliation
 
 19. Update visualization for heterogeneous capacity and shock debugging without alternate transitions.
@@ -143,11 +149,7 @@ more than five files, split it before editing.
 
 ## Open design checkpoints
 
-- Confirm the initial sensitivity method and parameter ranges before Phase E Task 17. Morris screening
-  is the recommended first method; Sobol analysis should follow only for narrowed parameters.
-- Confirm whether shock scopes receive separate sensitivity designs or correlated shocks form the
-  first screening target; a categorical `shock.kind` cannot be treated as an ordinary Morris factor.
-- Confirm how replicated model seeds pair across parameter points so intrinsic stochasticity is not
-  mistaken for parameter influence.
 - Confirm whether long batch runs should add process-level parallelism after deterministic sequential
-  semantics are verified.
+  semantics and the 600-run screen are verified.
+- Select the narrowed factors, replication count, and inferential method only after the screening
+  outputs and seed-stratified variability are inspected.

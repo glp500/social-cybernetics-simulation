@@ -10,6 +10,9 @@ note.
 | kremerHerman2024ReplacingSugarscape | 2024 | ABM | renewable heterogeneous resource landscape | reading | [[items/kremer-herman-gupta-2024-replacing-sugarscape]] |
 | turnerEtAl1989LandscapeDisturbance | 1989 | landscape ecology | disturbance frequency and correlated footprints | reviewed | [[items/turner-et-al-1989-landscape-disturbance]] |
 | massieEtAl2015EnhancedMoran | 2015 | experimental/theoretical ecology | correlated environmental stochasticity | supporting source | [[items/turner-et-al-1989-landscape-disturbance]] |
+| morris1991FactorialSampling | 1991 | sensitivity analysis | elementary-effects factor screening | reviewed | [[items/morris-screening-stochastic-simulators]] |
+| campolongoEtAl2007EffectiveScreening | 2007 | sensitivity analysis | optimized trajectories and absolute elementary effects | supporting source | [[items/morris-screening-stochastic-simulators]] |
+| stoutEtAl2009CommonRandomNumbers | 2009 | stochastic simulation | paired common random numbers and noise reduction | boundary evidence | [[items/morris-screening-stochastic-simulators]] |
 | watkinsDayan1992QLearning | 1992 | reinforcement learning | tabular action-value learning | reviewed | [[items/watkins-dayan-1992-q-learning]] |
 | mcElreathEtAl2008SocialLearning | 2008 | cultural evolution | payoff- and frequency-biased social learning | supporting source | [[items/social-learning-and-complex-diffusion]] |
 | mesoudi2011PayoffBiasedLearning | 2011 | experimental cultural evolution | payoff-biased imitation and task dependence | reviewed | [[items/social-learning-and-complex-diffusion]] |
