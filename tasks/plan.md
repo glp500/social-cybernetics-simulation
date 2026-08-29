@@ -128,6 +128,11 @@ inactive/categorical fields and inexact integer grids, generates stable point/re
 the recorded design seed, validates all 600 realized configurations, and delegates execution and
 publication to the existing batch boundary.
 
+Task 18 is complete. A 12-run published verification batch pairs no-shock and zero-damage sham
+controls, forces mortality under zero resources, and compares all three shock scopes across seeds
+101/202/303. The regression reads only published Parquet/JSON/NetCDF evidence and fixes continuous
+resource outcomes without accessing live model objects.
+
 ### Phase F — Release reconciliation
 
 19. Update visualization for heterogeneous capacity and shock debugging without alternate transitions.

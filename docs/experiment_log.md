@@ -1,5 +1,23 @@
 # Experiment Log
 
+## 2026-08-30 — Ecological verification experiment set
+
+**Status:** Phase E complete; shock-aware visualization next
+
+Added a compact 12-run batch with one no-shock control, a same-seed zero-damage system-shock sham,
+one guaranteed mortality condition with zero capacity and stock, and independent, correlated, and
+system shocks under paired seeds 101, 202, and 303. Scope comparisons share event probability,
+damage, recovery, duration, landscape, agents, sensing, policy, and gate; only the spatial shock
+mechanism and the correlated propagation fields differ.
+
+The integration analysis reads the published Parquet index and child NetCDF histories after recursive
+bundle validation. It confirms no-shock/sham equality, death retention in scarcity, seed blocks,
+non-null raw outcomes, exact fixed resource totals for all nine scope runs, and six spatial snapshots
+for a five-tick correlated child. No assertion reads a live model object.
+
+`just check` passed 215 tests with 91.08% branch-aware coverage, Ruff formatting/lint, Pyright
+standard, dependency synchronization, and the unchanged Linux-64 lock input hash.
+
 ## 2026-08-30 — Scope-stratified Morris sensitivity workflow
 
 **Status:** Phase E Task 17 implemented and verified; verification experiments next

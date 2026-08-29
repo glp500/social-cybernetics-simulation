@@ -25,7 +25,8 @@ spatial NetCDF history now streams tick zero and every completed tick with bound
 Deterministic sequential batches now retain ordered resolved configuration provenance, failure-isolated
 child bundles, and equivalent JSON/Parquet indexes under one atomic publication. The seeded Morris
 workflow now validates explicit active factor paths, generates three paired-seed scope designs, and
-executes them only through that batch boundary. Small verification experiments are the next slice.
+executes them only through that batch boundary. Published sham, mortality, and three-scope
+verification experiments now pass; shock-aware visualization and release reconciliation are next.
 
 **Question:** how much inequality and mortality arise from ecology and energetic constraints alone?
 

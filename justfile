@@ -43,6 +43,9 @@ batch output="results/batch-v0.2":
 sensitivity output="results/sensitivity-v0.2":
     conda run -n social-cybernetics scs sensitivity --spec configs/sensitivity-v0.2.yml --output {{output}}
 
+verification output="results/verification-v0.2":
+    conda run -n social-cybernetics scs batch --spec configs/verification-v0.2.yml --output {{output}}
+
 validate:
     conda run -n social-cybernetics scs validate --config configs/baseline.yml
 

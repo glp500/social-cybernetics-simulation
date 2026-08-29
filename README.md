@@ -21,6 +21,7 @@ conda run -n social-cybernetics scs run --config configs/baseline.yml
 mkdir -p results
 conda run -n social-cybernetics scs run --config configs/baseline.yml --output results/run-001
 conda run -n social-cybernetics scs batch --spec configs/batch-v0.2.yml --output results/batch-v0.2
+conda run -n social-cybernetics scs batch --spec configs/verification-v0.2.yml --output results/verification-v0.2
 conda run -n social-cybernetics scs sensitivity --spec configs/sensitivity-v0.2.yml --output results/sensitivity-v0.2
 ```
 
@@ -41,6 +42,7 @@ just test
 just check
 just run
 just batch
+just verification
 just sensitivity
 just viz
 just browser-check
@@ -70,8 +72,8 @@ diffusion, institutions, exchange, debt, and births. The literal policy intentio
 cap, so a surviving agent's energy may grow without bound.
 
 Version 0.2 is in implementation. Its domain, runtime shock, persistent-output, deterministic batch,
-and seeded sensitivity-design slices are complete. Sensing, policy, gating, competition, and
-physiology stay fixed; verification experiments are next. See the active
+seeded sensitivity-design, and small ecological-verification slices are complete. Sensing, policy,
+gating, competition, and physiology stay fixed; shock-aware visualization is next. See the active
 [implementation plan](tasks/plan.md) and [task list](tasks/todo.md).
 
 The debugging page is exercised in isolated Chromium and captured in the

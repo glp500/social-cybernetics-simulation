@@ -137,11 +137,15 @@
     with 90.90% branch-aware coverage.
   - Files: one sensitivity configuration module, its tests, one CLI/config integration, and at most
     two reconciled documentation/configuration files.
-- [ ] Add verification experiments for ecological inequality and mortality controls.
+- [x] Add verification experiments for ecological inequality and mortality controls.
   - Acceptance: no-shock, sham-shock, scarcity/mortality, and scope-comparison fixtures retain raw
     outcomes and separate parameter effects from replicate-seed variation.
   - Verify: analysis smoke tests read only published JSON/Parquet/NetCDF evidence and reproduce fixed
     small-design results.
+  - Evidence: `configs/verification-v0.2.yml` publishes 12 runs covering paired no-shock/sham
+    equivalence, forced scarcity mortality, and three paired seeds for every shock scope. The
+    integration regression checks raw Parquet outcomes and complete child NetCDF history. `just
+    check` passes 215 tests with 91.08% branch-aware coverage.
 
 ## Phase F — Release reconciliation
 
