@@ -40,7 +40,7 @@ class BatchRunSpecification(_StrictBatchModel):
     @field_validator("overrides")
     @classmethod
     def validate_overrides(cls, value: dict[str, Any]) -> dict[str, Any]:
-        _validate_tree(value, path="overrides")
+        validate_configuration_tree(value, path="overrides")
         seed = value.get("seed")
         if isinstance(seed, bool) or not isinstance(seed, int) or seed < 0:
             raise ValueError("every run override requires an explicit top-level integer seed")
@@ -84,7 +84,9 @@ class ResolvedBatchSpecification:
     runs: tuple[ResolvedBatchRun, ...]
 
 
-def _validate_tree(value: object, *, path: str) -> None:
+def validate_configuration_tree(value: object, *, path: str) -> None:
+    """Reject configuration values that cannot be represented portably in YAML/JSON."""
+
     if value is None or isinstance(value, (bool, int, str)):
         return
     if isinstance(value, float):
@@ -93,13 +95,13 @@ def _validate_tree(value: object, *, path: str) -> None:
         return
     if isinstance(value, list):
         for index, item in enumerate(value):
-            _validate_tree(item, path=f"{path}[{index}]")
+            validate_configuration_tree(item, path=f"{path}[{index}]")
         return
     if isinstance(value, dict):
         for key, item in value.items():
             if not isinstance(key, str):
                 raise ValueError(f"{path} mapping keys must be strings")
-            _validate_tree(item, path=f"{path}.{key}")
+            validate_configuration_tree(item, path=f"{path}.{key}")
         return
     raise ValueError(f"{path} contains an unsupported YAML value: {type(value).__name__}")
 
@@ -134,8 +136,16 @@ def load_batch_specification(path: Path) -> ResolvedBatchSpecification:
         raise ValueError("batch specification root must be a mapping")
     specification = BatchSpecification.model_validate(payload)
 
+    return resolve_batch_specification(specification, source_directory=path.parent)
+
+
+def resolve_batch_specification(
+    specification: BatchSpecification, *, source_directory: Path
+) -> ResolvedBatchSpecification:
+    """Resolve an already validated batch contract relative to its source directory."""
+
     base_source = Path(specification.base_config)
-    base_path = base_source if base_source.is_absolute() else path.parent / base_source
+    base_path = base_source if base_source.is_absolute() else Path(source_directory) / base_source
     base_path = base_path.resolve()
     base_config = load_config(base_path)
     base_payload = base_config.model_dump(mode="json")

@@ -2,7 +2,11 @@ from pathlib import Path
 
 import pytest
 
-from social_cybernetics.batch_config import load_batch_specification
+from social_cybernetics.batch_config import (
+    BatchSpecification,
+    load_batch_specification,
+    resolve_batch_specification,
+)
 
 
 def _write_base(path: Path) -> None:
@@ -68,6 +72,23 @@ runs:
     assert resolved.runs[0].config.agents.initial_positions == ((3, 1), (2, 0))
     assert resolved.runs[1].config.shock.kind == "system"
     assert len(resolved.runs[0].configuration_sha256) == 64
+
+
+def test_batch_spec_can_be_resolved_from_an_already_validated_contract(tmp_path: Path) -> None:
+    _write_base(tmp_path / "base.yml")
+    specification = BatchSpecification.model_validate(
+        {
+            "schema_version": "0.1.0",
+            "base_config": "base.yml",
+            "runs": [{"id": "generated-run", "overrides": {"seed": 9}}],
+        }
+    )
+
+    resolved = resolve_batch_specification(specification, source_directory=tmp_path)
+
+    assert resolved.base_config_path == (tmp_path / "base.yml").resolve()
+    assert resolved.runs[0].run_id == "generated-run"
+    assert resolved.runs[0].config.seed == 9
 
 
 def test_batch_spec_requires_an_explicit_integer_seed_in_every_override(tmp_path: Path) -> None:
