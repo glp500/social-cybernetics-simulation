@@ -1,0 +1,43 @@
+schema_version: "0.2.0"
+seed: 42
+duration: 100
+world:
+  width: 3
+  height: 2
+  torus: true
+  occupancy: unlimited
+resources:
+  kind: explicit
+  capacity:
+    - [4.0, 8.0]
+    - [6.0, 10.0]
+    - [2.0, 12.0]
+  initial_stock:
+    - [2.0, 8.0]
+    - [3.0, 5.0]
+    - [1.0, 6.0]
+  regeneration_rate: 0.1
+agents:
+  count: 1
+  initial_positions:
+    - [1, 1]
+  initial_energy: 10.0
+  viability_target: 10.0
+  basal_cost: 1.0
+  movement_cost: 0.25
+  harvest_capacity: 2.0
+  harvest_threshold: 1.0
+  conversion_efficiency: 1.0
+policy:
+  kind: literal_local
+shock:
+  kind: correlated
+  event_probability: 1.0
+  stock_loss_fraction: 0.1
+  capacity_loss_fraction: 0.2
+  regeneration_suppression_fraction: 0.3
+  recovery_ticks: 4
+  spread_probability: 0.75
+  max_spread_ticks: 2
+gate:
+  kind: allow_all

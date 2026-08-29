@@ -1,4 +1,4 @@
-"""Minimal read-only SolaraViz debugging page for the canonical baseline."""
+"""Minimal read-only SolaraViz debugging page for the v0.2 ecology."""
 
 from pathlib import Path
 
@@ -8,6 +8,7 @@ from mesa.visualization import SolaraViz, SpaceRenderer
 from mesa.visualization.components import AgentPortrayalStyle, PropertyLayerStyle
 
 from social_cybernetics.config import load_config
+from social_cybernetics.domain import ShockEventStatus
 from social_cybernetics.runtime.mesa.agent import ForagerAgent
 from social_cybernetics.runtime.mesa.model import SugarscapeModel
 
@@ -36,16 +37,25 @@ def property_layer_portrayal(layer: PropertyLayer) -> PropertyLayerStyle | None:
         alpha=0.85,
         colorbar=True,
         vmin=0,
-        vmax=10,
+        vmax=None,
     )
 
 
 def metric_values(model: SugarscapeModel) -> dict[str, float | int]:
     latest = model.model_records[-1]
+    tick = model.completed_ticks
     return {
         "Total resources": latest.total_resources,
         "Alive": latest.alive_count,
         "Mean cohort energy": latest.cohort_mean_energy,
+        "Recovering cells": int((model.recovery_remaining > 0).sum()),
+        "Active shock events": sum(
+            snapshot.tick == tick and snapshot.status is ShockEventStatus.ACTIVE
+            for snapshot in model.shock_event_snapshots
+        ),
+        "Cells damaged this tick": sum(
+            application.tick == tick for application in model.cell_damage_applications
+        ),
     }
 
 
@@ -64,8 +74,8 @@ def model_metrics(model: SugarscapeModel):
 
 
 REPOSITORY_ROOT = Path(__file__).resolve().parents[4]
-baseline_config = load_config(REPOSITORY_ROOT / "configs" / "baseline.yml")
-model = SugarscapeModel(baseline_config)
+visualization_config = load_config(REPOSITORY_ROOT / "configs" / "visualization-v0.2.yml")
+model = SugarscapeModel(visualization_config)
 
 renderer = (
     SpaceRenderer(model, backend="matplotlib")
@@ -79,8 +89,8 @@ page = SolaraViz(
     model,
     renderer,
     components=[(model_metrics, 0)],  # pyright: ignore[reportArgumentType]
-    model_params={"config": baseline_config},
-    name="Social Cybernetics Sugarscape — deterministic v0.1",
+    model_params={"config": visualization_config},
+    name="Social Cybernetics Sugarscape — stochastic ecology v0.2",
     play_interval=300,
 )
 
