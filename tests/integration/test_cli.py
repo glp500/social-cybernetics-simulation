@@ -93,11 +93,18 @@ def test_run_output_publishes_a_valid_bundle_without_changing_stdout(tmp_path: P
     assert manifest["completed_ticks"] == 1
     assert manifest["tables"]["model"]["row_count"] == 2
     assert manifest["tables"]["cohort"]["row_count"] == 2
+    assert manifest["tables"]["agent_transitions"]["row_count"] == 1
     assert manifest["spatial"]["snapshot_count"] == 2
     assert json.loads((destination / "summary.json").read_text()) == json.loads(result.stdout)
     with Dataset(destination / "spatial.nc", "r") as spatial:
         np.testing.assert_array_equal(spatial.variables["tick"][:], [0, 1])
         assert spatial.variables["resource_stock"].shape == (2, 5, 5)
+
+    transitions = pq.read_table(destination / "tables/agent_transitions.parquet").to_pylist()
+    assert len(transitions) == 1
+    assert transitions[0]["tick"] == 1
+    assert transitions[0]["energy_before"] == 10.0
+    assert transitions[0]["energy_after"] == 11.0
 
 
 def test_run_output_persists_runtime_shock_and_damage_records(tmp_path: Path) -> None:

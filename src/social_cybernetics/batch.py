@@ -171,6 +171,7 @@ def _run_records(model: SugarscapeModel) -> RunRecords:
     return RunRecords(
         model=model.model_records,
         cohort=model.cohort_records,
+        agent_transitions=model.agent_transitions,
         agent_events=model.event_records,
         shock_events=model.shock_event_snapshots,
         shock_exposures=model.shock_exposures,

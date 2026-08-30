@@ -9,7 +9,9 @@ import pytest
 
 from social_cybernetics.config import SimulationConfig
 from social_cybernetics.domain import (
+    ActionKind,
     AgentSnapshot,
+    AgentTransitionRecord,
     CellDamageApplication,
     CohortRecord,
     DamageParameters,
@@ -163,6 +165,26 @@ def test_record_tables_have_explicit_versioned_schemas_and_normalized_values() -
                 ),
             ),
         ),
+        agent_transitions=(
+            AgentTransitionRecord(
+                tick=1,
+                agent_id=7,
+                origin=(2, 3),
+                observed_stock=4.0,
+                believed_stock=4.0,
+                intent_kind=ActionKind.MOVE,
+                requested_amount=0.0,
+                intended_destination=(2, 2),
+                gate_allowed=True,
+                harvested=0.0,
+                moved=True,
+                final_position=(2, 2),
+                energy_before=9.25,
+                energy_after=8.0,
+                shortfall=2.0,
+                died=False,
+            ),
+        ),
         agent_events=(EventRecord(1, "move", 7, position=(2, 3)),),
         shock_events=(
             ShockEventSnapshot(
@@ -226,6 +248,27 @@ def test_record_tables_have_explicit_versioned_schemas_and_normalized_values() -
         "energy": 8.0,
         "alive": True,
     }
+    assert tables["agent_transitions"].to_pylist()[0] == {
+        "tick": 1,
+        "agent_id": 7,
+        "origin_x": 2,
+        "origin_y": 3,
+        "observed_stock": 4.0,
+        "believed_stock": 4.0,
+        "intent_kind": "move",
+        "requested_amount": 0.0,
+        "intended_destination_x": 2,
+        "intended_destination_y": 2,
+        "gate_allowed": True,
+        "harvested": 0.0,
+        "moved": True,
+        "final_position_x": 2,
+        "final_position_y": 2,
+        "energy_before": 9.25,
+        "energy_after": 8.0,
+        "shortfall": 2.0,
+        "died": False,
+    }
     assert tables["shock_events"].to_pylist()[0]["frontier"] == [
         {"x": 1, "y": 2},
         {"x": 2, "y": 1},
@@ -240,6 +283,43 @@ def test_empty_record_tables_retain_complete_schemas() -> None:
     assert tuple(tables) == tuple(TABLE_SCHEMA_VERSIONS)
     assert all(table.num_rows == 0 for table in tables.values())
     assert all(table.num_columns > 0 for table in tables.values())
+
+
+def test_transition_count_must_match_active_agent_history(tmp_path: Path) -> None:
+    transition = AgentTransitionRecord(
+        tick=1,
+        agent_id=0,
+        origin=(2, 2),
+        observed_stock=10.0,
+        believed_stock=10.0,
+        intent_kind=ActionKind.HARVEST,
+        requested_amount=2.0,
+        intended_destination=None,
+        gate_allowed=True,
+        harvested=2.0,
+        moved=False,
+        final_position=(2, 2),
+        energy_before=10.0,
+        energy_after=11.0,
+        shortfall=0.0,
+        died=False,
+    )
+    records = RunRecords(
+        model=(ModelRecord(0, 250.0, 1, 10.0, 0.0, 0.0, 0.0),),
+        cohort=(CohortRecord(0, AgentSnapshot(0, 0, (2, 2), 10.0, True)),),
+        agent_transitions=(transition,),
+    )
+
+    with pytest.raises(BundleValidationError, match="transition count"):
+        write_run_bundle(
+            tmp_path / "invalid",
+            config=SimulationConfig(duration=0),
+            summary=_summary(),
+            records=records,
+            rng_provenance=_rng_provenance(),
+        )
+
+    assert not (tmp_path / "invalid").exists()
 
 
 def test_run_bundle_round_trips_configuration_provenance_summary_and_tables(
@@ -261,7 +341,7 @@ def test_run_bundle_round_trips_configuration_provenance_summary_and_tables(
     manifest = validate_run_bundle(published)
 
     assert published == destination
-    assert manifest["schema_version"] == "scs-run-bundle/v1.0.0"
+    assert manifest["schema_version"] == "scs-run-bundle/v1.1.0"
     assert manifest["seed"] == 9
     assert manifest["tables"]["model"]["row_count"] == 1
     assert manifest["tables"]["cohort"]["row_count"] == 0
@@ -271,6 +351,7 @@ def test_run_bundle_round_trips_configuration_provenance_summary_and_tables(
         "summary.json",
         "spatial.nc",
         "tables/agent_events.parquet",
+        "tables/agent_transitions.parquet",
         "tables/cell_damage.parquet",
         "tables/cohort.parquet",
         "tables/model.parquet",

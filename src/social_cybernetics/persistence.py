@@ -30,6 +30,7 @@ from social_cybernetics.artifact_io import (
 )
 from social_cybernetics.config import SimulationConfig
 from social_cybernetics.domain import (
+    AgentTransitionRecord,
     CellDamageApplication,
     CohortRecord,
     EventCellExposure,
@@ -54,7 +55,7 @@ _AT_FDCWD = -100
 _RENAME_NOREPLACE = 1
 _MAX_JSON_BYTES = 16 * 1024 * 1024
 
-BUNDLE_SCHEMA_VERSION = "scs-run-bundle/v1.0.0"
+BUNDLE_SCHEMA_VERSION = "scs-run-bundle/v1.1.0"
 CONFIGURATION_SCHEMA_VERSION = "scs-normalized-configuration/v0.1.0"
 PROVENANCE_SCHEMA_VERSION = "scs-provenance/v0.1.0"
 SUMMARY_SCHEMA_VERSION = "scs-run-summary/v0.1.0"
@@ -100,6 +101,7 @@ type DirectoryBuilder = Callable[[Path], None]
 TABLE_SCHEMA_VERSIONS = {
     "model": "scs-table/model/v0.1.0",
     "cohort": "scs-table/cohort/v1.0.0",
+    "agent_transitions": "scs-table/agent-transitions/v1.0.0",
     "agent_events": "scs-table/agent-events/v0.1.0",
     "shock_events": "scs-table/shock-events/v0.1.0",
     "shock_exposures": "scs-table/shock-exposures/v0.1.0",
@@ -146,6 +148,30 @@ _TABLE_SCHEMAS = {
             pa.field("position_y", pa.int64(), nullable=False),
             pa.field("energy", pa.float64(), nullable=False),
             pa.field("alive", pa.bool_(), nullable=False),
+        ],
+    ),
+    "agent_transitions": _schema(
+        "agent_transitions",
+        [
+            pa.field("tick", pa.int64(), nullable=False),
+            pa.field("agent_id", pa.int64(), nullable=False),
+            pa.field("origin_x", pa.int64(), nullable=False),
+            pa.field("origin_y", pa.int64(), nullable=False),
+            pa.field("observed_stock", pa.float64(), nullable=False),
+            pa.field("believed_stock", pa.float64(), nullable=False),
+            pa.field("intent_kind", pa.string(), nullable=False),
+            pa.field("requested_amount", pa.float64(), nullable=False),
+            pa.field("intended_destination_x", pa.int64()),
+            pa.field("intended_destination_y", pa.int64()),
+            pa.field("gate_allowed", pa.bool_(), nullable=False),
+            pa.field("harvested", pa.float64(), nullable=False),
+            pa.field("moved", pa.bool_(), nullable=False),
+            pa.field("final_position_x", pa.int64(), nullable=False),
+            pa.field("final_position_y", pa.int64(), nullable=False),
+            pa.field("energy_before", pa.float64(), nullable=False),
+            pa.field("energy_after", pa.float64(), nullable=False),
+            pa.field("shortfall", pa.float64(), nullable=False),
+            pa.field("died", pa.bool_(), nullable=False),
         ],
     ),
     "agent_events": _schema(
@@ -238,6 +264,7 @@ class RunRecords:
 
     model: tuple[ModelRecord, ...] = ()
     cohort: tuple[CohortRecord, ...] = ()
+    agent_transitions: tuple[AgentTransitionRecord, ...] = ()
     agent_events: tuple[EventRecord, ...] = ()
     shock_events: tuple[ShockEventSnapshot, ...] = ()
     shock_exposures: tuple[EventCellExposure, ...] = ()
@@ -274,6 +301,38 @@ def build_record_tables(records: RunRecords) -> dict[str, pa.Table]:
                 "alive": record.snapshot.alive,
             }
             for record in records.cohort
+        ],
+        "agent_transitions": [
+            {
+                "tick": record.tick,
+                "agent_id": record.agent_id,
+                "origin_x": record.origin[0],
+                "origin_y": record.origin[1],
+                "observed_stock": record.observed_stock,
+                "believed_stock": record.believed_stock,
+                "intent_kind": record.intent_kind.value,
+                "requested_amount": record.requested_amount,
+                "intended_destination_x": (
+                    record.intended_destination[0]
+                    if record.intended_destination is not None
+                    else None
+                ),
+                "intended_destination_y": (
+                    record.intended_destination[1]
+                    if record.intended_destination is not None
+                    else None
+                ),
+                "gate_allowed": record.gate_allowed,
+                "harvested": record.harvested,
+                "moved": record.moved,
+                "final_position_x": record.final_position[0],
+                "final_position_y": record.final_position[1],
+                "energy_before": record.energy_before,
+                "energy_after": record.energy_after,
+                "shortfall": record.shortfall,
+                "died": record.died,
+            }
+            for record in records.agent_transitions
         ],
         "agent_events": [
             {
@@ -351,6 +410,40 @@ def build_record_tables(records: RunRecords) -> dict[str, pa.Table]:
         name: pa.Table.from_pylist(rows[name], schema=_TABLE_SCHEMAS[name])
         for name in TABLE_SCHEMA_VERSIONS
     }
+
+
+def _validate_agent_transition_records(records: RunRecords, completed_ticks: int) -> None:
+    """Cross-check transitions before serialization while records remain typed."""
+
+    if not records.model:
+        if completed_ticks == 0 and not records.cohort and not records.agent_transitions:
+            return
+        raise BundleValidationError("model records do not cover every completed tick")
+    if [record.tick for record in records.model] != list(range(completed_ticks + 1)):
+        raise BundleValidationError("model records do not cover every completed tick")
+    expected_count = sum(record.alive_count for record in records.model[:-1])
+    if len(records.agent_transitions) != expected_count:
+        raise BundleValidationError("agent-transition count differs from active-agent history")
+
+    transition_keys = [(record.tick, record.agent_id) for record in records.agent_transitions]
+    if transition_keys != sorted(set(transition_keys)):
+        raise BundleValidationError("agent transitions are duplicated or out of canonical order")
+    cohort_by_key = {
+        (record.tick, record.snapshot.agent_id): record.snapshot for record in records.cohort
+    }
+    for transition in records.agent_transitions:
+        before = cohort_by_key.get((transition.tick - 1, transition.agent_id))
+        after = cohort_by_key.get((transition.tick, transition.agent_id))
+        if before is None or after is None or not before.alive:
+            raise BundleValidationError("agent transition lacks an active cohort origin")
+        if before.position != transition.origin or before.energy != transition.energy_before:
+            raise BundleValidationError("agent-transition origin differs from cohort history")
+        if (
+            after.position != transition.final_position
+            or after.energy != transition.energy_after
+            or after.alive == transition.died
+        ):
+            raise BundleValidationError("agent-transition result differs from cohort history")
 
 
 def _path_exists(path: Path) -> bool:
@@ -662,7 +755,6 @@ def _write_staged_bundle(
 ) -> None:
     """Finalize non-spatial artifacts beside an already closed spatial stream."""
 
-    record_tables = build_record_tables(records)
     configuration = {
         "schema_version": CONFIGURATION_SCHEMA_VERSION,
         "configuration": config.model_dump(mode="json"),
@@ -671,6 +763,12 @@ def _write_staged_bundle(
     validate_summary_payload(summary_payload)
     if summary_payload["seed"] != config.seed:
         raise BundleValidationError("summary seed differs from normalized configuration")
+    completed_value = summary_payload["completed_ticks"]
+    if not isinstance(completed_value, int):
+        raise BundleValidationError("completed tick count is invalid")
+    completed_ticks = completed_value
+    _validate_agent_transition_records(records, completed_ticks)
+    record_tables = build_record_tables(records)
     provenance = _provenance_payload(seed=config.seed, rng_provenance=rng_provenance)
     tables_directory = staging / "tables"
     tables_directory.mkdir()
@@ -704,10 +802,6 @@ def _write_staged_bundle(
             staging / relative_path,
             schema_version=schema_version,
         )
-    completed_value = summary_payload["completed_ticks"]
-    if not isinstance(completed_value, int):
-        raise BundleValidationError("completed tick count is invalid")
-    completed_ticks = completed_value
     manifest = {
         "schema_version": BUNDLE_SCHEMA_VERSION,
         "model_schema_version": config.schema_version,

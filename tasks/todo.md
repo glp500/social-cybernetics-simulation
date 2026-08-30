@@ -120,10 +120,13 @@ verification evidence, not merely code presence.
     runtime/CLI regressions and unchanged baseline output.
   - Files: `src/social_cybernetics/runtime/mesa/model.py`,
     `tests/integration/test_mesa_runtime.py`.
-- [ ] B5. Publish the Project 1 transition table and migrate bundle schemas.
+- [x] B5. Publish the Project 1 transition table and migrate bundle schemas.
   - Acceptance: exact Arrow schema, empty-table behavior, cross-record counts, and bundle validation
     are fail closed.
   - Verification: persistence unit and CLI bundle tests pass, including tampering cases.
+  - Evidence: bundle v1.1 publishes the explicit 19-field transition table, both CLI and batch paths
+    supply it, typed pre-serialization checks reconcile active counts/origin/results with cohort
+    history, invalid attempts remain unpublished, and 66 persistence/CLI/batch tests pass.
   - Files: `src/social_cybernetics/persistence.py`, `src/social_cybernetics/cli.py`,
     `tests/unit/test_persistence.py`, `tests/integration/test_cli.py`.
 
