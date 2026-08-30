@@ -132,9 +132,12 @@ verification evidence, not merely code presence.
 
 ## Phase C — Pure Project 1 analysis
 
-- [ ] C1. Add robust distribution shares and Gini helpers.
+- [x] C1. Add robust distribution shares and Gini helpers.
   - Acceptance: deterministic top/bottom shares cover empty, singleton, tied, and zero-total inputs.
   - Verification: example and property tests pass; `social_cybernetics.metrics.gini` remains public.
+  - Evidence: finite one-dimensional validation, bounded Gini, ceiling-sized top shares, explicit-ID
+    bottom burden shares, cutoff-tie metadata, empty/zero-total semantics, and order properties pass
+    15 focused tests.
   - Files: `src/social_cybernetics/metrics.py`, `tests/test_metrics.py`.
 - [ ] C2. Add subsistence-security metrics.
   - Acceptance: frequency, spell lengths, depth, maximum depth, and catastrophic probability follow
