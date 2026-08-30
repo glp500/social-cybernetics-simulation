@@ -160,9 +160,6 @@ def test_record_tables_have_explicit_versioned_schemas_and_normalized_values() -
                     position=(2, 3),
                     energy=8.0,
                     alive=True,
-                    resource_holdings=1.5,
-                    debt=0.25,
-                    information_capabilities=frozenset({"shared", "local"}),
                 ),
             ),
         ),
@@ -221,7 +218,14 @@ def test_record_tables_have_explicit_versioned_schemas_and_normalized_values() -
         assert table.schema.metadata is not None
         assert table.schema.metadata[b"scs.schema_version"].decode() == TABLE_SCHEMA_VERSIONS[name]
 
-    assert tables["cohort"].to_pylist()[0]["information_capabilities"] == ["local", "shared"]
+    assert tables["cohort"].to_pylist()[0] == {
+        "tick": 1,
+        "agent_id": 7,
+        "position_x": 2,
+        "position_y": 3,
+        "energy": 8.0,
+        "alive": True,
+    }
     assert tables["shock_events"].to_pylist()[0]["frontier"] == [
         {"x": 1, "y": 2},
         {"x": 2, "y": 1},
@@ -257,7 +261,7 @@ def test_run_bundle_round_trips_configuration_provenance_summary_and_tables(
     manifest = validate_run_bundle(published)
 
     assert published == destination
-    assert manifest["schema_version"] == "scs-run-bundle/v0.2.0"
+    assert manifest["schema_version"] == "scs-run-bundle/v1.0.0"
     assert manifest["seed"] == 9
     assert manifest["tables"]["model"]["row_count"] == 1
     assert manifest["tables"]["cohort"]["row_count"] == 0

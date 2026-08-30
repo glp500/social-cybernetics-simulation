@@ -292,9 +292,6 @@ class SugarscapeModel(Model):
                 position=position,
                 energy=state.energy,
                 alive=state.alive,
-                resource_holdings=state.resource_holdings,
-                debt=state.debt,
-                information_capabilities=state.information_capabilities,
             )
         return snapshots
 
@@ -628,9 +625,6 @@ class SugarscapeModel(Model):
                         position=self.cohort_positions[agent_id],
                         energy=state.energy,
                         alive=state.alive,
-                        resource_holdings=state.resource_holdings,
-                        debt=state.debt,
-                        information_capabilities=state.information_capabilities,
                     ),
                 )
             )

@@ -42,10 +42,6 @@ class AgentState:
     agent_id: AgentId
     energy: float
     alive: bool = True
-    action_capacity: float = 1.0
-    resource_holdings: float = 0.0
-    debt: float = 0.0
-    information_capabilities: frozenset[str] = frozenset()
 
 
 @dataclass(frozen=True, slots=True)
@@ -55,9 +51,6 @@ class AgentSnapshot:
     position: Position
     energy: float
     alive: bool
-    resource_holdings: float = 0.0
-    debt: float = 0.0
-    information_capabilities: frozenset[str] = frozenset()
 
 
 @dataclass(frozen=True, slots=True)

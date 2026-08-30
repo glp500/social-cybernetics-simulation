@@ -54,7 +54,7 @@ _AT_FDCWD = -100
 _RENAME_NOREPLACE = 1
 _MAX_JSON_BYTES = 16 * 1024 * 1024
 
-BUNDLE_SCHEMA_VERSION = "scs-run-bundle/v0.2.0"
+BUNDLE_SCHEMA_VERSION = "scs-run-bundle/v1.0.0"
 CONFIGURATION_SCHEMA_VERSION = "scs-normalized-configuration/v0.1.0"
 PROVENANCE_SCHEMA_VERSION = "scs-provenance/v0.1.0"
 SUMMARY_SCHEMA_VERSION = "scs-run-summary/v0.1.0"
@@ -99,7 +99,7 @@ type DirectoryBuilder = Callable[[Path], None]
 
 TABLE_SCHEMA_VERSIONS = {
     "model": "scs-table/model/v0.1.0",
-    "cohort": "scs-table/cohort/v0.1.0",
+    "cohort": "scs-table/cohort/v1.0.0",
     "agent_events": "scs-table/agent-events/v0.1.0",
     "shock_events": "scs-table/shock-events/v0.1.0",
     "shock_exposures": "scs-table/shock-exposures/v0.1.0",
@@ -146,13 +146,6 @@ _TABLE_SCHEMAS = {
             pa.field("position_y", pa.int64(), nullable=False),
             pa.field("energy", pa.float64(), nullable=False),
             pa.field("alive", pa.bool_(), nullable=False),
-            pa.field("resource_holdings", pa.float64(), nullable=False),
-            pa.field("debt", pa.float64(), nullable=False),
-            pa.field(
-                "information_capabilities",
-                pa.list_(pa.field("element", pa.string(), nullable=False)),
-                nullable=False,
-            ),
         ],
     ),
     "agent_events": _schema(
@@ -279,9 +272,6 @@ def build_record_tables(records: RunRecords) -> dict[str, pa.Table]:
                 "position_y": record.snapshot.position[1],
                 "energy": record.snapshot.energy,
                 "alive": record.snapshot.alive,
-                "resource_holdings": record.snapshot.resource_holdings,
-                "debt": record.snapshot.debt,
-                "information_capabilities": sorted(record.snapshot.information_capabilities),
             }
             for record in records.cohort
         ],

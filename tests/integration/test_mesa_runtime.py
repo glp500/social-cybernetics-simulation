@@ -177,7 +177,7 @@ def test_explicit_landscape_initializes_and_steps_without_transposition() -> Non
 
 def test_system_shock_damages_all_cells_and_records_normalized_evidence() -> None:
     config = SimulationConfig(
-        schema_version="0.2.0",
+        schema_version="1.0.0",
         duration=1,
         world=WorldConfig(width=2, height=1),
         resources=ResourceConfig(initial_stock=10, capacity=10, regeneration_rate=0.2),
@@ -210,7 +210,7 @@ def test_system_shock_damages_all_cells_and_records_normalized_evidence() -> Non
 
 def test_correlated_events_propagate_concurrently_with_immutable_records() -> None:
     config = SimulationConfig(
-        schema_version="0.2.0",
+        schema_version="1.0.0",
         seed=9,
         duration=2,
         world=WorldConfig(width=3, height=3),

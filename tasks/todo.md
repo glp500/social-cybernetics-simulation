@@ -94,10 +94,13 @@ verification evidence, not merely code presence.
     sensitivity tests pass, and the existing baseline byte regression remains green.
   - Files: `src/social_cybernetics/config.py`, `tests/unit/test_config.py`,
     `tests/integration/test_cli.py`, `configs/baseline.yml`.
-- [ ] B2. Remove dormant future agent state.
+- [x] B2. Remove dormant future agent state.
   - Acceptance: holdings, debt, and information capability are absent from shared domain state and
     Project 1 snapshots.
   - Verification: domain tests and architecture search reject those fields in Project 1 code.
+  - Evidence: `AgentState` now contains only ID, energy, and alive; snapshots add tick/position only;
+    Project 1 cohort schema v1 removes holdings/debt/capabilities, bundle schema is v1, and 83 focused
+    architecture/domain/runtime/persistence/batch/CLI regressions pass.
   - Files: `src/social_cybernetics/domain/types.py`, `src/social_cybernetics/runtime/mesa/model.py`,
     `tests/unit/test_domain.py`, `tests/architecture/test_boundaries.py`.
 - [ ] B3. Define immutable agent-transition evidence.

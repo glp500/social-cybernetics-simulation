@@ -3,6 +3,10 @@ from pathlib import Path
 
 DOMAIN = Path("src/social_cybernetics/domain")
 FORBIDDEN = {"mesa", "pydantic", "pandas", "solara"}
+PROJECT_1_AGENT_FIELDS = {
+    "AgentState": {"agent_id", "energy", "alive"},
+    "AgentSnapshot": {"tick", "agent_id", "position", "energy", "alive"},
+}
 
 
 def modules_in(tree: ast.AST) -> set[str]:
@@ -19,6 +23,21 @@ def test_domain_has_no_framework_imports() -> None:
     for path in DOMAIN.glob("*.py"):
         tree = ast.parse(path.read_text(encoding="utf-8"))
         assert modules_in(tree).isdisjoint(FORBIDDEN), path
+
+
+def test_project_1_agent_state_contains_no_dormant_future_fields() -> None:
+    tree = ast.parse((DOMAIN / "types.py").read_text(encoding="utf-8"))
+    classes = {
+        node.name: {
+            statement.target.id
+            for statement in node.body
+            if isinstance(statement, ast.AnnAssign) and isinstance(statement.target, ast.Name)
+        }
+        for node in tree.body
+        if isinstance(node, ast.ClassDef) and node.name in PROJECT_1_AGENT_FIELDS
+    }
+
+    assert classes == PROJECT_1_AGENT_FIELDS
 
 
 def test_scientific_code_does_not_use_global_randomness() -> None:
