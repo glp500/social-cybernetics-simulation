@@ -1,5 +1,10 @@
 # Project 1 Experiments
 
+**Status:** frozen and executed from `configs/project-1.yml` on 2026-08-31.
+
+The canonical expansion produced 140/140 completed runs. Its validated local batch manifest SHA-256
+is `9355cbb919f748446a0e6eab3c65c9104c151c5642ca7ca614a8865431a17197`.
+
 ## Design principles
 
 - all conditions are complete validated `Study01Config` objects;

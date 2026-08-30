@@ -1,5 +1,7 @@
 # Project 1 Hypotheses
 
+**Status:** frozen before the canonical P1-A–E result review on 2026-08-31.
+
 Hypotheses are comparisons of named outcome vectors. A directional component may fail while another
 holds; no condition is ranked by a single statistic.
 

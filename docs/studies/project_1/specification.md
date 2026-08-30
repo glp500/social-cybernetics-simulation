@@ -1,6 +1,10 @@
 # Project 1 Specification: Ecology, Provisioning, and Inequality
 
-**Status:** mechanics verified from the pre-refactor v0.2 release; analytical and freeze work active.
+**Status:** frozen for Project 1 schema `1.0.0` on 2026-08-31.
+
+The executable authority is the validated `Study01Config` scheduler and artifact contracts at source
+commit `4ae3859364fe2abc995b858ed779519b8336d7e2`. Changes to mechanics, ordering, state, or outcomes
+require a new study/schema version and reopening the specification gate.
 
 ## Purpose
 

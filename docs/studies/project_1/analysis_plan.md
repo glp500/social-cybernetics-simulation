@@ -1,5 +1,11 @@
 # Project 1 Analysis Plan
 
+**Status:** frozen and implemented in schema `scs-project1-outcome/v1.0.0` and aggregate bundle
+schema `scs-project1-analysis-bundle/v1.0.0` on 2026-08-31.
+
+The canonical artifact-only analysis completed 140/140 runs. Its local analysis-manifest SHA-256 is
+`773f07fcb61d3f9616666e514e0a67c8c8299bfea3f03126dd11a0c28bab983a`.
+
 ## Authority and inputs
 
 Analysis is pure and post hoc. It consumes validated Project 1 run bundles: normalized configuration,
