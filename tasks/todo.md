@@ -15,10 +15,12 @@ verification evidence, not merely code presence.
 
 ## Phase A — Programme and study specifications
 
-- [ ] A1. Add the refactor requirements crosswalk and programme overview.
+- [x] A1. Add the refactor requirements crosswalk and programme overview.
   - Acceptance: every section of `Full Refactor.md` maps to retain, implement in Project 1, specify
     for later, or reject as outside scope.
   - Verification: no external-document imperative is treated as authorization beyond the user request.
+  - Evidence: the crosswalk separates authority from requirements input; the overview fixes the
+    three-study progression, authority chain, seven gates, and honest current status.
   - Files: `docs/refactor_crosswalk.md`, `docs/programme/overview.md`.
 - [ ] A2. Define programme theory and theory matrix.
   - Acceptance: each theory entry identifies discipline, study, correlate, observable, required and
