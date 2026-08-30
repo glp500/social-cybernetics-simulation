@@ -1,164 +1,185 @@
-# Stochastic Ecological Baseline v0.2 Task List
+# Three-Study Programme Refactor Task List
 
-## Completed prerequisite
+Each task is a reviewable slice touching no more than five files. A checked task requires its stated
+verification evidence, not merely code presence.
 
-- [x] Complete and verify deterministic material control v0.1.
-  - Evidence: 56 tests, 97.02% branch-aware coverage, clean lock install, exact CLI regression, and
-    isolated-browser verification recorded in `docs/experiment_log.md`.
-- [x] Audit primary literature for the committed causal sequence using paired evidence.
-  - Evidence: reviewed notes distinguish support, counterevidence/boundaries, justified commitments,
-    and uncalibrated choices for learning, diffusion, networks, enforcement, governance, and regime
-    discovery.
-  - Files: `docs/literature/items/`, `docs/literature/literature_matrix.md`,
-    `docs/modeling/mechanism_backlog.md`, `docs/experiment_log.md`.
+## Completed foundation retained
 
-## Phase A — Documentation and ecological contracts
+- [x] Verify deterministic material control and exact scheduler semantics.
+- [x] Implement and verify heterogeneous landscapes and recoverable independent, correlated, and
+  system shocks.
+- [x] Implement immutable shock evidence, streamed spatial history, fail-closed run bundles,
+  deterministic batches, Morris design generation, and isolated-browser visualization.
+- [x] Pass the pre-refactor release gate: 217 tests, 91.08% branch-aware coverage, Ruff, Pyright,
+  dependency/lock synchronization, clean lock install, baseline byte regression, and browser check.
 
-- [x] Reconcile canonical documents for active v0.2 work and add ADR 0007.
-  - Acceptance: scope, implemented landscape representation, proposed shock alternatives,
-    compatibility, and exclusions agree.
-  - Verify: documentation links resolve and no canonical page calls v0.2 merely future work.
-  - Files: `docs/model_specification.md`, `docs/architecture.md`, `docs/assumptions.md`,
-    `docs/adr/0007-stochastic-ecological-variants.md`, `docs/adr/README.md`.
-- [x] Add backward-compatible v0.2 landscape configuration contracts.
-  - Acceptance: v0.1 accepts only uniform/no-shock; v0.2 accepts implemented variants and rejects
-    malformed matrices or unsupported kinds.
-  - Verify: focused configuration tests pass; baseline JSON remains byte-identical.
+## Phase A — Programme and study specifications
+
+- [ ] A1. Add the refactor requirements crosswalk and programme overview.
+  - Acceptance: every section of `Full Refactor.md` maps to retain, implement in Project 1, specify
+    for later, or reject as outside scope.
+  - Verification: no external-document imperative is treated as authorization beyond the user request.
+  - Files: `docs/refactor_crosswalk.md`, `docs/programme/overview.md`.
+- [ ] A2. Define programme theory and theory matrix.
+  - Acceptance: each theory entry identifies discipline, study, correlate, observable, required and
+    absent mechanisms, permitted/prohibited inference, and sources.
+  - Verification: mechanism evidence is distinguishable from interpretation and calibration.
+  - Files: `docs/programme/theory.md`, `docs/programme/theory_matrix.md`.
+- [ ] A3. Define shared ontology, causal map, and scope.
+  - Acceptance: objective, privately actionable, and socially accessible opportunity are distinct;
+    reserved political-economic terms have necessary conditions.
+  - Verification: no future state appears in the Project 1 ontology.
+  - Files: `docs/programme/shared_ontology.md`, `docs/programme/causal_map.md`,
+    `docs/programme/scope.md`.
+- [ ] A4. Define the interpretation protocol and programme claims boundary.
+  - Acceptance: seven required interpretation fields and the five-level methodological rule are
+    mandatory for headline results.
+  - Verification: prohibited conclusions from the refactor are enumerated.
+  - Files: `docs/programme/interpretation_protocol.md`, `docs/programme/claims_and_limits.md`.
+- [ ] A5. Create Project 1's eight-document scientific package.
+  - Acceptance: specification, theory, hypotheses, experiments, validation, analysis, interpretation,
+    and limits jointly define all seven completion gates.
+  - Verification: equations and edge cases are implementation-ready.
+  - Files: split into two commits of four files under `docs/studies/project_1/`.
+- [ ] A6. Create Project 2's eight-document specification package.
+  - Acceptance: observation channel `C=(radius, noise, delay)`, fixed-policy/Q-learning comparisons,
+    information inequality, experiments, metrics, boundaries, and freeze gates are complete.
+  - Verification: documents state that Project 2 is specified, not implemented.
+  - Files: split into two commits of four files under `docs/studies/project_2/`.
+- [ ] A7. Create Project 3's eight-document specification package.
+  - Acceptance: network reports, trust, rewiring, capability diffusion, D0–D3 circulation accounting,
+    relational metrics, boundaries, and freeze gates are complete.
+  - Verification: credit stock is conserved and distinct from obligation claims in the specification.
+  - Files: split into two commits of four files under `docs/studies/project_3/`.
+- [ ] A8. Expand the literature matrix and add missing paired-evidence notes.
+  - Acceptance: the requested 13-column schema is used and Project 1 mechanisms/interpretations have
+    supporting, boundary, and counterevidence roles where available.
+  - Verification: sources are verified against primary or authoritative records; parameter values
+    remain labelled as project choices.
+  - Files: `docs/literature/literature_matrix.md` plus at most four notes per slice.
+- [ ] A9. Record the study-driven architecture decision.
+  - Acceptance: configuration naming, legacy normalization, project-specific state, schema migration,
+    and non-executable future studies are explicit.
+  - Verification: ADR index and architecture links resolve.
+  - Files: `docs/adr/0012-study-driven-programme.md`, `docs/adr/README.md`,
+    `docs/architecture.md`.
+
+## Phase B — Study 01 contracts and evidence
+
+- [ ] B1. Add `Study01Config` and explicit legacy normalization.
+  - Acceptance: canonical Project 1 YAML validates; legacy v0.1/v0.2 YAML resolves equivalently;
+    unsupported study IDs fail closed.
+  - Verification: configuration and CLI tests pass; baseline summary is byte-identical.
   - Files: `src/social_cybernetics/config.py`, `tests/unit/test_config.py`,
-    `tests/integration/test_cli.py`, `configs/baseline.yml`, `configs/ecology-v0.2.yml`.
-- [x] Construct resource arrays from validated landscape configuration.
-  - Acceptance: uniform and asymmetric explicit fixtures produce correctly oriented, independent
-    float arrays satisfying `0 <= stock <= capacity`.
-  - Verify: unit and property tests cover shape and bounds.
-  - Files: `src/social_cybernetics/domain/ecology.py`, `src/social_cybernetics/domain/__init__.py`,
-    `tests/unit/test_domain.py`, `tests/property/test_domain_properties.py`.
-
-## Phase B — Pure shock mechanisms
-
-- [x] Add the required shock-mechanism literature note and relevance statement.
-  - Acceptance: primary evidence supports the abstraction or clearly identifies it as a controlled
-    experimental simplification.
-  - Verify: literature matrix and mechanism backlog link to the note and executable target.
-  - Files: `docs/literature/items/<shock-note>.md`, `docs/literature/literature_matrix.md`,
-    `docs/modeling/mechanism_backlog.md`.
-- [x] Confirm shock semantics before adding a domain contract.
-  - Acceptance: the user selects the loss model, event clock, correlated footprint, duration/recovery,
-    and minimum event evidence after reviewing alternatives and tradeoffs.
-  - Verify: specification, assumptions, ADR 0007, plan, and task wording agree with the selection.
-  - Files: `docs/model_specification.md`, `docs/assumptions.md`,
-    `docs/adr/0007-stochastic-ecological-variants.md`, `tasks/plan.md`, `tasks/todo.md`.
-- [x] Define immutable shock-result evidence.
-  - Acceptance: recovery state, event snapshots, event-cell exposures, and simultaneous cell-damage
-    applications cannot alias mutable inputs or double-count physical changes.
-  - Verify: contract isolation and invariant tests pass.
+    `tests/integration/test_cli.py`, `configs/baseline.yml`.
+- [ ] B2. Remove dormant future agent state.
+  - Acceptance: holdings, debt, and information capability are absent from shared domain state and
+    Project 1 snapshots.
+  - Verification: domain tests and architecture search reject those fields in Project 1 code.
+  - Files: `src/social_cybernetics/domain/types.py`, `src/social_cybernetics/runtime/mesa/model.py`,
+    `tests/unit/test_domain.py`, `tests/architecture/test_boundaries.py`.
+- [ ] B3. Define immutable agent-transition evidence.
+  - Acceptance: one record can reconstruct local exposure, request, movement, extraction, shortfall,
+    energy change, and death without duplicating mutable position.
+  - Verification: immutability and field-invariant tests pass.
   - Files: `src/social_cybernetics/domain/types.py`, `src/social_cybernetics/domain/__init__.py`,
     `tests/unit/test_domain.py`.
-- [x] Implement independent, correlated, and system shocks.
-  - Acceptance: pure functions implement finite recovery, signed relaxation, scope-specific hazards,
-    concurrent synchronous wavefronts, simultaneous compounding, and explicit hierarchical RNGs.
-  - Verify: focused deterministic examples, sham controls, and repeated-hit cases pass.
-  - Files: `src/social_cybernetics/domain/ecology.py`, `tests/unit/test_domain.py`.
-- [x] Prove stochastic ecology properties.
-  - Acceptance: removal accounting, bounds, seed reproducibility, and mask geometry hold.
-  - Verify: Hypothesis suite passes without flaky examples.
-  - Files: `tests/property/test_domain_properties.py`, `tests/architecture/test_domain_boundaries.py`.
-
-## Phase C — Runtime integration and records
-
-- [x] Initialize Mesa property layers from configured resource arrays.
-  - Acceptance: asymmetric arrays keep documented `(x, y)` orientation and tick-zero measurement.
-  - Verify: focused runtime tests pass for uniform and explicit landscapes.
-  - Files: `src/social_cybernetics/runtime/mesa/model.py`, `tests/integration/test_mesa_runtime.py`.
-- [x] Execute shocks in the explicit shock stage and retain event evidence.
-  - Acceptance: shocks occur after regeneration and before observation; no other stage draws them.
-  - Verify: stage trace and fixed-seed event regressions pass.
-  - Files: `src/social_cybernetics/runtime/mesa/model.py`, `src/social_cybernetics/domain/types.py`,
+- [ ] B4. Record one transition per active agent-tick.
+  - Acceptance: records follow sorted agent identity and existing stage semantics without extra RNG
+    draws or behavioral changes.
+  - Verification: full tiny trajectories and activation-order invariance remain exact.
+  - Files: `src/social_cybernetics/runtime/mesa/model.py`,
     `tests/integration/test_mesa_runtime.py`.
-- [x] Add complete v0.2 trajectory and CLI regressions.
-  - Acceptance: same seed reproduces records; the canonical v0.1 JSON remains unchanged while
-    stochastic v0.1 trajectories intentionally migrate to policy stream `(1,)`.
-  - Verify: regression suite compares records and JSON byte-for-byte.
-  - Files: `tests/integration/test_mesa_runtime.py`, `tests/integration/test_cli.py`,
-    `tests/fixtures/ecology_v0.2_summary.json`.
+- [ ] B5. Publish the Project 1 transition table and migrate bundle schemas.
+  - Acceptance: exact Arrow schema, empty-table behavior, cross-record counts, and bundle validation
+    are fail closed.
+  - Verification: persistence unit and CLI bundle tests pass, including tampering cases.
+  - Files: `src/social_cybernetics/persistence.py`, `src/social_cybernetics/cli.py`,
+    `tests/unit/test_persistence.py`, `tests/integration/test_cli.py`.
 
-## Phase D — Persistent run bundles
+## Phase C — Pure Project 1 analysis
 
-- [x] Define provenance and persistent table schemas.
-  - Evidence: normalized configuration, software/RNG provenance, JSON summary, manifest, and six
-    explicit Arrow table schemas validate and round-trip, including empty tables.
-- [x] Write fail-closed atomic Parquet bundles.
-  - Evidence: sibling staging, digest/schema/value validation, Linux atomic no-replace publication,
-    collision preservation, and cleanup-on-failure tests pass. See ADR 0008.
-- [x] Expose `scs run --output` with stable failure behavior.
-  - Evidence: the CLI preserves JSON stdout, rejects an existing destination before execution, and
-    persists real runtime shock and damage evidence.
-- [x] Stream complete NetCDF spatial history.
-  - Evidence: tick zero and every completed tick use exact `(tick, x, y)` coordinates; four dynamic
-    ecological variables and two static baselines validate against configuration and completed ticks.
-    Runtime failures remove staging, and successful CLI bundles publish NetCDF and Parquet together.
+- [ ] C1. Add robust distribution shares and Gini helpers.
+  - Acceptance: deterministic top/bottom shares cover empty, singleton, tied, and zero-total inputs.
+  - Verification: example and property tests pass; `social_cybernetics.metrics.gini` remains public.
+  - Files: `src/social_cybernetics/metrics.py`, `tests/test_metrics.py`.
+- [ ] C2. Add subsistence-security metrics.
+  - Acceptance: frequency, spell lengths, depth, maximum depth, and catastrophic probability follow
+    the Project 1 equations and censoring rules.
+  - Verification: hand-calculated multi-agent histories and edge cases pass.
+  - Files: `src/social_cybernetics/analysis/project1.py`,
+    `src/social_cybernetics/analysis/__init__.py`, `tests/unit/test_project1_analysis.py`.
+- [ ] C3. Add distribution and persistence metrics.
+  - Acceptance: harvest/energy/need inequality, quantile shares, rank autocorrelation, transition
+    matrix, advantage duration, and half-life return typed values plus definedness metadata.
+  - Verification: order-invariance, ties, extinction, and known-rank examples pass.
+  - Files: `src/social_cybernetics/analysis/project1.py`,
+    `tests/unit/test_project1_analysis.py`, `tests/property/test_analysis_properties.py`.
+- [ ] C4. Add ecological deficit and recovery metrics.
+  - Acceptance: depletion, capacity/regeneration deficits, recovery duration, and cumulative recovery
+    deficit derive from complete spatial history and damage evidence.
+  - Verification: no-shock zero deficits, forced damage, overlap, and incomplete history fail closed.
+  - Files: `src/social_cybernetics/analysis/project1.py`,
+    `tests/unit/test_project1_analysis.py`, `tests/property/test_analysis_properties.py`.
+- [ ] C5. Assemble and serialize the Project 1 outcome vector.
+  - Acceptance: raw measures and definedness flags are JSON-safe; no composite ranking is emitted.
+  - Verification: published-bundle-only regression reproduces a fixed fixture.
+  - Files: `src/social_cybernetics/analysis/project1.py`,
+    `src/social_cybernetics/analysis/artifacts.py`, `tests/integration/test_project1_analysis.py`.
 
-## Phase E — Batch and sensitivity workflows
+## Phase D — Canonical experiments
 
-- [x] Add deterministic sequential batch execution and aggregate indexes.
-  - Evidence: relative base configuration plus ordered recursive overrides, explicit per-run seeds,
-    duplicate-seed controls, full preflight validation, sequential failure isolation, exact child
-    bundles, normalized provenance/configuration hashes, equivalent JSON/Parquet indexes, recursive
-    bundle validation, deterministic complete-tree digests, and atomic no-overwrite publication.
-  - Interface: `scs batch --spec configs/batch-v0.2.yml --output results/batch-v0.2`.
-- [x] Simplify batch validation before adding sensitivity behavior.
-  - Acceptance: `validate_batch_bundle` and normalized-run validation read as named sequential checks;
-    focused C901 reports no batch violations; schemas, error ordering, and published bytes are
-    unchanged.
-  - Verify: existing batch/config tests pass without modification, deterministic bundle-digest tests
-    remain exact, and `just check` passes.
-  - Evidence: both prior batch C901 violations (17 and 28) are eliminated; 197 unchanged tests pass
-    with 90.98% branch-aware coverage, clean Ruff/Pyright checks, and a consistent Conda lock.
-  - Files: `src/social_cybernetics/batch.py`, `tasks/plan.md`, `tasks/todo.md`.
-- [x] Complete the sensitivity evidence and decision gate.
-  - Decisions required: screening method, shock-scope treatment, parameter paths/ranges, design seed,
-    model-seed pairing/replication, and maximum run budget.
-  - Acceptance: a paired literature note distinguishes support, counterevidence, stochastic-model
-    boundaries, and project choices; specification/assumptions record every selected semantic.
-  - Evidence: ADR 0011 specifies three separate scope designs, four levels, 100 candidate and 10
-    selected trajectories, design seed 42, paired model seeds 101/202/303, broad explicit ranges, and
-    a 600-run fail-closed cap. The literature note distinguishes screening evidence from calibration
-    and final inference.
-  - Files: `docs/literature/items/<sensitivity-note>.md`, `docs/literature/literature_matrix.md`,
-    `docs/model_specification.md`, `docs/assumptions.md`, `tasks/plan.md`.
-- [x] Add validated, seeded sensitivity designs after the decision gate.
-  - Acceptance: declared scalar paths and ranges reject unknown, categorical, inactive, or invalid
-    fields; the design is reproducible from its own recorded seed and emits ordered batch runs with
-    explicit model seeds and configuration provenance.
-  - Verify: focused unit/property tests cover bounds, determinism, run counts, seed pairing, and full
-    `SimulationConfig` validation; generated designs execute through the existing batch boundary.
-  - Evidence: the canonical specification resolves deterministically to 600 validated runs (180
-    independent, 240 correlated, 180 system); a tiny CLI design publishes through the ordinary batch
-    validator; explicit seed-type regression tests reject YAML coercion; `just check` passes 214 tests
-    with 90.90% branch-aware coverage.
-  - Files: one sensitivity configuration module, its tests, one CLI/config integration, and at most
-    two reconciled documentation/configuration files.
-- [x] Add verification experiments for ecological inequality and mortality controls.
-  - Acceptance: no-shock, sham-shock, scarcity/mortality, and scope-comparison fixtures retain raw
-    outcomes and separate parameter effects from replicate-seed variation.
-  - Verify: analysis smoke tests read only published JSON/Parquet/NetCDF evidence and reproduce fixed
-    small-design results.
-  - Evidence: `configs/verification-v0.2.yml` publishes 12 runs covering paired no-shock/sham
-    equivalence, forced scarcity mortality, and three paired seeds for every shock scope. The
-    integration regression checks raw Parquet outcomes and complete child NetCDF history. `just
-    check` passes 215 tests with 91.08% branch-aware coverage.
+- [ ] D1. Define and validate the Project 1 experiment-plan contract.
+  - Acceptance: groups, ordered conditions, paired seeds, horizons, and maximum run count are explicit;
+    generated runs pass `Study01Config`.
+  - Verification: invalid grids and unstable IDs fail before execution.
+  - Files: `src/social_cybernetics/project1_experiments.py`,
+    `tests/unit/test_project1_experiments.py`, `configs/project-1.yml`.
+- [ ] D2. Generate P1-A and P1-B runs.
+  - Acceptance: homogeneous/heterogeneous and density-by-mobility comparisons share controlled
+    baselines and ten paired seeds.
+  - Verification: exact run count, labels, positions, and seed pairing regressions pass.
+  - Files: experiment module, focused tests, canonical config.
+- [ ] D3. Generate P1-C and P1-D runs.
+  - Acceptance: scope comparisons match expected initial affected-cell count where feasible; recovery
+    comparisons change only recovery duration.
+  - Verification: realized configs and matching calculations are tested exactly.
+  - Files: experiment module, focused tests, canonical config.
+- [ ] D4. Generate P1-E persistence runs.
+  - Acceptance: three frozen representative regimes use 1,000 ticks and the same ten seeds without
+    adding mechanisms.
+  - Verification: selection provenance and exact realized configs are retained.
+  - Files: experiment module, focused tests, canonical config.
+- [ ] D5. Add Project 1 experiment and analysis CLI boundaries.
+  - Acceptance: execution reuses batch publication; analysis consumes only validated published
+    bundles and atomically publishes aggregate JSON/Parquet evidence.
+  - Verification: tiny end-to-end design passes, existing destinations are refused, failures are typed.
+  - Files: `src/social_cybernetics/cli.py`, `src/social_cybernetics/project1_experiments.py`,
+    `src/social_cybernetics/analysis/artifacts.py`, `tests/integration/test_project1_cli.py`.
 
-## Phase F — Release reconciliation
+## Phase E — Project 1 freezes
 
-- [x] Update SolaraViz for heterogeneous landscapes and shock events.
-  - Evidence: the page uses `configs/visualization-v0.2.yml`, renders the heterogeneous stock field
-    and living-agent energy, and reports recovery, active-event, and damage counters from public
-    runtime evidence. Unit tests and isolated Chromium stepping pass; `docs/solara-v0.2.png` is the
-    reference screenshot.
-- [x] Reconcile all status documentation and record the v0.2 experiment environment.
-  - Evidence: specification, assumptions, architecture, roadmap, dashboard, README, plan, task list,
-    and experiment log identify v0.2 as verified and retain its limitations and project choices.
-- [x] Pass clean lock installation, `just check`, browser verification, and scheduler agreement.
-  - Evidence: a new `/tmp` prefix installed from `conda-lock.yml`; the editable package, baseline
-    validation/regression, 600-run design resolution, and published verification regression passed.
-    `just check` passes 217 tests at 91.08% coverage, and isolated Chromium captures the stepped v0.2
-    page with only the documented upstream warning. Stage-order agreement remains regression-tested.
+- [ ] E1. Freeze Project 1 specification and literature evidence.
+- [ ] E2. Freeze verification and baseline equivalence.
+- [ ] E3. Freeze sensitivity evidence under Study 01 configuration.
+- [ ] E4. Execute and freeze P1-A–E experimental evidence.
+- [ ] E5. Freeze analysis, representative regimes, and interpretation tables.
+  - Acceptance for E1–E5: `docs/studies/project_1/` status tables link exact configuration, artifact
+    identity, environment, result, assumptions, alternatives, absent mechanisms, and prohibited
+    conclusions.
+  - Verification: all seven gates independently read `frozen`; no claim depends on a live model object.
+
+## Phase F — Reconciliation and release
+
+- [ ] F1. Reconcile the canonical repository documentation and remove version-driven active wording.
+  - Files: `README.md`, `docs/00-dashboard.md`, `docs/model_specification.md`,
+    `docs/research_roadmap.md`, `docs/experiment_log.md` in separate ≤5-file slices.
+- [ ] F2. Apply the code-simplification review to all changed production modules.
+  - Acceptance: named linear stages, explicit records, no speculative abstraction, no focused C901
+    regressions without a documented scientific reason.
+- [ ] F3. Pass full release verification.
+  - Acceptance: focused and property tests, `just check`, exact baseline regression, run/batch/analysis
+    bundle validation, isolated browser check, clean lock installation, and scheduler/spec agreement.
+- [ ] F4. Report completion temperature honestly.
+  - Acceptance: Project 1 and each freeze gate have separate percentages; Projects 2–3 distinguish
+    specification completeness from implementation completeness.
