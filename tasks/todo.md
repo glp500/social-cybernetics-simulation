@@ -166,11 +166,17 @@ verification evidence, not merely code presence.
     declared mean burden; example/error tests and a boundedness property pass.
   - Files: `src/social_cybernetics/analysis/project1.py`,
     `tests/unit/test_project1_analysis.py`, `tests/property/test_analysis_properties.py`.
-- [ ] C5. Assemble and serialize the Project 1 outcome vector.
+- [x] C5. Assemble and serialize the Project 1 outcome vector.
   - Acceptance: raw measures and definedness flags are JSON-safe; no composite ranking is emitted.
   - Verification: published-bundle-only regression reproduces a fixed fixture.
-  - Files: `src/social_cybernetics/analysis/project1.py`,
-    `src/social_cybernetics/analysis/artifacts.py`, `tests/integration/test_project1_analysis.py`.
+  - Evidence: a frozen `Project1Outcome` assembles material, subsistence, distribution, persistence,
+    and ecology measures; `as_payload()` emits a versioned finite JSON-safe vector without a
+    composite score; the artifact reader first validates the bundle and reconstructs all inputs from
+    Parquet/NetCDF evidence; 14 focused unit, property, and integration tests plus Ruff and Pyright
+    pass.
+  - Files: `src/social_cybernetics/analysis/project1_outcome.py`,
+    `src/social_cybernetics/analysis/artifacts.py`,
+    `tests/integration/test_project1_artifact_analysis.py`.
 
 ## Phase D — Canonical experiments
 

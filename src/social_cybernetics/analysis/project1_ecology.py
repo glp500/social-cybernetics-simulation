@@ -6,7 +6,7 @@ import math
 from dataclasses import dataclass
 
 import numpy as np
-from numpy.typing import NDArray
+from numpy.typing import ArrayLike, NDArray
 
 type FloatArray = NDArray[np.float64]
 type IntArray = NDArray[np.int64]
@@ -44,12 +44,12 @@ class EcologyMetrics:
 
 def _validated_spatial_arrays(
     *,
-    resource_stock: NDArray[object],
-    effective_capacity: NDArray[object],
-    effective_regeneration: NDArray[object],
-    recovery_remaining: NDArray[object],
-    baseline_capacity: NDArray[object],
-    baseline_regeneration: NDArray[object],
+    resource_stock: ArrayLike,
+    effective_capacity: ArrayLike,
+    effective_regeneration: ArrayLike,
+    recovery_remaining: ArrayLike,
+    baseline_capacity: ArrayLike,
+    baseline_regeneration: ArrayLike,
 ) -> tuple[FloatArray, FloatArray, FloatArray, IntArray, FloatArray, FloatArray]:
     stock = np.asarray(resource_stock, dtype=np.float64)
     capacity = np.asarray(effective_capacity, dtype=np.float64)
@@ -122,12 +122,12 @@ def _recovery_spells(remaining: IntArray) -> tuple[RecoverySpell, ...]:
 
 def calculate_ecology(
     *,
-    resource_stock: NDArray[object],
-    effective_capacity: NDArray[object],
-    effective_regeneration: NDArray[object],
-    recovery_remaining: NDArray[object],
-    baseline_capacity: NDArray[object],
-    baseline_regeneration: NDArray[object],
+    resource_stock: ArrayLike,
+    effective_capacity: ArrayLike,
+    effective_regeneration: ArrayLike,
+    recovery_remaining: ArrayLike,
+    baseline_capacity: ArrayLike,
+    baseline_regeneration: ArrayLike,
 ) -> EcologyMetrics:
     """Calculate normalized ecological paths and cell-level recovery spells."""
 

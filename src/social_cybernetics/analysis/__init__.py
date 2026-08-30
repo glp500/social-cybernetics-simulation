@@ -1,5 +1,6 @@
 """Pure study-specific analysis over immutable scientific records."""
 
+from .artifacts import analyze_run_bundle
 from .project1 import ShortfallSpell, SubsistenceSecurity, calculate_subsistence_security
 from .project1_distribution import (
     DefinedFloat,
@@ -17,6 +18,7 @@ from .project1_ecology import (
     SeriesSummary,
     calculate_ecology,
 )
+from .project1_outcome import Project1Outcome, calculate_project1_outcome
 
 __all__ = [
     "DefinedFloat",
@@ -25,6 +27,7 @@ __all__ = [
     "EcologyMetrics",
     "HalfLife",
     "PersistenceMetrics",
+    "Project1Outcome",
     "RankTransition",
     "RecoverySpell",
     "SeriesSummary",
@@ -33,5 +36,7 @@ __all__ = [
     "calculate_distribution",
     "calculate_ecology",
     "calculate_persistence",
+    "calculate_project1_outcome",
     "calculate_subsistence_security",
+    "analyze_run_bundle",
 ]
