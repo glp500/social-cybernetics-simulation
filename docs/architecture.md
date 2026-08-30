@@ -1,6 +1,17 @@
 # Software Architecture
 
-## Boundary
+## Programme and software boundary
+
+The programme is study-driven:
+
+```text
+Project 1: objective ecological opportunity        executable completion in progress
+Project 2: privately actionable opportunity        specified, not executable
+Project 3: socially accessible opportunity         specified, not executable
+```
+
+Study packages share environmental/physiological contracts and evidence conventions. They compose
+study-specific state and configuration; they do not progressively widen one universal agent.
 
 The scientific specification is independent of any simulation framework. Executable code follows a
 functional-core/runtime-shell design:
@@ -31,7 +42,7 @@ not import Mesa, Pydantic, pandas, PyArrow, Solara, or presentation code.
 
 ## Contracts
 
-The domain defines:
+The Project 1 domain currently defines:
 
 - `AgentState` and `AgentSnapshot`;
 - `CellObservation`, `Observation`, and `BeliefState`;
@@ -54,16 +65,22 @@ not change domain contracts or scientific equations.
 
 ## Configuration boundary
 
-YAML is untrusted input. Pydantic validates it before model construction. Configuration uses
-discriminated variants:
+YAML is untrusted input. Pydantic validates it before model construction. ADR 0012 makes
+`Study01Config` the canonical executable contract. During the migration, `SimulationConfig` is a
+compatibility alias and a one-way legacy normalizer accepts equivalent v0.1/v0.2 inputs. Canonical
+normalized bundles store the Project 1 form. Unknown Project 2/3 identities fail closed because their
+documents are specifications, not implementations.
+
+Project 1 configuration uses discriminated variants:
 
 - `policy.kind: literal_local`;
 - `resources.kind: uniform | explicit` in version 0.2;
 - `shock.kind: none | independent | correlated | system` in version 0.2;
 - `gate.kind: allow_all`.
 
-Schema version 0.1 continues to accept only the uniform/no-shock control. Schema version 0.2 accepts
-only implemented ecological variants; version/variant mismatches and unknown names fail closed.
+The legacy schema version 0.1 accepts only the uniform/no-shock control and 0.2 accepts the verified
+ecological variants during normalization. The Project 1 study schema accepts only those same
+implemented variants; study/variant mismatches and unknown names fail closed.
 Dimensions, matrix shapes, duration, seed, stocks, capacities, rates, probabilities, damage
 fractions, recovery/spread ticks, costs, efficiency, thresholds, positions, and agent counts are
 range-checked. Shock-enabled variants require every applicable scientific field explicitly.
@@ -172,12 +189,18 @@ bundle; validation recursively verifies successful children before publication.
 
 The compatibility import `social_cybernetics.metrics.gini` remains available.
 
-## Measurement
+## Measurement and study analysis
 
 The runtime records tick 0 and every completed transition. Cohort records include living and dead
 members. Agent event records describe movement, harvest, and death; ecological records describe
-shock-event snapshots, attempted/successful exposure, and authoritative cell damage. A run summary is
-derived from records, not from transient UI state.
+shock-event snapshots, attempted/successful exposure, and authoritative cell damage. The Project 1
+refactor adds one immutable active-agent transition per tick so exposure, intent, allocation, movement,
+energy, shortfall, and mortality are reconstructable without runtime access. A run summary is derived
+from records, not from transient UI state.
+
+Study-specific derived metrics belong in pure `social_cybernetics.analysis` modules. Artifact readers
+may depend on PyArrow/NetCDF, but calculation contracts remain independent of Mesa and visualization.
+No analysis function may step or mutate a model.
 
 ## Visualisation
 
@@ -197,6 +220,8 @@ src/social_cybernetics/
   sensitivity.py            Morris specification, factor validation, and batch generation
   cli.py                    command-line boundary
   metrics.py                pure public metrics
+  analysis/                 pure study-specific derived metrics and artifact readers (planned P1)
+  project1_experiments.py   validated P1-A--E design expansion (planned)
   persistence.py            run-bundle staging, manifests, Parquet, and atomic publication
   persistence_errors.py     shared fail-closed output errors
   spatial_output.py         incremental NetCDF spatial writer and validator
@@ -204,5 +229,5 @@ src/social_cybernetics/
   runtime/mesa/             Mesa model, agents, collection, and visualisation
 ```
 
-Future modules are added only when their version is implemented; the repository does not contain
-empty speculative packages.
+Future executable modules are added only when their study is implemented; the repository does not
+contain empty Project 2/3 packages. Their complete future contracts live under `docs/studies/`.

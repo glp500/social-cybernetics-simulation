@@ -16,3 +16,4 @@ supersedes the old one rather than rewriting history.
 | [0009](0009-stream-complete-spatial-history.md) | Stream complete spatial history into staged run bundles | Accepted |
 | [0010](0010-sequential-failure-isolated-batches.md) | Publish sequential failure-isolated batch attempts | Accepted |
 | [0011](0011-scope-stratified-morris-screening.md) | Screen shock scopes with separate paired-seed Morris designs | Accepted |
+| [0012](0012-study-driven-programme.md) | Organize independent studies with composed state and legacy normalization | Accepted |

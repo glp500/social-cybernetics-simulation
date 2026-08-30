@@ -74,10 +74,12 @@ verification evidence, not merely code presence.
     counterevidence/boundaries, licensed use, prohibited use, and project choices. Future-study rows
     still needing paired review remain explicitly marked `reading`.
   - Files: `docs/literature/literature_matrix.md` plus at most four notes per slice.
-- [ ] A9. Record the study-driven architecture decision.
+- [x] A9. Record the study-driven architecture decision.
   - Acceptance: configuration naming, legacy normalization, project-specific state, schema migration,
     and non-executable future studies are explicit.
   - Verification: ADR index and architecture links resolve.
+  - Evidence: ADR 0012 separates study/config/artifact version axes, fixes legacy normalization and
+    composed-state policy, and the architecture marks Project 2/3 as non-executable.
   - Files: `docs/adr/0012-study-driven-programme.md`, `docs/adr/README.md`,
     `docs/architecture.md`.
 
