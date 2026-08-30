@@ -58,10 +58,12 @@ verification evidence, not merely code presence.
   - Evidence: eight documents define sensing, belief, fixed/Q policies, exact P2-A/P2-B designs,
     information/conversion measures, seven gates, interpretations, and protected exclusions.
   - Files: split into two commits of four files under `docs/studies/project_2/`.
-- [ ] A7. Create Project 3's eight-document specification package.
+- [x] A7. Create Project 3's eight-document specification package.
   - Acceptance: network reports, trust, rewiring, capability diffusion, D0–D3 circulation accounting,
     relational metrics, boundaries, and freeze gates are complete.
   - Verification: credit stock is conserved and distinct from obligation claims in the specification.
+  - Evidence: eight documents define reports/trust/rewiring, complete-profile diffusion, D0–D3
+    accounting, 330 planned runs, relational metrics, invariants, interpretation, and limits.
   - Files: split into two commits of four files under `docs/studies/project_3/`.
 - [ ] A8. Expand the literature matrix and add missing paired-evidence notes.
   - Acceptance: the requested 13-column schema is used and Project 1 mechanisms/interpretations have
