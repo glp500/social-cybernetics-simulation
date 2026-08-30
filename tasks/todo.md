@@ -29,10 +29,12 @@ verification evidence, not merely code presence.
   - Evidence: the theory layer separates mechanism-facing and interpretive roles; every matrix row
     names required/absent mechanisms, licensed/prohibited inference, evidence role, and source.
   - Files: `docs/programme/theory.md`, `docs/programme/theory_matrix.md`.
-- [ ] A3. Define shared ontology, causal map, and scope.
+- [x] A3. Define shared ontology, causal map, and scope.
   - Acceptance: objective, privately actionable, and socially accessible opportunity are distinct;
     reserved political-economic terms have necessary conditions.
   - Verification: no future state appears in the Project 1 ontology.
+  - Evidence: the ontology reserves politically loaded terms, the causal map identifies each
+    cross-study transformation, and scope makes later-study mechanisms non-executable now.
   - Files: `docs/programme/shared_ontology.md`, `docs/programme/causal_map.md`,
     `docs/programme/scope.md`.
 - [ ] A4. Define the interpretation protocol and programme claims boundary.
