@@ -1,0 +1,111 @@
+study: project_1
+schema_version: "1.0.0"
+base_config: baseline.yml
+seeds: [101, 202, 303, 404, 505, 606, 707, 808, 909, 1010]
+expected_runs: 140
+max_runs: 140
+groups:
+  - id: p1-a
+    duration: 100
+    conditions:
+      - id: homogeneous
+        agent_count: 10
+      - id: checkerboard
+        agent_count: 10
+        landscape: checkerboard
+
+  - id: p1-b
+    duration: 100
+    conditions:
+      - id: n5-cost0
+        agent_count: 5
+        movement_cost: 0.0
+      - id: n5-cost05
+        agent_count: 5
+        movement_cost: 0.5
+      - id: n20-cost0
+        agent_count: 20
+        movement_cost: 0.0
+      - id: n20-cost05
+        agent_count: 20
+        movement_cost: 0.5
+
+  - id: p1-c
+    duration: 100
+    conditions:
+      - id: independent
+        agent_count: 10
+        shock:
+          kind: independent
+          event_probability: 0.04
+          stock_loss_fraction: 0.5
+          capacity_loss_fraction: 0.25
+          regeneration_suppression_fraction: 0.5
+          recovery_ticks: 5
+      - id: correlated
+        agent_count: 10
+        shock:
+          kind: correlated
+          event_probability: 1.0
+          stock_loss_fraction: 0.5
+          capacity_loss_fraction: 0.25
+          regeneration_suppression_fraction: 0.5
+          recovery_ticks: 5
+          spread_probability: 0.5
+          max_spread_ticks: 2
+      - id: system
+        agent_count: 10
+        shock:
+          kind: system
+          event_probability: 0.04
+          stock_loss_fraction: 0.5
+          capacity_loss_fraction: 0.25
+          regeneration_suppression_fraction: 0.5
+          recovery_ticks: 5
+
+  - id: p1-d
+    duration: 100
+    conditions:
+      - id: recovery-2
+        agent_count: 10
+        shock:
+          kind: correlated
+          event_probability: 0.2
+          stock_loss_fraction: 0.5
+          capacity_loss_fraction: 0.25
+          regeneration_suppression_fraction: 0.5
+          recovery_ticks: 2
+          spread_probability: 0.5
+          max_spread_ticks: 2
+      - id: recovery-10
+        agent_count: 10
+        shock:
+          kind: correlated
+          event_probability: 0.2
+          stock_loss_fraction: 0.5
+          capacity_loss_fraction: 0.25
+          regeneration_suppression_fraction: 0.5
+          recovery_ticks: 10
+          spread_probability: 0.5
+          max_spread_ticks: 2
+
+  - id: p1-e
+    duration: 1000
+    conditions:
+      - id: control
+        agent_count: 10
+      - id: heterogeneous-pressure
+        agent_count: 20
+        movement_cost: 0.5
+        landscape: checkerboard
+      - id: correlated-slow-recovery
+        agent_count: 10
+        shock:
+          kind: correlated
+          event_probability: 0.2
+          stock_loss_fraction: 0.5
+          capacity_loss_fraction: 0.25
+          regeneration_suppression_fraction: 0.5
+          recovery_ticks: 10
+          spread_probability: 0.5
+          max_spread_ticks: 2

@@ -180,26 +180,36 @@ verification evidence, not merely code presence.
 
 ## Phase D — Canonical experiments
 
-- [ ] D1. Define and validate the Project 1 experiment-plan contract.
+- [x] D1. Define and validate the Project 1 experiment-plan contract.
   - Acceptance: groups, ordered conditions, paired seeds, horizons, and maximum run count are explicit;
     generated runs pass `Study01Config`.
   - Verification: invalid grids and unstable IDs fail before execution.
+  - Evidence: one extra-forbid plan schema declares ordered groups/conditions, unique paired seeds,
+    exact and maximum run counts, and bounded 5×5-fixture conditions; the loader resolves every run
+    through the ordinary batch contract and `Study01Config` before execution.
   - Files: `src/social_cybernetics/project1_experiments.py`,
     `tests/unit/test_project1_experiments.py`, `configs/project-1.yml`.
-- [ ] D2. Generate P1-A and P1-B runs.
+- [x] D2. Generate P1-A and P1-B runs.
   - Acceptance: homogeneous/heterogeneous and density-by-mobility comparisons share controlled
     baselines and ten paired seeds.
   - Verification: exact run count, labels, positions, and seed pairing regressions pass.
+  - Evidence: P1-A expands to 20 mean-preserving landscape runs and P1-B to the ordered 40-run 2×2
+    density/movement-cost factorial; generated row-major positions and seeds are paired exactly.
   - Files: experiment module, focused tests, canonical config.
-- [ ] D3. Generate P1-C and P1-D runs.
+- [x] D3. Generate P1-C and P1-D runs.
   - Acceptance: scope comparisons match expected initial affected-cell count where feasible; recovery
     comparisons change only recovery duration.
   - Verification: realized configs and matching calculations are tested exactly.
+  - Evidence: P1-C's 30 runs match one expected initial affected cell per tick while leaving
+    correlated propagation unmatched by design; P1-D's 20 paired runs differ only in recovery 2/10.
   - Files: experiment module, focused tests, canonical config.
-- [ ] D4. Generate P1-E persistence runs.
+- [x] D4. Generate P1-E persistence runs.
   - Acceptance: three frozen representative regimes use 1,000 ticks and the same ten seeds without
     adding mechanisms.
   - Verification: selection provenance and exact realized configs are retained.
+  - Evidence: control, heterogeneous-pressure, and correlated-slow-recovery expand to 30 validated
+    1,000-tick runs; stable IDs, condition labels, seed identities, overrides, and configuration
+    digests remain in the resolved design.
   - Files: experiment module, focused tests, canonical config.
 - [ ] D5. Add Project 1 experiment and analysis CLI boundaries.
   - Acceptance: execution reuses batch publication; analysis consumes only validated published
