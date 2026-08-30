@@ -157,10 +157,13 @@ verification evidence, not merely code presence.
     peak-decay half-life; seven examples plus a Hypothesis order-invariance property pass.
   - Files: `src/social_cybernetics/analysis/project1.py`,
     `tests/unit/test_project1_analysis.py`, `tests/property/test_analysis_properties.py`.
-- [ ] C4. Add ecological deficit and recovery metrics.
+- [x] C4. Add ecological deficit and recovery metrics.
   - Acceptance: depletion, capacity/regeneration deficits, recovery duration, and cumulative recovery
     deficit derive from complete spatial history and damage evidence.
   - Verification: no-shock zero deficits, forced damage, overlap, and incomplete history fail closed.
+  - Evidence: validated complete arrays yield full/final/mean/max normalized depletion and deficit
+    paths, completed/right-censored cell recovery spells, component cumulative deficits, and their
+    declared mean burden; example/error tests and a boundedness property pass.
   - Files: `src/social_cybernetics/analysis/project1.py`,
     `tests/unit/test_project1_analysis.py`, `tests/property/test_analysis_properties.py`.
 - [ ] C5. Assemble and serialize the Project 1 outcome vector.

@@ -1,9 +1,11 @@
 from dataclasses import replace
 
+import numpy as np
 import pytest
 
 from social_cybernetics.analysis import (
     calculate_distribution,
+    calculate_ecology,
     calculate_persistence,
     calculate_subsistence_security,
 )
@@ -181,3 +183,70 @@ def test_persistence_reports_tied_rank_undefinedness_and_zero_inequality() -> No
     assert metrics.material_rank_autocorrelation.reason == "constant cumulative-harvest ranks"
     assert metrics.inequality_half_life.value == 0
     assert metrics.inequality_half_life.right_censored is False
+
+
+def test_ecology_metrics_reconstruct_deficits_and_completed_recovery() -> None:
+    stock = np.array([[[10.0]], [[5.0]], [[7.5]], [[8.75]]])
+    effective_capacity = np.array([[[10.0]], [[5.0]], [[7.5]], [[10.0]]])
+    effective_regeneration = np.array([[[0.2]], [[0.1]], [[0.15]], [[0.2]]])
+    remaining = np.array([[[0]], [[2]], [[1]], [[0]]])
+
+    metrics = calculate_ecology(
+        resource_stock=stock,
+        effective_capacity=effective_capacity,
+        effective_regeneration=effective_regeneration,
+        recovery_remaining=remaining,
+        baseline_capacity=np.array([[10.0]]),
+        baseline_regeneration=np.array([[0.2]]),
+    )
+
+    assert metrics.resource_depletion.values == pytest.approx((0.0, 0.5, 0.25, 0.125))
+    assert metrics.capacity_deficit.values == pytest.approx((0.0, 0.5, 0.25, 0.0))
+    assert metrics.regeneration_deficit.values == pytest.approx((0.0, 0.5, 0.25, 0.0))
+    assert metrics.recovery_spells[0].length == 2
+    assert metrics.recovery_spells[0].right_censored is False
+    assert metrics.completed_mean_recovery_duration == 2.0
+    assert metrics.cumulative_capacity_deficit == pytest.approx(0.75)
+    assert metrics.cumulative_regeneration_deficit == pytest.approx(0.75)
+    assert metrics.cumulative_recovery_deficit == pytest.approx(0.75)
+
+
+def test_ecology_metrics_define_no_damage_and_right_censoring() -> None:
+    baseline = np.array([[10.0]])
+    rate = np.array([[0.1]])
+    no_damage = calculate_ecology(
+        resource_stock=np.repeat(baseline[None, :, :], 2, axis=0),
+        effective_capacity=np.repeat(baseline[None, :, :], 2, axis=0),
+        effective_regeneration=np.repeat(rate[None, :, :], 2, axis=0),
+        recovery_remaining=np.zeros((2, 1, 1), dtype=np.int64),
+        baseline_capacity=baseline,
+        baseline_regeneration=rate,
+    )
+    assert no_damage.cumulative_recovery_deficit == 0.0
+    assert no_damage.recovery_spells == ()
+
+    censored = calculate_ecology(
+        resource_stock=np.array([[[10.0]], [[8.0]], [[9.0]]]),
+        effective_capacity=np.array([[[10.0]], [[8.0]], [[9.0]]]),
+        effective_regeneration=np.array([[[0.1]], [[0.08]], [[0.09]]]),
+        recovery_remaining=np.array([[[0]], [[2]], [[1]]]),
+        baseline_capacity=baseline,
+        baseline_regeneration=rate,
+    )
+    assert censored.recovery_spells[0].right_censored is True
+    assert censored.completed_mean_recovery_duration == 0.0
+
+
+def test_ecology_metrics_reject_shape_and_physical_bound_errors() -> None:
+    valid = {
+        "resource_stock": np.array([[[1.0]]]),
+        "effective_capacity": np.array([[[1.0]]]),
+        "effective_regeneration": np.array([[[0.1]]]),
+        "recovery_remaining": np.array([[[0]]]),
+        "baseline_capacity": np.array([[1.0]]),
+        "baseline_regeneration": np.array([[0.1]]),
+    }
+    with pytest.raises(ValueError, match="same three-dimensional shape"):
+        calculate_ecology(**{**valid, "resource_stock": np.ones((1, 2, 1))})
+    with pytest.raises(ValueError, match="baseline capacity"):
+        calculate_ecology(**{**valid, "resource_stock": np.array([[[2.0]]])})

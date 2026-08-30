@@ -1,7 +1,12 @@
+import numpy as np
 from hypothesis import given
 from hypothesis import strategies as st
 
-from social_cybernetics.analysis import calculate_distribution, calculate_persistence
+from social_cybernetics.analysis import (
+    calculate_distribution,
+    calculate_ecology,
+    calculate_persistence,
+)
 from social_cybernetics.domain import (
     ActionKind,
     AgentSnapshot,
@@ -75,3 +80,51 @@ def test_distribution_and_persistence_are_record_order_independent(
     assert forward_persistence == reverse_persistence
     assert 0 <= forward_distribution.harvest_gini <= 1
     assert 0 <= forward_distribution.top_10_percent_harvest_share.value <= 1
+
+
+@given(
+    stock_factors=st.lists(
+        st.floats(min_value=0, max_value=1, allow_nan=False, allow_infinity=False),
+        min_size=4,
+        max_size=4,
+    ),
+    capacity_factors=st.lists(
+        st.floats(min_value=0, max_value=1, allow_nan=False, allow_infinity=False),
+        min_size=4,
+        max_size=4,
+    ),
+    regeneration_factors=st.lists(
+        st.floats(min_value=0, max_value=1, allow_nan=False, allow_infinity=False),
+        min_size=4,
+        max_size=4,
+    ),
+)
+def test_ecological_deficits_are_finite_and_bounded(
+    stock_factors: list[float],
+    capacity_factors: list[float],
+    regeneration_factors: list[float],
+) -> None:
+    baseline_capacity = np.array([[5.0, 10.0], [15.0, 20.0]])
+    baseline_regeneration = np.full((2, 2), 0.2)
+    stock = np.stack([baseline_capacity * factor for factor in stock_factors])
+    capacity = np.stack([baseline_capacity * factor for factor in capacity_factors])
+    regeneration = np.stack([baseline_regeneration * factor for factor in regeneration_factors])
+    metrics = calculate_ecology(
+        resource_stock=stock,
+        effective_capacity=capacity,
+        effective_regeneration=regeneration,
+        recovery_remaining=np.zeros((4, 2, 2), dtype=np.int64),
+        baseline_capacity=baseline_capacity,
+        baseline_regeneration=baseline_regeneration,
+    )
+
+    for summary in (
+        metrics.resource_depletion,
+        metrics.capacity_deficit,
+        metrics.regeneration_deficit,
+    ):
+        assert all(np.isfinite(value) and 0 <= value <= 1 for value in summary.values)
+    assert (
+        metrics.cumulative_recovery_deficit
+        == (metrics.cumulative_capacity_deficit + metrics.cumulative_regeneration_deficit) / 2
+    )
