@@ -37,10 +37,12 @@ verification evidence, not merely code presence.
     cross-study transformation, and scope makes later-study mechanisms non-executable now.
   - Files: `docs/programme/shared_ontology.md`, `docs/programme/causal_map.md`,
     `docs/programme/scope.md`.
-- [ ] A4. Define the interpretation protocol and programme claims boundary.
+- [x] A4. Define the interpretation protocol and programme claims boundary.
   - Acceptance: seven required interpretation fields and the five-level methodological rule are
     mandatory for headline results.
   - Verification: prohibited conclusions from the refactor are enumerated.
+  - Evidence: the protocol retains all eight distinct result fields and five analytical levels; the
+    claims document states the exact prohibited translations and extension gate.
   - Files: `docs/programme/interpretation_protocol.md`, `docs/programme/claims_and_limits.md`.
 - [ ] A5. Create Project 1's eight-document scientific package.
   - Acceptance: specification, theory, hypotheses, experiments, validation, analysis, interpretation,
