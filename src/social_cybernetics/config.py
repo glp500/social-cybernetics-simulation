@@ -1,4 +1,4 @@
-"""Validated executable configuration for implemented v0.1 and v0.2 variants."""
+"""Validated executable configuration for Project 1 ecological variants."""
 
 import math
 from pathlib import Path
@@ -135,8 +135,11 @@ class AllowAllGateConfig(StrictModel):
     kind: Literal["allow_all"] = "allow_all"
 
 
-class SimulationConfig(StrictModel):
-    schema_version: Literal["0.1.0", "0.2.0"] = "0.1.0"
+class Study01Config(StrictModel):
+    """Executable Project 1 configuration with one-way legacy normalization."""
+
+    study: Literal["project_1"] = "project_1"
+    schema_version: Literal["1.0.0"] = "1.0.0"
     seed: int = Field(default=42, ge=0)
     duration: int = Field(default=100, ge=0)
     world: WorldConfig = Field(default_factory=WorldConfig)
@@ -148,38 +151,49 @@ class SimulationConfig(StrictModel):
 
     @model_validator(mode="before")
     @classmethod
-    def normalize_legacy_uniform_resources(cls, payload: Any) -> Any:
-        """Preserve v0.1 resource mappings written before the discriminator existed."""
+    def normalize_legacy_configuration(cls, payload: Any) -> Any:
+        """Map historical v0.1/v0.2 inputs to the canonical Project 1 contract."""
 
         if not isinstance(payload, dict):
             return payload
-        resources = payload.get("resources")
-        if not isinstance(resources, dict) or "kind" in resources:
-            return payload
         normalized = dict(payload)
-        normalized["resources"] = {"kind": "uniform", **resources}
+        legacy_version = normalized.get("schema_version")
+        if legacy_version in {"0.1.0", "0.2.0"}:
+            resources = normalized.get("resources")
+            shock = normalized.get("shock")
+            if legacy_version == "0.1.0":
+                if isinstance(resources, dict) and resources.get("kind", "uniform") == "explicit":
+                    raise ValueError("explicit landscapes require legacy schema version 0.2.0")
+                if isinstance(shock, dict) and shock.get("kind", "none") != "none":
+                    raise ValueError("enabled shocks require legacy schema version 0.2.0")
+            normalized["study"] = "project_1"
+            normalized["schema_version"] = "1.0.0"
+
+        resources = normalized.get("resources")
+        if isinstance(resources, dict) and "kind" not in resources:
+            normalized["resources"] = {"kind": "uniform", **resources}
         return normalized
 
     @model_validator(mode="after")
     def positions_fit_world(self) -> Self:
         if isinstance(self.resources, ExplicitResourceConfig):
-            if self.schema_version != "0.2.0":
-                raise ValueError("explicit landscapes require schema version 0.2.0")
             shape = (len(self.resources.capacity), len(self.resources.capacity[0]))
             world_shape = (self.world.width, self.world.height)
             if shape != world_shape:
                 raise ValueError(
                     f"explicit landscape shape {shape} must match world shape {world_shape}"
                 )
-        if not isinstance(self.shock, NoShockConfig) and self.schema_version != "0.2.0":
-            raise ValueError("enabled shocks require schema version 0.2.0")
         for x, y in self.agents.initial_positions:
             if not (0 <= x < self.world.width and 0 <= y < self.world.height):
                 raise ValueError(f"initial position {(x, y)} is outside the world")
         return self
 
 
-def load_config(path: Path) -> SimulationConfig:
+# Temporary public compatibility name. ADR 0012 governs its eventual removal.
+SimulationConfig = Study01Config
+
+
+def load_config(path: Path) -> Study01Config:
     """Load a small YAML mapping and validate it as an executable configuration."""
 
     if path.stat().st_size > MAX_CONFIG_BYTES:
@@ -187,4 +201,4 @@ def load_config(path: Path) -> SimulationConfig:
     payload = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(payload, dict):
         raise ValueError("configuration root must be a mapping")
-    return SimulationConfig.model_validate(payload)
+    return Study01Config.model_validate(payload)

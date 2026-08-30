@@ -105,7 +105,15 @@ def validate(
     """Validate only implemented schema variants without running the model."""
 
     validated = _read_config(config)
-    typer.echo(_json_line({"schema_version": validated.schema_version, "status": "valid"}))
+    typer.echo(
+        _json_line(
+            {
+                "schema_version": validated.schema_version,
+                "status": "valid",
+                "study": validated.study,
+            }
+        )
+    )
 
 
 @app.command()

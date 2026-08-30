@@ -1,4 +1,5 @@
-schema_version: "0.1.0"
+study: project_1
+schema_version: "1.0.0"
 seed: 42
 duration: 100
 world:

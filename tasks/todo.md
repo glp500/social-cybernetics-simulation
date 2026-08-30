@@ -85,10 +85,13 @@ verification evidence, not merely code presence.
 
 ## Phase B — Study 01 contracts and evidence
 
-- [ ] B1. Add `Study01Config` and explicit legacy normalization.
+- [x] B1. Add `Study01Config` and explicit legacy normalization.
   - Acceptance: canonical Project 1 YAML validates; legacy v0.1/v0.2 YAML resolves equivalently;
     unsupported study IDs fail closed.
   - Verification: configuration and CLI tests pass; baseline summary is byte-identical.
+  - Evidence: canonical baseline uses `study: project_1`/schema `1.0.0`; legacy v0.1/v0.2 inputs
+    normalize one-way, unsupported study IDs fail, 129 focused config/CLI/batch/persistence/spatial/
+    sensitivity tests pass, and the existing baseline byte regression remains green.
   - Files: `src/social_cybernetics/config.py`, `tests/unit/test_config.py`,
     `tests/integration/test_cli.py`, `configs/baseline.yml`.
 - [ ] B2. Remove dormant future agent state.

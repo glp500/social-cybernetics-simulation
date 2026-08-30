@@ -3,12 +3,20 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from social_cybernetics.config import DamageShockConfig, SimulationConfig, load_config
+from social_cybernetics.config import (
+    DamageShockConfig,
+    SimulationConfig,
+    Study01Config,
+    load_config,
+)
 
 
 def test_baseline_configuration_is_canonical() -> None:
     config = load_config(Path("configs/baseline.yml"))
 
+    assert isinstance(config, Study01Config)
+    assert config.study == "project_1"
+    assert config.schema_version == "1.0.0"
     assert config.seed == 42
     assert config.duration == 100
     assert (config.world.width, config.world.height) == (5, 5)
@@ -45,14 +53,30 @@ def test_resource_stock_cannot_exceed_capacity() -> None:
         )
 
 
-def test_legacy_v01_resource_mapping_defaults_to_uniform() -> None:
+def test_legacy_v01_configuration_normalizes_to_study_01() -> None:
     config = SimulationConfig.model_validate(
         {"resources": {"capacity": 10, "initial_stock": 5, "regeneration_rate": 0.1}}
     )
 
-    assert config.schema_version == "0.1.0"
+    assert config.study == "project_1"
+    assert config.schema_version == "1.0.0"
     assert config.resources.kind == "uniform"
     assert config.resources.initial_stock == 5
+
+
+def test_legacy_and_canonical_inputs_resolve_to_the_same_study_config() -> None:
+    legacy = Study01Config.model_validate({"schema_version": "0.1.0", "seed": 7})
+    canonical = Study01Config.model_validate(
+        {"study": "project_1", "schema_version": "1.0.0", "seed": 7}
+    )
+
+    assert legacy == canonical
+    assert legacy.model_dump(mode="json") == canonical.model_dump(mode="json")
+
+
+def test_unimplemented_studies_fail_closed() -> None:
+    with pytest.raises(ValidationError, match="project_1"):
+        Study01Config.model_validate({"study": "project_2", "schema_version": "1.0.0"})
 
 
 @pytest.mark.parametrize("value", [float("nan"), float("inf"), float("-inf")])
@@ -64,7 +88,8 @@ def test_all_scientific_floats_must_be_finite(value: float) -> None:
 def test_v02_explicit_landscape_is_validated_with_xy_orientation() -> None:
     config = load_config(Path("configs/ecology-v0.2.yml"))
 
-    assert config.schema_version == "0.2.0"
+    assert config.study == "project_1"
+    assert config.schema_version == "1.0.0"
     assert config.resources.kind == "explicit"
     assert config.resources.capacity == ((4.0, 8.0), (6.0, 10.0), (2.0, 12.0))
     assert config.resources.initial_stock == ((2.0, 8.0), (3.0, 5.0), (1.0, 6.0))

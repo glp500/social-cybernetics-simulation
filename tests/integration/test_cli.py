@@ -24,14 +24,22 @@ def test_validate_reports_a_schema_versioned_success() -> None:
     result = runner.invoke(app, ["validate", "--config", str(BASELINE)])
 
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == {"schema_version": "0.1.0", "status": "valid"}
+    assert json.loads(result.stdout) == {
+        "schema_version": "1.0.0",
+        "status": "valid",
+        "study": "project_1",
+    }
 
 
 def test_validate_accepts_the_v02_explicit_landscape_fixture() -> None:
     result = runner.invoke(app, ["validate", "--config", str(ECOLOGY_V02)])
 
     assert result.exit_code == 0
-    assert json.loads(result.stdout) == {"schema_version": "0.2.0", "status": "valid"}
+    assert json.loads(result.stdout) == {
+        "schema_version": "1.0.0",
+        "status": "valid",
+        "study": "project_1",
+    }
 
 
 def test_invalid_configuration_has_stable_exit_code(tmp_path: Path) -> None:
