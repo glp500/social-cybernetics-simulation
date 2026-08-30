@@ -65,11 +65,14 @@ verification evidence, not merely code presence.
   - Evidence: eight documents define reports/trust/rewiring, complete-profile diffusion, D0–D3
     accounting, 330 planned runs, relational metrics, invariants, interpretation, and limits.
   - Files: split into two commits of four files under `docs/studies/project_3/`.
-- [ ] A8. Expand the literature matrix and add missing paired-evidence notes.
+- [x] A8. Expand the literature matrix and add missing paired-evidence notes.
   - Acceptance: the requested 13-column schema is used and Project 1 mechanisms/interpretations have
     supporting, boundary, and counterevidence roles where available.
   - Verification: sources are verified against primary or authoritative records; parameter values
     remain labelled as project choices.
+  - Evidence: the 14-field matrix classifies 36 sources; four Project 1 paired notes record support,
+    counterevidence/boundaries, licensed use, prohibited use, and project choices. Future-study rows
+    still needing paired review remain explicitly marked `reading`.
   - Files: `docs/literature/literature_matrix.md` plus at most four notes per slice.
 - [ ] A9. Record the study-driven architecture decision.
   - Acceptance: configuration naming, legacy normalization, project-specific state, schema migration,
