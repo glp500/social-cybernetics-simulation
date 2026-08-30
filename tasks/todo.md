@@ -139,10 +139,13 @@ verification evidence, not merely code presence.
     bottom burden shares, cutoff-tie metadata, empty/zero-total semantics, and order properties pass
     15 focused tests.
   - Files: `src/social_cybernetics/metrics.py`, `tests/test_metrics.py`.
-- [ ] C2. Add subsistence-security metrics.
+- [x] C2. Add subsistence-security metrics.
   - Acceptance: frequency, spell lengths, depth, maximum depth, and catastrophic probability follow
     the Project 1 equations and censoring rules.
   - Verification: hand-calculated multi-agent histories and edge cases pass.
+  - Evidence: pure immutable results calculate frequency, completed/right-censored spells, conditional
+    depth, maximum depth, and one-time terminal catastrophe; empty, duplicate, incomplete, negative,
+    and inconsistent-death cases pass four focused tests.
   - Files: `src/social_cybernetics/analysis/project1.py`,
     `src/social_cybernetics/analysis/__init__.py`, `tests/unit/test_project1_analysis.py`.
 - [ ] C3. Add distribution and persistence metrics.
