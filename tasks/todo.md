@@ -103,10 +103,12 @@ verification evidence, not merely code presence.
     architecture/domain/runtime/persistence/batch/CLI regressions pass.
   - Files: `src/social_cybernetics/domain/types.py`, `src/social_cybernetics/runtime/mesa/model.py`,
     `tests/unit/test_domain.py`, `tests/architecture/test_boundaries.py`.
-- [ ] B3. Define immutable agent-transition evidence.
+- [x] B3. Define immutable agent-transition evidence.
   - Acceptance: one record can reconstruct local exposure, request, movement, extraction, shortfall,
     energy change, and death without duplicating mutable position.
   - Verification: immutability and field-invariant tests pass.
+  - Evidence: `AgentTransitionRecord` captures origin/exposure/belief/intent/gate/resolution/final
+    position/energy/shortfall/death as one frozen value; all 53 domain tests pass.
   - Files: `src/social_cybernetics/domain/types.py`, `src/social_cybernetics/domain/__init__.py`,
     `tests/unit/test_domain.py`.
 - [ ] B4. Record one transition per active agent-tick.

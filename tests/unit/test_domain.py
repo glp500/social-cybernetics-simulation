@@ -9,6 +9,7 @@ from social_cybernetics.domain import (
     ActionKind,
     AgentSnapshot,
     AgentState,
+    AgentTransitionRecord,
     BeliefState,
     DamageParameters,
     GateDecision,
@@ -47,6 +48,34 @@ def snapshot(agent_id: int = 1, energy: float = 10.0) -> AgentSnapshot:
         energy=energy,
         alive=True,
     )
+
+
+def test_agent_transition_record_is_immutable_and_reconstructs_one_active_tick() -> None:
+    transition = AgentTransitionRecord(
+        tick=1,
+        agent_id=7,
+        origin=(1, 1),
+        observed_stock=3.0,
+        believed_stock=3.0,
+        intent_kind=ActionKind.HARVEST,
+        requested_amount=2.0,
+        intended_destination=None,
+        gate_allowed=True,
+        harvested=1.5,
+        moved=False,
+        final_position=(1, 1),
+        energy_before=10.0,
+        energy_after=10.5,
+        shortfall=0.0,
+        died=False,
+    )
+
+    assert transition.observed_stock == transition.believed_stock == 3.0
+    assert transition.requested_amount == 2.0
+    assert transition.harvested == 1.5
+    assert transition.origin == transition.final_position
+    with pytest.raises(FrozenInstanceError):
+        transition.energy_after = 0.0  # type: ignore[misc]
 
 
 def test_relaxation_regeneration_returns_a_bounded_copy() -> None:

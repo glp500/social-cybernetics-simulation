@@ -54,6 +54,28 @@ class AgentSnapshot:
 
 
 @dataclass(frozen=True, slots=True)
+class AgentTransitionRecord:
+    """Immutable evidence for one active agent's complete tick transition."""
+
+    tick: int
+    agent_id: AgentId
+    origin: Position
+    observed_stock: float
+    believed_stock: float
+    intent_kind: ActionKind
+    requested_amount: float
+    intended_destination: Position | None
+    gate_allowed: bool
+    harvested: float
+    moved: bool
+    final_position: Position
+    energy_before: float
+    energy_after: float
+    shortfall: float
+    died: bool
+
+
+@dataclass(frozen=True, slots=True)
 class Observation:
     agent_id: AgentId
     position: Position
