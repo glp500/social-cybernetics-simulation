@@ -148,10 +148,13 @@ verification evidence, not merely code presence.
     and inconsistent-death cases pass four focused tests.
   - Files: `src/social_cybernetics/analysis/project1.py`,
     `src/social_cybernetics/analysis/__init__.py`, `tests/unit/test_project1_analysis.py`.
-- [ ] C3. Add distribution and persistence metrics.
+- [x] C3. Add distribution and persistence metrics.
   - Acceptance: harvest/energy/need inequality, quantile shares, rank autocorrelation, transition
     matrix, advantage duration, and half-life return typed values plus definedness metadata.
   - Verification: order-invariance, ties, extinction, and known-rank examples pass.
+  - Evidence: pure named helpers calculate separate outcome distributions, fixed-group shares,
+    midrank autocorrelation with reasons, quartile transitions, active advantage spells, and censored
+    peak-decay half-life; seven examples plus a Hypothesis order-invariance property pass.
   - Files: `src/social_cybernetics/analysis/project1.py`,
     `tests/unit/test_project1_analysis.py`, `tests/property/test_analysis_properties.py`.
 - [ ] C4. Add ecological deficit and recovery metrics.
