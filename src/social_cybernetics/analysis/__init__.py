@@ -1,6 +1,10 @@
 """Pure study-specific analysis over immutable scientific records."""
 
-from .artifacts import analyze_run_bundle
+from .artifacts import (
+    analyze_project1_batch,
+    analyze_run_bundle,
+    validate_project1_analysis_bundle,
+)
 from .project1 import ShortfallSpell, SubsistenceSecurity, calculate_subsistence_security
 from .project1_distribution import (
     DefinedFloat,
@@ -38,5 +42,7 @@ __all__ = [
     "calculate_persistence",
     "calculate_project1_outcome",
     "calculate_subsistence_security",
+    "analyze_project1_batch",
     "analyze_run_bundle",
+    "validate_project1_analysis_bundle",
 ]

@@ -211,10 +211,15 @@ verification evidence, not merely code presence.
     1,000-tick runs; stable IDs, condition labels, seed identities, overrides, and configuration
     digests remain in the resolved design.
   - Files: experiment module, focused tests, canonical config.
-- [ ] D5. Add Project 1 experiment and analysis CLI boundaries.
+- [x] D5. Add Project 1 experiment and analysis CLI boundaries.
   - Acceptance: execution reuses batch publication; analysis consumes only validated published
     bundles and atomically publishes aggregate JSON/Parquet evidence.
   - Verification: tiny end-to-end design passes, existing destinations are refused, failures are typed.
+  - Evidence: `project1-run` resolves the study plan into the ordinary fail-closed batch executor;
+    `project1-analyze` requires a complete validated batch whose ordered IDs and configuration
+    digests match the plan, reads only child artifacts, and atomically publishes cross-validated full
+    JSON outcomes plus an explicit typed Parquet table. Tiny end-to-end, provenance-mismatch, and
+    existing-destination cases pass with stable exit codes alongside 60 broader CLI/batch regressions.
   - Files: `src/social_cybernetics/cli.py`, `src/social_cybernetics/project1_experiments.py`,
     `src/social_cybernetics/analysis/artifacts.py`, `tests/integration/test_project1_cli.py`.
 

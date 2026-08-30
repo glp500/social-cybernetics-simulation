@@ -7,6 +7,7 @@ from typing import Annotated, Any, NoReturn
 import typer
 import yaml
 
+from social_cybernetics.analysis import analyze_project1_batch
 from social_cybernetics.batch import execute_batch
 from social_cybernetics.batch_config import ResolvedBatchSpecification, load_batch_specification
 from social_cybernetics.config import SimulationConfig, load_config
@@ -15,6 +16,11 @@ from social_cybernetics.persistence import (
     BundlePublicationError,
     RunBundleSession,
     RunRecords,
+)
+from social_cybernetics.persistence_errors import BundleValidationError
+from social_cybernetics.project1_experiments import (
+    ResolvedProject1Design,
+    load_project1_design,
 )
 from social_cybernetics.runtime.mesa import SugarscapeModel
 from social_cybernetics.runtime.mesa.model import SpatialSnapshotSink
@@ -71,6 +77,17 @@ def _read_sensitivity_design(path: Path) -> ResolvedSensitivityDesign:
     except (OSError, UnicodeError, ValueError, yaml.YAMLError) as error:
         typer.echo(
             _json_line({"error": "invalid_sensitivity_specification", "message": str(error)}),
+            err=True,
+        )
+        raise typer.Exit(code=2) from error
+
+
+def _read_project1_design(path: Path) -> ResolvedProject1Design:
+    try:
+        return load_project1_design(path)
+    except (OSError, UnicodeError, ValueError, yaml.YAMLError) as error:
+        typer.echo(
+            _json_line({"error": "invalid_project1_specification", "message": str(error)}),
             err=True,
         )
         raise typer.Exit(code=2) from error
@@ -194,6 +211,54 @@ def sensitivity(
 
     design = _read_sensitivity_design(specification)
     _execute_batch(design.batch, output)
+
+
+@app.command("project1-run")
+def project1_run(
+    specification: Annotated[
+        Path,
+        typer.Option("--spec", help="Project 1 experiment-plan YAML to execute."),
+    ],
+    output: Annotated[
+        Path,
+        typer.Option("--output", help="Publish the complete Project 1 batch attempt."),
+    ],
+) -> None:
+    """Expand, validate, and execute one Project 1 experiment plan."""
+
+    design = _read_project1_design(specification)
+    _execute_batch(design.batch, output)
+
+
+@app.command("project1-analyze")
+def project1_analyze(
+    specification: Annotated[
+        Path,
+        typer.Option("--spec", help="Project 1 experiment plan used for the batch."),
+    ],
+    batch: Annotated[
+        Path,
+        typer.Option("--batch", help="Validated published Project 1 batch bundle."),
+    ],
+    output: Annotated[
+        Path,
+        typer.Option("--output", help="Publish validated Project 1 outcome evidence."),
+    ],
+) -> None:
+    """Analyze only a complete published batch matching the declared design."""
+
+    design = _read_project1_design(specification)
+    try:
+        summary = analyze_project1_batch(design, batch, output)
+    except BundleValidationError as error:
+        typer.echo(
+            _json_line({"error": "invalid_project1_evidence", "message": str(error)}),
+            err=True,
+        )
+        raise typer.Exit(code=2) from error
+    except (BundlePublicationError, OSError, ValueError) as error:
+        _output_error(error)
+    typer.echo(_json_line(summary))
 
 
 if __name__ == "__main__":  # pragma: no cover
