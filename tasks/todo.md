@@ -22,10 +22,12 @@ verification evidence, not merely code presence.
   - Evidence: the crosswalk separates authority from requirements input; the overview fixes the
     three-study progression, authority chain, seven gates, and honest current status.
   - Files: `docs/refactor_crosswalk.md`, `docs/programme/overview.md`.
-- [ ] A2. Define programme theory and theory matrix.
+- [x] A2. Define programme theory and theory matrix.
   - Acceptance: each theory entry identifies discipline, study, correlate, observable, required and
     absent mechanisms, permitted/prohibited inference, and sources.
   - Verification: mechanism evidence is distinguishable from interpretation and calibration.
+  - Evidence: the theory layer separates mechanism-facing and interpretive roles; every matrix row
+    names required/absent mechanisms, licensed/prohibited inference, evidence role, and source.
   - Files: `docs/programme/theory.md`, `docs/programme/theory_matrix.md`.
 - [ ] A3. Define shared ontology, causal map, and scope.
   - Acceptance: objective, privately actionable, and socially accessible opportunity are distinct;
