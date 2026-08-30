@@ -44,10 +44,12 @@ verification evidence, not merely code presence.
   - Evidence: the protocol retains all eight distinct result fields and five analytical levels; the
     claims document states the exact prohibited translations and extension gate.
   - Files: `docs/programme/interpretation_protocol.md`, `docs/programme/claims_and_limits.md`.
-- [ ] A5. Create Project 1's eight-document scientific package.
+- [x] A5. Create Project 1's eight-document scientific package.
   - Acceptance: specification, theory, hypotheses, experiments, validation, analysis, interpretation,
     and limits jointly define all seven completion gates.
   - Verification: equations and edge cases are implementation-ready.
+  - Evidence: eight linked documents define mechanics, theory, falsifiable comparisons, exact
+    140-run design, metric equations/edge cases, validation gates, interpretation template, and limits.
   - Files: split into two commits of four files under `docs/studies/project_1/`.
 - [ ] A6. Create Project 2's eight-document specification package.
   - Acceptance: observation channel `C=(radius, noise, delay)`, fixed-policy/Q-learning comparisons,
