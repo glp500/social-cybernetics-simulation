@@ -15,7 +15,7 @@ from social_cybernetics.config import (
     WorldConfig,
     load_config,
 )
-from social_cybernetics.domain import ShockEventStatus, ShockScope
+from social_cybernetics.domain import ActionKind, ShockEventStatus, ShockScope
 from social_cybernetics.runtime.mesa.model import STAGE_ORDER, SugarscapeModel
 
 
@@ -52,6 +52,7 @@ def test_initial_and_completed_tick_snapshots_are_recorded() -> None:
 
     assert [record.tick for record in model.model_records] == [0]
     assert [record.tick for record in model.cohort_records] == [0]
+    assert model.agent_transitions == ()
 
     model.step()
 
@@ -61,6 +62,17 @@ def test_initial_and_completed_tick_snapshots_are_recorded() -> None:
     assert [record.tick for record in model.cohort_records] == [0, 1]
     assert model.model_records[-1].total_resources == pytest.approx(248.0)
     assert model.cohort_records[-1].snapshot.energy == pytest.approx(11.0)
+    assert len(model.agent_transitions) == 1
+    transition = model.agent_transitions[0]
+    assert transition.tick == 1
+    assert transition.origin == transition.final_position == (2, 2)
+    assert transition.observed_stock == transition.believed_stock == 10.0
+    assert transition.intent_kind is ActionKind.HARVEST
+    assert transition.requested_amount == transition.harvested == 2.0
+    assert transition.energy_before == 10.0
+    assert transition.energy_after == 11.0
+    assert transition.shortfall == 0.0
+    assert transition.died is False
 
 
 def test_spatial_sink_receives_tick_zero_and_every_completed_tick() -> None:
@@ -290,6 +302,13 @@ def test_scarcity_causes_death_but_keeps_the_original_cohort() -> None:
     assert model.cohort_states[0].energy == 0
     assert [record.snapshot.alive for record in model.cohort_records] == [True, False]
     assert any(event.event == "death" for event in model.event_records)
+    transition = model.agent_transitions[0]
+    assert transition.intent_kind is ActionKind.MOVE
+    assert transition.moved is True
+    assert transition.energy_before == 0.1
+    assert transition.energy_after == 0.0
+    assert transition.shortfall == 10.0
+    assert transition.died is True
 
 
 def test_two_agents_contest_one_cell_proportionally() -> None:
@@ -305,6 +324,8 @@ def test_two_agents_contest_one_cell_proportionally() -> None:
     assert [model.cohort_states[index].energy for index in (0, 1)] == [10.5, 10.5]
     assert model.lifetime_harvest == {0: 1.5, 1: 1.5}
     assert model.resource_stock[2, 2] == 0
+    assert [record.requested_amount for record in model.agent_transitions] == [2.0, 2.0]
+    assert [record.harvested for record in model.agent_transitions] == [1.5, 1.5]
 
 
 def test_same_seed_reproduces_complete_records_even_if_agent_mapping_is_reordered() -> None:
@@ -323,6 +344,7 @@ def test_same_seed_reproduces_complete_records_even_if_agent_mapping_is_reordere
     assert first.model_records == second.model_records
     assert first.cohort_records == second.cohort_records
     assert first.event_records == second.event_records
+    assert first.agent_transitions == second.agent_transitions
     assert first.summary() == second.summary()
 
 

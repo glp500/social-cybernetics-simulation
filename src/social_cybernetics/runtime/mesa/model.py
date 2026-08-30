@@ -21,6 +21,7 @@ from social_cybernetics.config import (
 from social_cybernetics.domain import (
     AgentSnapshot,
     AgentState,
+    AgentTransitionRecord,
     CellDamageApplication,
     CohortRecord,
     DamageParameters,
@@ -168,6 +169,7 @@ class SugarscapeModel(Model):
         self.cumulative_unmet_need: dict[int, float] = {}
         self._model_records: list[ModelRecord] = []
         self._cohort_records: list[CohortRecord] = []
+        self._agent_transitions: list[AgentTransitionRecord] = []
         self._event_records: list[EventRecord] = []
         self._shock_event_snapshots: list[ShockEventSnapshot] = []
         self._shock_exposures: list[EventCellExposure] = []
@@ -226,6 +228,10 @@ class SugarscapeModel(Model):
     @property
     def event_records(self) -> tuple[EventRecord, ...]:
         return tuple(self._event_records)
+
+    @property
+    def agent_transitions(self) -> tuple[AgentTransitionRecord, ...]:
+        return tuple(self._agent_transitions)
 
     @property
     def shock_event_snapshots(self) -> tuple[ShockEventSnapshot, ...]:
@@ -379,6 +385,7 @@ class SugarscapeModel(Model):
 
         # 7. Institutional gate: allow every intent in v0.1.
         decisions = tuple(allow_all(intents[agent_id]) for agent_id in sorted(intents))
+        decisions_by_agent = {decision.agent_id: decision for decision in decisions}
 
         # 8. Physical resolution: simultaneous harvest allocation and movement results.
         resolution = resolve_actions(self.resource_stock, decisions)
@@ -408,6 +415,7 @@ class SugarscapeModel(Model):
         for agent_id in sorted(self.active_agents):
             result = resolution.by_agent[agent_id]
             agent = self.active_agents[agent_id]
+            energy_before = agent.state.energy
             state, died = apply_metabolism(
                 agent.state,
                 harvested=result.harvested,
@@ -418,6 +426,27 @@ class SugarscapeModel(Model):
             )
             agent.state = state
             self.cohort_states[agent_id] = state
+            intent = intents[agent_id]
+            self._agent_transitions.append(
+                AgentTransitionRecord(
+                    tick=next_tick,
+                    agent_id=agent_id,
+                    origin=snapshots[agent_id].position,
+                    observed_stock=observations[agent_id].local_stock,
+                    believed_stock=beliefs[agent_id].believed_local_stock,
+                    intent_kind=intent.kind,
+                    requested_amount=intent.amount,
+                    intended_destination=intent.destination,
+                    gate_allowed=decisions_by_agent[agent_id].allowed,
+                    harvested=result.harvested,
+                    moved=result.moved,
+                    final_position=self._agent_position(agent),
+                    energy_before=energy_before,
+                    energy_after=state.energy,
+                    shortfall=max(0.0, agent_config.viability_target - state.energy),
+                    died=died,
+                )
+            )
             if died:
                 dying.append(agent_id)
 

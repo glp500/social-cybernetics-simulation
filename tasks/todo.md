@@ -111,10 +111,13 @@ verification evidence, not merely code presence.
     position/energy/shortfall/death as one frozen value; all 53 domain tests pass.
   - Files: `src/social_cybernetics/domain/types.py`, `src/social_cybernetics/domain/__init__.py`,
     `tests/unit/test_domain.py`.
-- [ ] B4. Record one transition per active agent-tick.
+- [x] B4. Record one transition per active agent-tick.
   - Acceptance: records follow sorted agent identity and existing stage semantics without extra RNG
     draws or behavioral changes.
   - Verification: full tiny trajectories and activation-order invariance remain exact.
+  - Evidence: the explicit scheduler appends transitions after metabolism in sorted agent order;
+    harvest, contested allocation, movement/death, shortfall, and mapping-order tests pass with all 33
+    runtime/CLI regressions and unchanged baseline output.
   - Files: `src/social_cybernetics/runtime/mesa/model.py`,
     `tests/integration/test_mesa_runtime.py`.
 - [ ] B5. Publish the Project 1 transition table and migrate bundle schemas.
