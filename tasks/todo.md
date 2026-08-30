@@ -51,10 +51,12 @@ verification evidence, not merely code presence.
   - Evidence: eight linked documents define mechanics, theory, falsifiable comparisons, exact
     140-run design, metric equations/edge cases, validation gates, interpretation template, and limits.
   - Files: split into two commits of four files under `docs/studies/project_1/`.
-- [ ] A6. Create Project 2's eight-document specification package.
+- [x] A6. Create Project 2's eight-document specification package.
   - Acceptance: observation channel `C=(radius, noise, delay)`, fixed-policy/Q-learning comparisons,
     information inequality, experiments, metrics, boundaries, and freeze gates are complete.
   - Verification: documents state that Project 2 is specified, not implemented.
+  - Evidence: eight documents define sensing, belief, fixed/Q policies, exact P2-A/P2-B designs,
+    information/conversion measures, seven gates, interpretations, and protected exclusions.
   - Files: split into two commits of four files under `docs/studies/project_2/`.
 - [ ] A7. Create Project 3's eight-document specification package.
   - Acceptance: network reports, trust, rewiring, capability diffusion, D0–D3 circulation accounting,
