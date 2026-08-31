@@ -77,6 +77,21 @@ def test_project1_cli_executes_then_analyzes_only_published_evidence(tmp_path: P
     assert record["outcome"]["schema_version"] == "scs-project1-outcome/v1.0.0"
     table = pq.read_table(output / "outcomes.parquet")
     assert table.column("aggregate_harvest").to_pylist() == [2.0]
+    summaries = pq.read_table(output / "condition_summaries.parquet").to_pylist()
+    harvest_summary = next(row for row in summaries if row["metric"] == "aggregate_harvest")
+    assert harvest_summary == {
+        "experiment_id": "p1-a",
+        "condition_id": "control",
+        "metric": "aggregate_harvest",
+        "defined_count": 1,
+        "undefined_count": 0,
+        "mean": 2.0,
+        "median": 2.0,
+        "sample_std": None,
+        "minimum": 2.0,
+        "maximum": 2.0,
+    }
+    assert pq.read_table(output / "paired_differences.parquet").num_rows == 0
 
 
 def test_project1_analysis_rejects_mismatched_design_and_existing_output(tmp_path: Path) -> None:

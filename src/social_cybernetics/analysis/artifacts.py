@@ -27,14 +27,27 @@ from social_cybernetics.persistence import publish_directory_atomically, validat
 from social_cybernetics.persistence_errors import BundleValidationError
 from social_cybernetics.project1_experiments import ResolvedProject1Design
 
+from .project1_aggregate import condition_summaries, paired_differences
 from .project1_outcome import Project1Outcome, calculate_project1_outcome
 
-PROJECT1_ANALYSIS_BUNDLE_SCHEMA = "scs-project1-analysis-bundle/v1.0.0"
+PROJECT1_ANALYSIS_BUNDLE_SCHEMA = "scs-project1-analysis-bundle/v1.1.0"
 PROJECT1_OUTCOMES_SCHEMA = "scs-project1-outcomes/v1.0.0"
 PROJECT1_OUTCOME_TABLE_SCHEMA = "scs-project1-outcome-table/v1.0.0"
+PROJECT1_CONDITION_SUMMARIES_SCHEMA = "scs-project1-condition-summaries/v1.0.0"
+PROJECT1_CONDITION_SUMMARY_TABLE_SCHEMA = "scs-project1-condition-summary-table/v1.0.0"
+PROJECT1_PAIRED_DIFFERENCES_SCHEMA = "scs-project1-paired-differences/v1.0.0"
+PROJECT1_PAIRED_DIFFERENCE_TABLE_SCHEMA = "scs-project1-paired-difference-table/v1.0.0"
 PROJECT1_ANALYSIS_SUMMARY_SCHEMA = "scs-project1-analysis-summary/v1.0.0"
 _MAX_ANALYSIS_JSON_BYTES = 64 * 1024 * 1024
-_ANALYSIS_ROOT_ENTRIES = {"manifest.json", "outcomes.json", "outcomes.parquet"}
+_ANALYSIS_ROOT_ENTRIES = {
+    "manifest.json",
+    "outcomes.json",
+    "outcomes.parquet",
+    "condition_summaries.json",
+    "condition_summaries.parquet",
+    "paired_differences.json",
+    "paired_differences.parquet",
+}
 
 _OUTCOME_SCHEMA = pa.schema(
     [
@@ -83,6 +96,44 @@ _OUTCOME_SCHEMA = pa.schema(
     metadata={
         b"scs.table_name": b"project1_outcomes",
         b"scs.schema_version": PROJECT1_OUTCOME_TABLE_SCHEMA.encode(),
+    },
+)
+
+_CONDITION_SUMMARY_SCHEMA = pa.schema(
+    [
+        pa.field("experiment_id", pa.string(), nullable=False),
+        pa.field("condition_id", pa.string(), nullable=False),
+        pa.field("metric", pa.string(), nullable=False),
+        pa.field("defined_count", pa.int64(), nullable=False),
+        pa.field("undefined_count", pa.int64(), nullable=False),
+        pa.field("mean", pa.float64()),
+        pa.field("median", pa.float64()),
+        pa.field("sample_std", pa.float64()),
+        pa.field("minimum", pa.float64()),
+        pa.field("maximum", pa.float64()),
+    ],
+    metadata={
+        b"scs.table_name": b"project1_condition_summaries",
+        b"scs.schema_version": PROJECT1_CONDITION_SUMMARY_TABLE_SCHEMA.encode(),
+    },
+)
+
+_PAIRED_DIFFERENCE_SCHEMA = pa.schema(
+    [
+        pa.field("experiment_id", pa.string(), nullable=False),
+        pa.field("reference_condition_id", pa.string(), nullable=False),
+        pa.field("condition_id", pa.string(), nullable=False),
+        pa.field("seed", pa.int64(), nullable=False),
+        pa.field("metric", pa.string(), nullable=False),
+        pa.field("reference_value", pa.float64()),
+        pa.field("condition_value", pa.float64()),
+        pa.field("difference", pa.float64()),
+        pa.field("defined", pa.bool_(), nullable=False),
+        pa.field("undefined_reason", pa.string()),
+    ],
+    metadata={
+        b"scs.table_name": b"project1_paired_differences",
+        b"scs.schema_version": PROJECT1_PAIRED_DIFFERENCE_TABLE_SCHEMA.encode(),
     },
 )
 
@@ -256,6 +307,32 @@ def _outcome_records(design: ResolvedProject1Design, batch: Path) -> list[dict[s
     ]
 
 
+def _write_parquet(path: Path, rows: list[dict[str, object]], schema: pa.Schema) -> None:
+    table = pa.Table.from_pylist(rows, schema)
+    pq.write_table(
+        table,
+        path,
+        version="2.6",
+        compression="zstd",
+        write_page_checksum=True,
+    )
+
+
+def _analysis_file_descriptors(staging: Path) -> dict[str, dict[str, object]]:
+    schemas = {
+        "outcomes.json": PROJECT1_OUTCOMES_SCHEMA,
+        "outcomes.parquet": PROJECT1_OUTCOME_TABLE_SCHEMA,
+        "condition_summaries.json": PROJECT1_CONDITION_SUMMARIES_SCHEMA,
+        "condition_summaries.parquet": PROJECT1_CONDITION_SUMMARY_TABLE_SCHEMA,
+        "paired_differences.json": PROJECT1_PAIRED_DIFFERENCES_SCHEMA,
+        "paired_differences.parquet": PROJECT1_PAIRED_DIFFERENCE_TABLE_SCHEMA,
+    }
+    return {
+        name: file_descriptor(staging / name, schema_version=schema)
+        for name, schema in schemas.items()
+    }
+
+
 def analyze_project1_batch(
     design: ResolvedProject1Design, batch: Path, destination: Path
 ) -> dict[str, object]:
@@ -264,6 +341,9 @@ def analyze_project1_batch(
     batch = Path(batch)
     _validate_design_matches_batch(design, batch)
     records = _outcome_records(design, batch)
+    flat_rows = [_flatten_outcome_record(record) for record in records]
+    summaries = condition_summaries(flat_rows)
+    differences = paired_differences(flat_rows)
     summary = {
         "schema_version": PROJECT1_ANALYSIS_SUMMARY_SCHEMA,
         "status": "completed",
@@ -271,41 +351,79 @@ def analyze_project1_batch(
     }
 
     def build(staging: Path) -> None:
-        outcomes = {"schema_version": PROJECT1_OUTCOMES_SCHEMA, "runs": records}
-        write_json(staging / "outcomes.json", outcomes)
-        table = pa.Table.from_pylist(
-            [_flatten_outcome_record(record) for record in records], _OUTCOME_SCHEMA
+        write_json(
+            staging / "outcomes.json",
+            {"schema_version": PROJECT1_OUTCOMES_SCHEMA, "runs": records},
         )
-        pq.write_table(
-            table,
-            staging / "outcomes.parquet",
-            version="2.6",
-            compression="zstd",
-            write_page_checksum=True,
+        write_json(
+            staging / "condition_summaries.json",
+            {
+                "schema_version": PROJECT1_CONDITION_SUMMARIES_SCHEMA,
+                "summaries": summaries,
+            },
         )
-        files = {
-            "outcomes.json": file_descriptor(
-                staging / "outcomes.json", schema_version=PROJECT1_OUTCOMES_SCHEMA
-            ),
-            "outcomes.parquet": file_descriptor(
-                staging / "outcomes.parquet", schema_version=PROJECT1_OUTCOME_TABLE_SCHEMA
-            ),
-        }
+        write_json(
+            staging / "paired_differences.json",
+            {
+                "schema_version": PROJECT1_PAIRED_DIFFERENCES_SCHEMA,
+                "contrasts": differences,
+            },
+        )
+        _write_parquet(staging / "outcomes.parquet", flat_rows, _OUTCOME_SCHEMA)
+        _write_parquet(
+            staging / "condition_summaries.parquet", summaries, _CONDITION_SUMMARY_SCHEMA
+        )
+        _write_parquet(
+            staging / "paired_differences.parquet", differences, _PAIRED_DIFFERENCE_SCHEMA
+        )
         write_json(
             staging / "manifest.json",
             {
                 "schema_version": PROJECT1_ANALYSIS_BUNDLE_SCHEMA,
                 "status": "completed",
                 "run_count": len(records),
+                "condition_summary_count": len(summaries),
+                "paired_difference_count": len(differences),
                 "plan_sha256": sha256_file(design.source_path),
                 "batch_manifest_sha256": sha256_file(batch / "batch_manifest.json"),
-                "files": files,
+                "files": _analysis_file_descriptors(staging),
             },
         )
         validate_project1_analysis_bundle(staging)
 
     publish_directory_atomically(destination, build)
     return summary
+
+
+def _validated_json_rows(
+    bundle: Path, filename: str, schema_version: str, collection: str
+) -> list[object]:
+    payload = read_json_object(bundle / filename, max_bytes=_MAX_ANALYSIS_JSON_BYTES)
+    rows = payload.get(collection)
+    if (
+        set(payload) != {"schema_version", collection}
+        or payload.get("schema_version") != schema_version
+        or not isinstance(rows, list)
+    ):
+        raise BundleValidationError(f"Project 1 {filename} differs from its schema")
+    return rows
+
+
+def _validate_parquet_matches(
+    bundle: Path,
+    filename: str,
+    rows: list[dict[str, object]],
+    schema: pa.Schema,
+) -> None:
+    expected = pa.Table.from_pylist(rows, schema)
+    try:
+        actual = pq.read_table(bundle / filename)
+    except Exception as error:
+        raise BundleValidationError(f"cannot read Project 1 table: {filename}") from error
+    if not actual.schema.equals(schema, check_metadata=True) or not actual.equals(
+        expected, check_metadata=True
+    ):
+        raise BundleValidationError(f"Project 1 JSON and Parquet differ: {filename}")
 
 
 def validate_project1_analysis_bundle(bundle: Path) -> dict[str, Any]:
@@ -323,6 +441,8 @@ def validate_project1_analysis_bundle(bundle: Path) -> dict[str, Any]:
             "schema_version",
             "status",
             "run_count",
+            "condition_summary_count",
+            "paired_difference_count",
             "plan_sha256",
             "batch_manifest_sha256",
             "files",
@@ -334,6 +454,10 @@ def validate_project1_analysis_bundle(bundle: Path) -> dict[str, Any]:
     expected_schemas = {
         "outcomes.json": PROJECT1_OUTCOMES_SCHEMA,
         "outcomes.parquet": PROJECT1_OUTCOME_TABLE_SCHEMA,
+        "condition_summaries.json": PROJECT1_CONDITION_SUMMARIES_SCHEMA,
+        "condition_summaries.parquet": PROJECT1_CONDITION_SUMMARY_TABLE_SCHEMA,
+        "paired_differences.json": PROJECT1_PAIRED_DIFFERENCES_SCHEMA,
+        "paired_differences.parquet": PROJECT1_PAIRED_DIFFERENCE_TABLE_SCHEMA,
     }
     if set(files) != set(expected_schemas):
         raise BundleValidationError("Project 1 analysis file set differs from its schema")
@@ -347,26 +471,45 @@ def validate_project1_analysis_bundle(bundle: Path) -> dict[str, Any]:
             or descriptor.get("sha256") != sha256_file(path)
         ):
             raise BundleValidationError(f"Project 1 analysis descriptor is invalid: {name}")
-    outcomes = read_json_object(bundle / "outcomes.json", max_bytes=_MAX_ANALYSIS_JSON_BYTES)
-    runs = outcomes.get("runs")
-    if (
-        set(outcomes) != {"schema_version", "runs"}
-        or outcomes.get("schema_version") != PROJECT1_OUTCOMES_SCHEMA
-        or not isinstance(runs, list)
-        or len(runs) != manifest.get("run_count")
-        or manifest.get("status") != "completed"
-    ):
+    runs = _validated_json_rows(bundle, "outcomes.json", PROJECT1_OUTCOMES_SCHEMA, "runs")
+    if len(runs) != manifest.get("run_count") or manifest.get("status") != "completed":
         raise BundleValidationError("Project 1 JSON outcomes differ from their schema")
-    expected = pa.Table.from_pylist(
-        [_flatten_outcome_record(_mapping(run, name="outcome record")) for run in runs],
-        _OUTCOME_SCHEMA,
+    flat_rows = [_flatten_outcome_record(_mapping(run, name="outcome record")) for run in runs]
+    _validate_parquet_matches(bundle, "outcomes.parquet", flat_rows, _OUTCOME_SCHEMA)
+
+    published_summaries = _validated_json_rows(
+        bundle,
+        "condition_summaries.json",
+        PROJECT1_CONDITION_SUMMARIES_SCHEMA,
+        "summaries",
     )
     try:
-        actual = pq.read_table(bundle / "outcomes.parquet")
-    except Exception as error:
-        raise BundleValidationError("cannot read Project 1 outcome table") from error
-    if not actual.schema.equals(_OUTCOME_SCHEMA, check_metadata=True) or not actual.equals(
-        expected, check_metadata=True
+        expected_summaries = condition_summaries(flat_rows)
+    except ValueError as error:
+        raise BundleValidationError("Project 1 summary inputs are invalid") from error
+    if published_summaries != expected_summaries or len(published_summaries) != manifest.get(
+        "condition_summary_count"
     ):
-        raise BundleValidationError("Project 1 JSON and Parquet outcomes differ")
+        raise BundleValidationError("Project 1 condition summaries are invalid")
+    _validate_parquet_matches(
+        bundle, "condition_summaries.parquet", expected_summaries, _CONDITION_SUMMARY_SCHEMA
+    )
+
+    published_differences = _validated_json_rows(
+        bundle,
+        "paired_differences.json",
+        PROJECT1_PAIRED_DIFFERENCES_SCHEMA,
+        "contrasts",
+    )
+    try:
+        expected_differences = paired_differences(flat_rows)
+    except ValueError as error:
+        raise BundleValidationError("Project 1 paired inputs are invalid") from error
+    if published_differences != expected_differences or len(published_differences) != manifest.get(
+        "paired_difference_count"
+    ):
+        raise BundleValidationError("Project 1 paired differences are invalid")
+    _validate_parquet_matches(
+        bundle, "paired_differences.parquet", expected_differences, _PAIRED_DIFFERENCE_SCHEMA
+    )
     return manifest
