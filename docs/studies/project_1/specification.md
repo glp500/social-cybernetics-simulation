@@ -3,7 +3,7 @@
 **Status:** frozen for Project 1 schema `1.0.0` on 2026-08-31.
 
 The executable authority is the validated `Study01Config` scheduler and artifact contracts at source
-commit `4ae3859364fe2abc995b858ed779519b8336d7e2`. Changes to mechanics, ordering, state, or outcomes
+commit `565485ed96f309e1f62fb5a465c6bfa8488227d5`. Changes to mechanics, ordering, state, or outcomes
 require a new study/schema version and reopening the specification gate.
 
 ## Purpose

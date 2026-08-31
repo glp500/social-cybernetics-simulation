@@ -241,15 +241,27 @@ verification evidence, not merely code presence.
 
 ## Phase F — Reconciliation and release
 
-- [ ] F1. Reconcile the canonical repository documentation and remove version-driven active wording.
+- [x] F1. Reconcile the canonical repository documentation and remove version-driven active wording.
   - Files: `README.md`, `docs/00-dashboard.md`, `docs/model_specification.md`,
     `docs/research_roadmap.md`, `docs/experiment_log.md` in separate ≤5-file slices.
-- [ ] F2. Apply the code-simplification review to all changed production modules.
+  - Evidence: README, dashboard, ODD+D, roadmap, and log now use the three-study authority chain;
+    superseded version/institution roadmaps are retained only as explicitly excluded history.
+- [x] F2. Apply the code-simplification review to all changed production modules.
   - Acceptance: named linear stages, explicit records, no speculative abstraction, no focused C901
     regressions without a documented scientific reason.
-- [ ] F3. Pass full release verification.
+  - Evidence: action resolution, bundle validation, shock advancement, and spatial validation were
+    split into named linear helpers; the complete production package now passes Ruff C901 with no
+    exceptions, and every refactor retained its focused scientific regressions.
+- [x] F3. Pass full release verification.
   - Acceptance: focused and property tests, `just check`, exact baseline regression, run/batch/analysis
     bundle validation, isolated browser check, clean lock installation, and scheduler/spec agreement.
-- [ ] F4. Report completion temperature honestly.
+  - Evidence: `just check` passes 259 tests at 90.85% branch-aware coverage plus Ruff, Pyright, and
+    lock consistency; browser and clean-lock checks pass; post-simplification 140-run batch, analysis,
+    and 600-run sensitivity trees are byte-identical to the frozen evidence.
+- [x] F4. Report completion temperature honestly.
   - Acceptance: Project 1 and each freeze gate have separate percentages; Projects 2–3 distinguish
     specification completeness from implementation completeness.
+  - Evidence: final handoff reports Project 1 at 100% with seven of seven gates; Projects 2 and 3 at
+    100% specification, 0% implementation, and zero of seven frozen evidence gates; overall executable
+    programme implementation is one of three studies (about 33%), while the requested refactor scope
+    itself is complete.

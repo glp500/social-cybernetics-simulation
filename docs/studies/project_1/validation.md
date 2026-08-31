@@ -4,9 +4,9 @@
 
 | Gate | Status | Existing evidence | Work required to freeze |
 | --- | --- | --- | --- |
-| specification | frozen | authoritative scheduler, state, shock, RNG, experiment, and outcome contracts agree with source commit `4ae3859` | reopen only through a versioned scientific change |
+| specification | frozen | authoritative scheduler, state, shock, RNG, experiment, and outcome contracts agree with source commit `565485e` | reopen only through a versioned scientific change |
 | literature | frozen | four paired Project 1 notes classify support, counterevidence/boundaries, licensed use, prohibited use, and project choices | empirical calibration remains a future study |
-| verification | frozen | 259 tests, 90.80% branch-aware coverage, Ruff, Pyright, exact baseline regression, lock consistency, clean lock install, and isolated browser stepping passed | rerun after any executable or environment change |
+| verification | frozen | 259 tests, 90.85% branch-aware coverage, Ruff, Pyright, exact baseline regression, lock consistency, clean lock install, isolated browser stepping, and exact post-simplification evidence reproduction passed | rerun after any executable or environment change |
 | sensitivity | frozen | 600/600 Morris runs completed; scope-specific elementary effects and uncertainty were inspected | do not interpret the broad screen as calibrated effect estimation |
 | experiment | frozen | the preregistered P1-A–E design completed 140/140 runs with a validated recursive batch bundle | archive externally before publication |
 | analysis | frozen | artifact-only analysis reconstructed and cross-validated 140 JSON/Parquet outcome rows | add inferential intervals only through preregistration |
@@ -16,7 +16,7 @@
 
 | Evidence | Identity / result |
 | --- | --- |
-| source state used for execution | Git commit `4ae3859364fe2abc995b858ed779519b8336d7e2` |
+| source state used for frozen reproduction | Git commit `565485ed96f309e1f62fb5a465c6bfa8488227d5` |
 | canonical batch | `results/project1-batch`; 140 completed, 0 failed; manifest SHA-256 `9355cbb919f748446a0e6eab3c65c9104c151c5642ca7ca614a8865431a17197` |
 | canonical analysis | `results/project1-analysis`; 140 outcome rows; manifest SHA-256 `773f07fcb61d3f9616666e514e0a67c8c8299bfea3f03126dd11a0c28bab983a` |
 | full outcome JSON | SHA-256 `eac312c6a160c06f278e7ff4064b4a305dded9691061f6f25ac194e477aa7ebc` |
@@ -44,6 +44,9 @@ conda-lock install --prefix /tmp/<fresh-prefix> conda-lock.yml
 
 The clean prefix installed the repository editable with `--no-deps --no-build-isolation` and passed
 the baseline byte regression plus Project 1 execution, aggregate-analysis, and artifact-reader tests.
+After the code-simplification pass, all 140 canonical runs, the full analysis bundle, and all 600
+sensitivity runs were regenerated. Recursive directory comparison was byte-identical to the original
+frozen evidence; all three top-level manifest hashes therefore remained unchanged.
 
 ## Sensitivity interpretation
 

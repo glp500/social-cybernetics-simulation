@@ -98,7 +98,7 @@ never steps or mutates a live model.
 - Batch bundles retain ordered resolved configurations, hashes, indexes, and recursively validated
   children.
 - Project 1 analysis cross-validates complete nested JSON outcomes against an explicit Arrow schema.
-- The final gate passed 259 tests at 90.80% branch-aware coverage, Ruff, Pyright, lock consistency, a
+- The final gate passed 259 tests at 90.85% branch-aware coverage, Ruff, Pyright, lock consistency, a
   clean lock installation, baseline byte regression, and isolated browser stepping.
 
 The literal Project 1 policy intentionally has no energy cap. Model units and all experiment values
