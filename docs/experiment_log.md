@@ -1,5 +1,22 @@
 # Experiment Log
 
+## 2026-08-31 — Post-simplification exact reproduction
+
+**Status:** final Project 1 executable state verified
+
+Completed the broad code-simplification review at source commit
+`565485ed96f309e1f62fb5a465c6bfa8488227d5`. Simultaneous action resolution, run-bundle validation,
+shock advancement, and spatial-history validation now expose named linear phases. Ruff C901 reports
+no complexity violations anywhere in the production package.
+
+`just check` passed 259 tests with 90.85% branch-aware coverage, formatting, lint, Pyright, and lock
+consistency. The 140-run Project 1 batch, 140-row artifact analysis, and 600-run Morris batch were then
+regenerated into separate destinations. Recursive byte comparison against the original frozen trees
+reported no differences. Batch, analysis, and sensitivity manifest hashes remain respectively
+`9355cbb919f748446a0e6eab3c65c9104c151c5642ca7ca614a8865431a17197`,
+`773f07fcb61d3f9616666e514e0a67c8c8299bfea3f03126dd11a0c28bab983a`, and
+`6cb02a3aad037e073288903316d5788d048f6ca21607b370d39aa0613c6163e0`.
+
 ## 2026-08-31 — Project 1 seven-gate freeze
 
 **Status:** Project 1 complete; Projects 2 and 3 remain specification-only
