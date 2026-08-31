@@ -1,5 +1,37 @@
 # Experiment Log
 
+## 2026-08-31 — Project 1 seven-gate freeze
+
+**Status:** Project 1 complete; Projects 2 and 3 remain specification-only
+
+Executed the preregistered `configs/project-1.yml` design from source commit `4ae3859`: all 140 runs
+completed, recursively validated, and published without failures. Artifact-only analysis reconstructed
+all 140 outcomes from Parquet/NetCDF child evidence. The batch and analysis manifest SHA-256 values are
+`9355cbb919f748446a0e6eab3c65c9104c151c5642ca7ca614a8865431a17197` and
+`773f07fcb61d3f9616666e514e0a67c8c8299bfea3f03126dd11a0c28bab983a`.
+
+The outcome vector supports four bounded findings and one informative null. Mean-preserving spatial
+heterogeneity produced lower harvest/survival and persistent unequal incidence. P1-B density increased
+aggregate throughput and depletion but not insecurity; movement cost was exactly null because none of
+50,000 transitions moved. Matched expected initial disturbance incidence did not equalize material risk:
+the always-initiated propagating correlated process was substantially harsher than independent or rare
+system-wide pulses. Slow recovery clearly increased cumulative ecological deficit but did not worsen
+every short-run security component. Both long-horizon non-control regimes retained near-perfect
+cumulative-harvest rank ordering; this is material persistence, not wealth or class reproduction.
+
+The scope-stratified Morris screen completed 600/600 runs. Event probability dominated the independent
+and system screens; event/spread probability and stock-loss fraction led correlated harvest and unmet
+need. Large interaction and confidence terms limit ranking precision. Its manifest SHA-256 is
+`6cb02a3aad037e073288903316d5788d048f6ca21607b370d39aa0613c6163e0`.
+
+`just check` passed 259 tests with 90.80% branch-aware coverage, Ruff, Pyright, and lock-input
+consistency. Isolated browser stepping passed with the one documented upstream Vue warning. A fresh
+Linux-64 Conda-lock prefix installed successfully; the package then passed the baseline byte regression
+and Project 1 execution/analysis regressions before the temporary 2.5 GB prefix was removed.
+
+Large scientific bundles remain in ignored local `results/` storage rather than Git. The validation
+register records exact identities and regeneration commands; no external archive or DOI is claimed.
+
 ## 2026-08-30 — Stochastic ecological baseline v0.2 release gate
 
 **Status:** v0.2 implementation and verification complete

@@ -225,15 +225,19 @@ verification evidence, not merely code presence.
 
 ## Phase E — Project 1 freezes
 
-- [ ] E1. Freeze Project 1 specification and literature evidence.
-- [ ] E2. Freeze verification and baseline equivalence.
-- [ ] E3. Freeze sensitivity evidence under Study 01 configuration.
-- [ ] E4. Execute and freeze P1-A–E experimental evidence.
-- [ ] E5. Freeze analysis, representative regimes, and interpretation tables.
+- [x] E1. Freeze Project 1 specification and literature evidence.
+- [x] E2. Freeze verification and baseline equivalence.
+- [x] E3. Freeze sensitivity evidence under Study 01 configuration.
+- [x] E4. Execute and freeze P1-A–E experimental evidence.
+- [x] E5. Freeze analysis, representative regimes, and interpretation tables.
   - Acceptance for E1–E5: `docs/studies/project_1/` status tables link exact configuration, artifact
     identity, environment, result, assumptions, alternatives, absent mechanisms, and prohibited
     conclusions.
   - Verification: all seven gates independently read `frozen`; no claim depends on a live model object.
+  - Evidence: the seven-gate register names source, batch/analysis/sensitivity/browser hashes, exact
+    environment and regeneration commands; 140/140 canonical and 600/600 sensitivity runs completed;
+    the interpretation register reports raw-vector means, paired contrasts, mechanical explanations,
+    alternative explanations, missing mechanisms, and prohibited conclusions for P1-A–E.
 
 ## Phase F — Reconciliation and release
 
