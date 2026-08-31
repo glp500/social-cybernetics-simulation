@@ -184,6 +184,75 @@ class SpatialHistoryWriter:
         self.close()
 
 
+def _validate_dataset_attributes(dataset: Any, config: SimulationConfig) -> None:
+    if dataset.getncattr("schema_version") != SPATIAL_SCHEMA_VERSION:
+        raise BundleValidationError("spatial history schema is unsupported")
+    if dataset.getncattr("model_schema_version") != config.schema_version:
+        raise BundleValidationError("spatial model schema differs from configuration")
+    if dataset.getncattr("axis_order") != "tick,x,y":
+        raise BundleValidationError("spatial axis order is invalid")
+
+
+def _validate_dimensions(dataset: Any, config: SimulationConfig, expected_snapshots: int) -> None:
+    if set(dataset.dimensions) != {"tick", "x", "y"}:
+        raise BundleValidationError("spatial dimensions differ from contract")
+    if not dataset.dimensions["tick"].isunlimited():
+        raise BundleValidationError("spatial tick dimension must be unlimited")
+    if len(dataset.dimensions["tick"]) != expected_snapshots:
+        raise BundleValidationError("spatial snapshot count differs from completed ticks")
+    if (
+        len(dataset.dimensions["x"]) != config.world.width
+        or len(dataset.dimensions["y"]) != config.world.height
+    ):
+        raise BundleValidationError("spatial world dimensions differ from configuration")
+
+
+def _validate_variable_contracts(dataset: Any) -> None:
+    expected_variables = _COORDINATES | set(_DYNAMIC_VARIABLES) | set(_STATIC_VARIABLES)
+    if set(dataset.variables) != expected_variables:
+        raise BundleValidationError("spatial variables differ from contract")
+    contracts = {
+        "tick": (np.dtype("int64"), ("tick",)),
+        "x": (np.dtype("int64"), ("x",)),
+        "y": (np.dtype("int64"), ("y",)),
+        **{name: (dtype, ("tick", "x", "y")) for name, dtype in _DYNAMIC_VARIABLES.items()},
+        **{name: (dtype, ("x", "y")) for name, dtype in _STATIC_VARIABLES.items()},
+    }
+    for name, (dtype, dimensions) in contracts.items():
+        variable = dataset.variables[name]
+        if variable.dtype != dtype or variable.dimensions != dimensions:
+            raise BundleValidationError(f"spatial variable contract differs: {name}")
+
+
+def _validate_coordinates(dataset: Any, config: SimulationConfig, expected_snapshots: int) -> None:
+    np.testing.assert_array_equal(
+        dataset.variables["tick"][:], np.arange(expected_snapshots, dtype=np.int64)
+    )
+    np.testing.assert_array_equal(
+        dataset.variables["x"][:], np.arange(config.world.width, dtype=np.int64)
+    )
+    np.testing.assert_array_equal(
+        dataset.variables["y"][:], np.arange(config.world.height, dtype=np.int64)
+    )
+
+
+def _validate_baselines(dataset: Any, config: SimulationConfig) -> None:
+    _, expected_capacity = initialize_resources(
+        (config.world.width, config.world.height),
+        initial_stock=config.resources.initial_stock,
+        capacity=config.resources.capacity,
+    )
+    expected_regeneration = np.full(
+        expected_capacity.shape,
+        config.resources.regeneration_rate,
+        dtype=np.float64,
+    )
+    np.testing.assert_array_equal(dataset.variables["baseline_capacity"][:], expected_capacity)
+    np.testing.assert_array_equal(
+        dataset.variables["baseline_regeneration"][:], expected_regeneration
+    )
+
+
 def validate_spatial_history(
     path: Path,
     *,
@@ -195,64 +264,11 @@ def validate_spatial_history(
     expected_snapshots = completed_ticks + 1
     try:
         with Dataset(path, "r") as dataset:
-            if dataset.getncattr("schema_version") != SPATIAL_SCHEMA_VERSION:
-                raise BundleValidationError("spatial history schema is unsupported")
-            if dataset.getncattr("model_schema_version") != config.schema_version:
-                raise BundleValidationError("spatial model schema differs from configuration")
-            if dataset.getncattr("axis_order") != "tick,x,y":
-                raise BundleValidationError("spatial axis order is invalid")
-            if set(dataset.dimensions) != {"tick", "x", "y"}:
-                raise BundleValidationError("spatial dimensions differ from contract")
-            if not dataset.dimensions["tick"].isunlimited():
-                raise BundleValidationError("spatial tick dimension must be unlimited")
-            if len(dataset.dimensions["tick"]) != expected_snapshots:
-                raise BundleValidationError("spatial snapshot count differs from completed ticks")
-            if (
-                len(dataset.dimensions["x"]) != config.world.width
-                or len(dataset.dimensions["y"]) != config.world.height
-            ):
-                raise BundleValidationError("spatial world dimensions differ from configuration")
-
-            expected_variables = _COORDINATES | set(_DYNAMIC_VARIABLES) | set(_STATIC_VARIABLES)
-            if set(dataset.variables) != expected_variables:
-                raise BundleValidationError("spatial variables differ from contract")
-            variable_contracts = {
-                "tick": (np.dtype("int64"), ("tick",)),
-                "x": (np.dtype("int64"), ("x",)),
-                "y": (np.dtype("int64"), ("y",)),
-                **{name: (dtype, ("tick", "x", "y")) for name, dtype in _DYNAMIC_VARIABLES.items()},
-                **{name: (dtype, ("x", "y")) for name, dtype in _STATIC_VARIABLES.items()},
-            }
-            for name, (dtype, dimensions) in variable_contracts.items():
-                variable = dataset.variables[name]
-                if variable.dtype != dtype or variable.dimensions != dimensions:
-                    raise BundleValidationError(f"spatial variable contract differs: {name}")
-
-            np.testing.assert_array_equal(
-                dataset.variables["tick"][:], np.arange(expected_snapshots, dtype=np.int64)
-            )
-            np.testing.assert_array_equal(
-                dataset.variables["x"][:], np.arange(config.world.width, dtype=np.int64)
-            )
-            np.testing.assert_array_equal(
-                dataset.variables["y"][:], np.arange(config.world.height, dtype=np.int64)
-            )
-            _, expected_capacity = initialize_resources(
-                (config.world.width, config.world.height),
-                initial_stock=config.resources.initial_stock,
-                capacity=config.resources.capacity,
-            )
-            expected_regeneration = np.full(
-                expected_capacity.shape,
-                config.resources.regeneration_rate,
-                dtype=np.float64,
-            )
-            np.testing.assert_array_equal(
-                dataset.variables["baseline_capacity"][:], expected_capacity
-            )
-            np.testing.assert_array_equal(
-                dataset.variables["baseline_regeneration"][:], expected_regeneration
-            )
+            _validate_dataset_attributes(dataset, config)
+            _validate_dimensions(dataset, config, expected_snapshots)
+            _validate_variable_contracts(dataset)
+            _validate_coordinates(dataset, config, expected_snapshots)
+            _validate_baselines(dataset, config)
     except BundleValidationError:
         raise
     except Exception as error:
