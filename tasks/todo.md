@@ -256,7 +256,7 @@ verification evidence, not merely code presence.
 - [x] F3. Pass full release verification.
   - Acceptance: focused and property tests, `just check`, exact baseline regression, run/batch/analysis
     bundle validation, isolated browser check, clean lock installation, and scheduler/spec agreement.
-  - Evidence: `just check` passes 263 tests at 90.83% branch-aware coverage plus Ruff, Pyright, and
+  - Evidence: `just check` passes 263 tests at 90.86% branch-aware coverage plus Ruff, Pyright, and
     lock consistency; browser and clean-lock checks pass; post-simplification 140-run and 600-run
     sensitivity trees reproduce exactly, and analysis v1.1 preserves raw outcomes byte-for-byte while
     adding validated condition summaries and paired contrasts.

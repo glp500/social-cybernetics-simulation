@@ -10,7 +10,7 @@
 
 Project 1 completed on 2026-08-31 with 140/140 canonical runs, 600/600 Morris sensitivity runs,
 artifact-only analysis containing 448 condition summaries and 4,480 paired contrasts, bounded
-interpretation, 263 passing tests at 90.83% coverage, clean-lock and browser verification. Exact
+interpretation, 263 passing tests at 90.86% coverage, clean-lock and browser verification. Exact
 evidence identities are in [[studies/project_1/validation]].
 
 Projects 2 and 3 are deliberately fail-closed. Their complete documents define mechanisms,

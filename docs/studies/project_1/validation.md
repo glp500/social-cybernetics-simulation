@@ -4,9 +4,9 @@
 
 | Gate | Status | Existing evidence | Work required to freeze |
 | --- | --- | --- | --- |
-| specification | frozen | authoritative scheduler, state, shock, RNG, experiment, and outcome contracts agree with simulation commit `565485e` and aggregate-analysis commit `9060206` | reopen only through a versioned scientific change |
+| specification | frozen | authoritative scheduler, state, shock, RNG, experiment, and outcome contracts agree with simulation commit `565485e` and aggregate-analysis commit `35dc033` | reopen only through a versioned scientific change |
 | literature | frozen | four paired Project 1 notes classify support, counterevidence/boundaries, licensed use, prohibited use, and project choices | empirical calibration remains a future study |
-| verification | frozen | 263 tests, 90.83% branch-aware coverage, Ruff, Pyright, exact baseline regression, lock consistency, clean lock install, isolated browser stepping, and exact raw-outcome reproduction passed | rerun after any executable or environment change |
+| verification | frozen | 263 tests, 90.86% branch-aware coverage, Ruff, Pyright, exact baseline regression, lock consistency, clean lock install, isolated browser stepping, and exact raw-outcome reproduction passed | rerun after any executable or environment change |
 | sensitivity | frozen | 600/600 Morris runs completed; scope-specific elementary effects and uncertainty were inspected | do not interpret the broad screen as calibrated effect estimation |
 | experiment | frozen | the preregistered P1-A–E design completed 140/140 runs with a validated recursive batch bundle | archive externally before publication |
 | analysis | frozen | artifact-only analysis cross-validates 140 raw rows, 448 condition summaries, and 4,480 all-pairs within-seed contrasts in JSON/Parquet | add inferential intervals only through preregistration |
@@ -17,7 +17,7 @@
 | Evidence | Identity / result |
 | --- | --- |
 | simulation source used for frozen run evidence | Git commit `565485ed96f309e1f62fb5a465c6bfa8488227d5` |
-| aggregate-analysis source | Git commit `906020631dab9c4b1d73efa95dcb864ad71363fb` |
+| aggregate-analysis source | Git commit `35dc0332864ab9bf7d4aafcfdcc5bb578ed0daf1` |
 | canonical batch | `results/project1-batch`; 140 completed, 0 failed; manifest SHA-256 `9355cbb919f748446a0e6eab3c65c9104c151c5642ca7ca614a8865431a17197` |
 | canonical analysis | `results/project1-analysis`; bundle v1.1.0; 140 outcomes, 448 summaries, 4,480 contrasts; manifest SHA-256 `e1793afcdace33780563039ee89e40dcaa7df427cb07d2516421fb5d6c7bc52a` |
 | full outcome JSON | SHA-256 `eac312c6a160c06f278e7ff4064b4a305dded9691061f6f25ac194e477aa7ebc` |
