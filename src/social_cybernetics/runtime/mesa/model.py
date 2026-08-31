@@ -533,6 +533,123 @@ class SugarscapeModel(Model):
             termination_reason=ShockTerminationReason.NONSPREADING,
         )
 
+    def _advance_correlated_shocks(
+        self,
+        tick: int,
+        shock: CorrelatedShockConfig,
+        damage: DamageParameters,
+        hits: dict[tuple[int, int], list[int]],
+        snapshots: list[ShockEventSnapshot],
+    ) -> None:
+        shape = (self.config.world.width, self.config.world.height)
+        for event_id in sorted(tuple(self._active_shock_events)):
+            result = advance_correlated_event(
+                self._active_shock_events[event_id],
+                tick=tick,
+                shape=shape,
+                torus=self.config.world.torus,
+                rng=self.shock_transmission_rng,
+            )
+            self._shock_exposures.extend(result.exposures)
+            for position in result.newly_affected:
+                hits.setdefault(position, []).append(event_id)
+            if result.event.status is ShockEventStatus.ACTIVE:
+                self._active_shock_events[event_id] = result.event
+            else:
+                del self._active_shock_events[event_id]
+            snapshots.append(self._correlated_snapshot(tick, result.event, shock, damage))
+
+        if not draw_event(shock.event_probability, self.shock_initiation_rng):
+            return
+        event_id = self._allocate_event_id()
+        epicenter = draw_uniform_position(shape, self.shock_location_rng)
+        event = start_correlated_event(
+            event_id,
+            tick,
+            epicenter,
+            shock.spread_probability,
+            shock.max_spread_ticks,
+        )
+        hits.setdefault(epicenter, []).append(event_id)
+        if event.status is ShockEventStatus.ACTIVE:
+            self._active_shock_events[event_id] = event
+        snapshots.append(self._correlated_snapshot(tick, event, shock, damage))
+
+    def _advance_independent_shocks(
+        self,
+        tick: int,
+        shock: IndependentShockConfig,
+        damage: DamageParameters,
+        hits: dict[tuple[int, int], list[int]],
+        snapshots: list[ShockEventSnapshot],
+    ) -> None:
+        shape = (self.config.world.width, self.config.world.height)
+        for position in draw_independent_hits(
+            shape, shock.event_probability, self.shock_initiation_rng
+        ):
+            event_id = self._allocate_event_id()
+            hits.setdefault(position, []).append(event_id)
+            snapshots.append(
+                self._nonspreading_snapshot(
+                    tick=tick,
+                    event_id=event_id,
+                    scope=ShockScope.INDEPENDENT,
+                    positions=(position,),
+                    event_probability=shock.event_probability,
+                    damage=damage,
+                    epicenter=position,
+                )
+            )
+
+    def _advance_system_shock(
+        self,
+        tick: int,
+        shock: SystemShockConfig,
+        damage: DamageParameters,
+        hits: dict[tuple[int, int], list[int]],
+        snapshots: list[ShockEventSnapshot],
+    ) -> None:
+        if not draw_event(shock.event_probability, self.shock_initiation_rng):
+            return
+        event_id = self._allocate_event_id()
+        shape = (self.config.world.width, self.config.world.height)
+        positions = tuple((x, y) for x in range(shape[0]) for y in range(shape[1]))
+        for position in positions:
+            hits.setdefault(position, []).append(event_id)
+        snapshots.append(
+            self._nonspreading_snapshot(
+                tick=tick,
+                event_id=event_id,
+                scope=ShockScope.SYSTEM,
+                positions=positions,
+                event_probability=shock.event_probability,
+                damage=damage,
+                epicenter=None,
+            )
+        )
+
+    def _apply_shock_hits(
+        self,
+        *,
+        tick: int,
+        damage: DamageParameters,
+        hits: dict[tuple[int, int], list[int]],
+    ) -> None:
+        if not hits:
+            return
+        batch = apply_simultaneous_damage(
+            self.resource_stock,
+            self._recovery_state(),
+            self.resource_capacity,
+            self.baseline_regeneration,
+            hits={position: tuple(event_ids) for position, event_ids in hits.items()},
+            parameters=damage,
+            tick=tick,
+        )
+        self.resource_layer.data = np.array(batch.resource_stock, copy=True)
+        self._set_recovery_state(batch.recovery)
+        self._cell_damage_applications.extend(batch.applications)
+
     def _advance_shocks(self, tick: int) -> None:
         shock = self.config.shock
         damage = self._damage_parameters()
@@ -541,89 +658,13 @@ class SugarscapeModel(Model):
 
         hits: dict[tuple[int, int], list[int]] = {}
         snapshots: list[ShockEventSnapshot] = []
-        shape = (self.config.world.width, self.config.world.height)
-
         if isinstance(shock, CorrelatedShockConfig):
-            for event_id in sorted(tuple(self._active_shock_events)):
-                result = advance_correlated_event(
-                    self._active_shock_events[event_id],
-                    tick=tick,
-                    shape=shape,
-                    torus=self.config.world.torus,
-                    rng=self.shock_transmission_rng,
-                )
-                self._shock_exposures.extend(result.exposures)
-                for position in result.newly_affected:
-                    hits.setdefault(position, []).append(event_id)
-                if result.event.status is ShockEventStatus.ACTIVE:
-                    self._active_shock_events[event_id] = result.event
-                else:
-                    del self._active_shock_events[event_id]
-                snapshots.append(self._correlated_snapshot(tick, result.event, shock, damage))
-
-            if draw_event(shock.event_probability, self.shock_initiation_rng):
-                event_id = self._allocate_event_id()
-                epicenter = draw_uniform_position(shape, self.shock_location_rng)
-                event = start_correlated_event(
-                    event_id,
-                    tick,
-                    epicenter,
-                    shock.spread_probability,
-                    shock.max_spread_ticks,
-                )
-                hits.setdefault(epicenter, []).append(event_id)
-                if event.status is ShockEventStatus.ACTIVE:
-                    self._active_shock_events[event_id] = event
-                snapshots.append(self._correlated_snapshot(tick, event, shock, damage))
+            self._advance_correlated_shocks(tick, shock, damage, hits, snapshots)
         elif isinstance(shock, IndependentShockConfig):
-            for position in draw_independent_hits(
-                shape, shock.event_probability, self.shock_initiation_rng
-            ):
-                event_id = self._allocate_event_id()
-                hits.setdefault(position, []).append(event_id)
-                snapshots.append(
-                    self._nonspreading_snapshot(
-                        tick=tick,
-                        event_id=event_id,
-                        scope=ShockScope.INDEPENDENT,
-                        positions=(position,),
-                        event_probability=shock.event_probability,
-                        damage=damage,
-                        epicenter=position,
-                    )
-                )
-        elif isinstance(shock, SystemShockConfig) and draw_event(
-            shock.event_probability, self.shock_initiation_rng
-        ):
-            event_id = self._allocate_event_id()
-            positions = tuple((x, y) for x in range(shape[0]) for y in range(shape[1]))
-            for position in positions:
-                hits.setdefault(position, []).append(event_id)
-            snapshots.append(
-                self._nonspreading_snapshot(
-                    tick=tick,
-                    event_id=event_id,
-                    scope=ShockScope.SYSTEM,
-                    positions=positions,
-                    event_probability=shock.event_probability,
-                    damage=damage,
-                    epicenter=None,
-                )
-            )
-
-        if hits:
-            batch = apply_simultaneous_damage(
-                self.resource_stock,
-                self._recovery_state(),
-                self.resource_capacity,
-                self.baseline_regeneration,
-                hits={position: tuple(event_ids) for position, event_ids in hits.items()},
-                parameters=damage,
-                tick=tick,
-            )
-            self.resource_layer.data = np.array(batch.resource_stock, copy=True)
-            self._set_recovery_state(batch.recovery)
-            self._cell_damage_applications.extend(batch.applications)
+            self._advance_independent_shocks(tick, shock, damage, hits, snapshots)
+        elif isinstance(shock, SystemShockConfig):
+            self._advance_system_shock(tick, shock, damage, hits, snapshots)
+        self._apply_shock_hits(tick=tick, damage=damage, hits=hits)
         self._shock_event_snapshots.extend(snapshots)
 
     def run(self) -> None:
