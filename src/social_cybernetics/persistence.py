@@ -610,16 +610,9 @@ def _validate_file_set(bundle: Path, declared_files: set[str]) -> None:
         raise BundleValidationError("bundle file set does not match its manifest")
 
 
-def validate_run_bundle(bundle: Path) -> dict[str, Any]:
-    """Validate schemas, digests, row counts, and cross-artifact provenance."""
-
-    bundle = Path(bundle)
-    if not bundle.is_dir():
-        raise BundleValidationError(f"run bundle is not a directory: {bundle}")
-    manifest = read_json_object(bundle / "manifest.json", max_bytes=_MAX_JSON_BYTES)
-    if manifest.get("schema_version") != BUNDLE_SCHEMA_VERSION:
-        raise BundleValidationError("unsupported run-bundle schema version")
-
+def _manifest_sections(
+    bundle: Path, manifest: Mapping[str, Any]
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, Any]]:
     files = manifest.get("files")
     tables = manifest.get("tables")
     spatial = manifest.get("spatial")
@@ -637,8 +630,11 @@ def validate_run_bundle(bundle: Path) -> dict[str, Any]:
     if set(files) != expected_file_names:
         raise BundleValidationError("manifest file set is incomplete or unknown")
     _validate_file_set(bundle, expected_file_names)
+    return files, tables, spatial
 
-    expected_file_schemas = {
+
+def _validate_artifact_descriptors(bundle: Path, files: Mapping[str, Any]) -> None:
+    expected_schemas = {
         "configuration.json": CONFIGURATION_SCHEMA_VERSION,
         "provenance.json": PROVENANCE_SCHEMA_VERSION,
         "summary.json": SUMMARY_SCHEMA_VERSION,
@@ -651,7 +647,7 @@ def validate_run_bundle(bundle: Path) -> dict[str, Any]:
     for relative_path, descriptor in files.items():
         if not isinstance(relative_path, str) or not isinstance(descriptor, dict):
             raise BundleValidationError("manifest file descriptors are malformed")
-        if descriptor.get("schema_version") != expected_file_schemas[relative_path]:
+        if descriptor.get("schema_version") != expected_schemas[relative_path]:
             raise BundleValidationError(f"artifact schema version is invalid: {relative_path}")
         path = bundle / relative_path
         if path.stat().st_size != descriptor.get("byte_count"):
@@ -659,6 +655,10 @@ def validate_run_bundle(bundle: Path) -> dict[str, Any]:
         if sha256_file(path) != descriptor.get("sha256"):
             raise BundleValidationError(f"digest mismatch for {relative_path}")
 
+
+def _validated_core_artifacts(
+    bundle: Path, manifest: Mapping[str, Any]
+) -> tuple[SimulationConfig, dict[str, Any], int]:
     configuration = read_json_object(bundle / "configuration.json", max_bytes=_MAX_JSON_BYTES)
     provenance = read_json_object(bundle / "provenance.json", max_bytes=_MAX_JSON_BYTES)
     summary = read_json_object(bundle / "summary.json", max_bytes=_MAX_JSON_BYTES)
@@ -688,6 +688,18 @@ def validate_run_bundle(bundle: Path) -> dict[str, Any]:
     ):
         raise BundleValidationError("seed differs across bundle artifacts")
     completed_ticks = summary["completed_ticks"]
+    if not isinstance(completed_ticks, int):  # guarded by validate_summary_payload
+        raise BundleValidationError("completed tick count is malformed")
+    return validated_config, provenance, completed_ticks
+
+
+def _validate_spatial_contract(
+    bundle: Path,
+    spatial: Mapping[str, Any],
+    *,
+    config: SimulationConfig,
+    completed_ticks: int,
+) -> None:
     if spatial != {
         "path": "spatial.nc",
         "schema_version": SPATIAL_SCHEMA_VERSION,
@@ -704,9 +716,12 @@ def validate_run_bundle(bundle: Path) -> dict[str, Any]:
         raise BundleValidationError("spatial manifest metadata differs from contract")
     validate_spatial_history(
         bundle / "spatial.nc",
-        config=validated_config,
+        config=config,
         completed_ticks=completed_ticks,
     )
+
+
+def _validate_provenance_contract(provenance: Mapping[str, Any]) -> None:
     software = provenance.get("software")
     packages = software.get("packages") if isinstance(software, dict) else None
     if not isinstance(packages, dict) or set(packages) != set(_PROVENANCE_PACKAGES):
@@ -725,6 +740,8 @@ def validate_run_bundle(bundle: Path) -> dict[str, Any]:
     }:
         raise BundleValidationError("RNG stream registry provenance is malformed")
 
+
+def _validate_table_contracts(bundle: Path, tables: Mapping[str, Any]) -> None:
     for name, schema_version in TABLE_SCHEMA_VERSIONS.items():
         descriptor = tables[name]
         if not isinstance(descriptor, dict):
@@ -742,6 +759,28 @@ def validate_run_bundle(bundle: Path) -> dict[str, Any]:
             raise BundleValidationError(f"Parquet schema differs from contract: {name}")
         if parquet.metadata.num_rows != descriptor.get("row_count"):
             raise BundleValidationError(f"Parquet row count differs from manifest: {name}")
+
+
+def validate_run_bundle(bundle: Path) -> dict[str, Any]:
+    """Validate schemas, digests, row counts, and cross-artifact provenance."""
+
+    bundle = Path(bundle)
+    if not bundle.is_dir():
+        raise BundleValidationError(f"run bundle is not a directory: {bundle}")
+    manifest = read_json_object(bundle / "manifest.json", max_bytes=_MAX_JSON_BYTES)
+    if manifest.get("schema_version") != BUNDLE_SCHEMA_VERSION:
+        raise BundleValidationError("unsupported run-bundle schema version")
+    files, tables, spatial = _manifest_sections(bundle, manifest)
+    _validate_artifact_descriptors(bundle, files)
+    config, provenance, completed_ticks = _validated_core_artifacts(bundle, manifest)
+    _validate_spatial_contract(
+        bundle,
+        spatial,
+        config=config,
+        completed_ticks=completed_ticks,
+    )
+    _validate_provenance_contract(provenance)
+    _validate_table_contracts(bundle, tables)
     return manifest
 
 
