@@ -217,9 +217,9 @@ verification evidence, not merely code presence.
   - Verification: tiny end-to-end design passes, existing destinations are refused, failures are typed.
   - Evidence: `project1-run` resolves the study plan into the ordinary fail-closed batch executor;
     `project1-analyze` requires a complete validated batch whose ordered IDs and configuration
-    digests match the plan, reads only child artifacts, and atomically publishes cross-validated full
-    JSON outcomes plus an explicit typed Parquet table. Tiny end-to-end, provenance-mismatch, and
-    existing-destination cases pass with stable exit codes alongside 60 broader CLI/batch regressions.
+    digests match the plan, reads only child artifacts, and atomically publishes cross-validated raw
+    outcomes, condition summaries, and all-pairs within-seed differences in JSON and typed Parquet.
+    Tiny end-to-end, provenance-mismatch, and existing-destination cases pass with stable exit codes.
   - Files: `src/social_cybernetics/cli.py`, `src/social_cybernetics/project1_experiments.py`,
     `src/social_cybernetics/analysis/artifacts.py`, `tests/integration/test_project1_cli.py`.
 
@@ -236,7 +236,8 @@ verification evidence, not merely code presence.
   - Verification: all seven gates independently read `frozen`; no claim depends on a live model object.
   - Evidence: the seven-gate register names source, batch/analysis/sensitivity/browser hashes, exact
     environment and regeneration commands; 140/140 canonical and 600/600 sensitivity runs completed;
-    the interpretation register reports raw-vector means, paired contrasts, mechanical explanations,
+    448 condition summaries and 4,480 paired differences are durably cross-validated; the
+    interpretation register reports raw-vector means, paired contrasts, mechanical explanations,
     alternative explanations, missing mechanisms, and prohibited conclusions for P1-A–E.
 
 ## Phase F — Reconciliation and release
@@ -255,9 +256,10 @@ verification evidence, not merely code presence.
 - [x] F3. Pass full release verification.
   - Acceptance: focused and property tests, `just check`, exact baseline regression, run/batch/analysis
     bundle validation, isolated browser check, clean lock installation, and scheduler/spec agreement.
-  - Evidence: `just check` passes 259 tests at 90.85% branch-aware coverage plus Ruff, Pyright, and
-    lock consistency; browser and clean-lock checks pass; post-simplification 140-run batch, analysis,
-    and 600-run sensitivity trees are byte-identical to the frozen evidence.
+  - Evidence: `just check` passes 263 tests at 90.83% branch-aware coverage plus Ruff, Pyright, and
+    lock consistency; browser and clean-lock checks pass; post-simplification 140-run and 600-run
+    sensitivity trees reproduce exactly, and analysis v1.1 preserves raw outcomes byte-for-byte while
+    adding validated condition summaries and paired contrasts.
 - [x] F4. Report completion temperature honestly.
   - Acceptance: Project 1 and each freeze gate have separate percentages; Projects 2–3 distinguish
     specification completeness from implementation completeness.

@@ -5,7 +5,7 @@
 The programme is study-driven:
 
 ```text
-Project 1: objective ecological opportunity        executable completion in progress
+Project 1: objective ecological opportunity        complete; 7/7 gates frozen
 Project 2: privately actionable opportunity        specified, not executable
 Project 3: socially accessible opportunity         specified, not executable
 ```
@@ -202,6 +202,22 @@ Study-specific derived metrics belong in pure `social_cybernetics.analysis` modu
 may depend on PyArrow/NetCDF, but calculation contracts remain independent of Mesa and visualization.
 No analysis function may step or mutate a model.
 
+Project 1 analysis uses the same fail-closed publication boundary:
+
+```text
+project1-analysis/
+  manifest.json
+  outcomes.json
+  outcomes.parquet
+  condition_summaries.json
+  condition_summaries.parquet
+  paired_differences.json
+  paired_differences.parquet
+```
+
+Validation recomputes summaries and all-pairs within-seed contrasts from the raw outcomes, checks
+their typed JSON/Parquet equivalence, and verifies every digest and row count before atomic publish.
+
 ## Visualisation
 
 SolaraViz is a debugging adapter. It reads the same property layers and records as the CLI and cannot
@@ -220,8 +236,8 @@ src/social_cybernetics/
   sensitivity.py            Morris specification, factor validation, and batch generation
   cli.py                    command-line boundary
   metrics.py                pure public metrics
-  analysis/                 pure study-specific derived metrics and artifact readers (planned P1)
-  project1_experiments.py   validated P1-A--E design expansion (planned)
+  analysis/                 pure Project 1 metrics, aggregation, and artifact readers
+  project1_experiments.py   validated P1-A--E design expansion
   persistence.py            run-bundle staging, manifests, Parquet, and atomic publication
   persistence_errors.py     shared fail-closed output errors
   spatial_output.py         incremental NetCDF spatial writer and validator

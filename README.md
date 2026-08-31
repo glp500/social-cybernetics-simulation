@@ -97,8 +97,9 @@ never steps or mutates a live model.
   and tick-zero through final-tick NetCDF ecology.
 - Batch bundles retain ordered resolved configurations, hashes, indexes, and recursively validated
   children.
-- Project 1 analysis cross-validates complete nested JSON outcomes against an explicit Arrow schema.
-- The final gate passed 259 tests at 90.85% branch-aware coverage, Ruff, Pyright, lock consistency, a
+- Project 1 analysis cross-validates 140 raw outcomes, 448 condition summaries, and 4,480 paired
+  contrasts between JSON and explicit Arrow schemas.
+- The final gate passed 263 tests at 90.83% branch-aware coverage, Ruff, Pyright, lock consistency, a
   clean lock installation, baseline byte regression, and isolated browser stepping.
 
 The literal Project 1 policy intentionally has no energy cap. Model units and all experiment values

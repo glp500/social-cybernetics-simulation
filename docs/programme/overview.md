@@ -16,7 +16,7 @@ unmodelled causes or calibrate unrelated parameters.
 
 | Study | Transformation | Executable status |
 | --- | --- | --- |
-| Project 1 | environment → objective ecological opportunity and material outcomes | active; completion work in progress |
+| Project 1 | environment → objective ecological opportunity and material outcomes | complete; 7/7 gates frozen |
 | Project 2 | objective opportunity → perceived and privately actionable opportunity | specified; not implemented |
 | Project 3 | private opportunity → socially accessible opportunity | specified; not implemented |
 
@@ -71,11 +71,11 @@ A study is complete only when all seven gates are frozen:
 
 ## Current position
 
-The former v0.1/v0.2 implementation is retained as Project 1's verified mechanical kernel. Project 1
-is not yet complete under the seven-gate definition: its new analytical records, derived metrics,
-P1-A–E experiment set, and interpretation freeze remain active work. Project 2 and Project 3 are
-documentation targets in this refactor and must remain non-executable until their own gates authorize
-implementation.
+The former v0.1/v0.2 implementation became Project 1's verified mechanical kernel. Project 1 is
+complete under the seven-gate definition: its analytical records, derived metrics, 140-run P1-A–E
+experiment, 600-run sensitivity screen, and bounded interpretation are frozen against validated local
+evidence. Project 2 and Project 3 have complete specification packages but must remain non-executable
+until their own gates authorize implementation.
 
 ## Canonical navigation
 
