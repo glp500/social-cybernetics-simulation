@@ -426,10 +426,7 @@ def _validate_parquet_matches(
         raise BundleValidationError(f"Project 1 JSON and Parquet differ: {filename}")
 
 
-def validate_project1_analysis_bundle(bundle: Path) -> dict[str, Any]:
-    """Validate Project 1 aggregate schemas, digests, and JSON/Parquet agreement."""
-
-    bundle = Path(bundle)
+def _validated_analysis_manifest(bundle: Path) -> dict[str, Any]:
     if not bundle.is_dir() or {path.name for path in bundle.iterdir()} != _ANALYSIS_ROOT_ENTRIES:
         raise BundleValidationError("Project 1 analysis bundle entries differ from its schema")
     if any(path.is_symlink() for path in bundle.iterdir()):
@@ -450,6 +447,10 @@ def validate_project1_analysis_bundle(bundle: Path) -> dict[str, Any]:
         or manifest.get("schema_version") != PROJECT1_ANALYSIS_BUNDLE_SCHEMA
     ):
         raise BundleValidationError("Project 1 analysis manifest differs from its schema")
+    return manifest
+
+
+def _validate_analysis_descriptors(bundle: Path, manifest: Mapping[str, Any]) -> None:
     files = _mapping(manifest.get("files"), name="analysis files")
     expected_schemas = {
         "outcomes.json": PROJECT1_OUTCOMES_SCHEMA,
@@ -471,12 +472,20 @@ def validate_project1_analysis_bundle(bundle: Path) -> dict[str, Any]:
             or descriptor.get("sha256") != sha256_file(path)
         ):
             raise BundleValidationError(f"Project 1 analysis descriptor is invalid: {name}")
+
+
+def _validated_outcome_rows(bundle: Path, manifest: Mapping[str, Any]) -> list[dict[str, object]]:
     runs = _validated_json_rows(bundle, "outcomes.json", PROJECT1_OUTCOMES_SCHEMA, "runs")
     if len(runs) != manifest.get("run_count") or manifest.get("status") != "completed":
         raise BundleValidationError("Project 1 JSON outcomes differ from their schema")
     flat_rows = [_flatten_outcome_record(_mapping(run, name="outcome record")) for run in runs]
     _validate_parquet_matches(bundle, "outcomes.parquet", flat_rows, _OUTCOME_SCHEMA)
+    return flat_rows
 
+
+def _validate_condition_summaries(
+    bundle: Path, manifest: Mapping[str, Any], flat_rows: list[dict[str, object]]
+) -> None:
     published_summaries = _validated_json_rows(
         bundle,
         "condition_summaries.json",
@@ -495,6 +504,10 @@ def validate_project1_analysis_bundle(bundle: Path) -> dict[str, Any]:
         bundle, "condition_summaries.parquet", expected_summaries, _CONDITION_SUMMARY_SCHEMA
     )
 
+
+def _validate_paired_differences(
+    bundle: Path, manifest: Mapping[str, Any], flat_rows: list[dict[str, object]]
+) -> None:
     published_differences = _validated_json_rows(
         bundle,
         "paired_differences.json",
@@ -512,4 +525,15 @@ def validate_project1_analysis_bundle(bundle: Path) -> dict[str, Any]:
     _validate_parquet_matches(
         bundle, "paired_differences.parquet", expected_differences, _PAIRED_DIFFERENCE_SCHEMA
     )
+
+
+def validate_project1_analysis_bundle(bundle: Path) -> dict[str, Any]:
+    """Validate Project 1 aggregate schemas, digests, and JSON/Parquet agreement."""
+
+    bundle = Path(bundle)
+    manifest = _validated_analysis_manifest(bundle)
+    _validate_analysis_descriptors(bundle, manifest)
+    flat_rows = _validated_outcome_rows(bundle, manifest)
+    _validate_condition_summaries(bundle, manifest, flat_rows)
+    _validate_paired_differences(bundle, manifest, flat_rows)
     return manifest
