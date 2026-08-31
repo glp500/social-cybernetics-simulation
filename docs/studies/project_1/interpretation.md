@@ -1,7 +1,7 @@
 # Project 1 Interpretation Register
 
 **Status:** frozen against analysis manifest
-`773f07fcb61d3f9616666e514e0a67c8c8299bfea3f03126dd11a0c28bab983a` on 2026-08-31.
+`e1793afcdace33780563039ee89e40dcaa7df427cb07d2516421fb5d6c7bc52a` on 2026-08-31.
 
 ## Outcome overview
 
@@ -27,9 +27,10 @@ deficit. These remain a vector; the table does not rank regimes.
 | P1-E | heterogeneous pressure | 16589.83 | 0.565 | 113.83 | 0.0007 | 0.435 | 0.493 | 0.658 | 0.00 |
 | P1-E | correlated slow recovery | 3398.44 | 0.24 | 160.78 | 0.0027 | 0.620 | 0.777 | 0.388 | 90.95 |
 
-Raw replicate values, undefined reasons, full temporal paths, and record-level evidence remain in the
-validated analysis and child run bundles. Differences below are descriptive paired-seed results; no
-confidence interval or population inference was preregistered.
+The displayed means come from the validated condition-summary artifact. Raw replicate values,
+definedness reasons, 4,480 all-pairs within-seed differences, full temporal paths, and record-level
+evidence remain in the validated analysis and child run bundles. Differences below are descriptive
+paired-seed results; no confidence interval or population inference was preregistered.
 
 ## P1-A — Mean-preserving heterogeneity
 

@@ -1,5 +1,23 @@
 # Experiment Log
 
+## 2026-08-31 — Complete aggregate-analysis evidence
+
+**Status:** final Project 1 analysis contract frozen
+
+Closed the final analysis-plan gap at source commit
+`906020631dab9c4b1d73efa95dcb864ad71363fb`. Analysis bundle schema v1.1 retains the 140 nested/raw
+outcomes and adds 448 condition–measure summaries plus 4,480 all-pairs within-seed differences. Each
+derived JSON record set is recomputed from raw outcomes during validation and cross-validated against
+an explicit Arrow/Parquet schema. Undefined values retain counts and reasons; no inferential interval
+or composite outcome was added.
+
+The canonical analysis manifest SHA-256 is
+`e1793afcdace33780563039ee89e40dcaa7df427cb07d2516421fb5d6c7bc52a`. Its outcome JSON and Parquet
+remain byte-identical to the prior bundle, proving the upgrade changed publication completeness rather
+than scientific results. `just check` passed 263 tests at 90.83% branch-aware coverage, Ruff, Pyright,
+and lock consistency. A new clean Conda-lock prefix installed successfully and passed 26 focused
+baseline, CLI, artifact-reader, and aggregate-analysis tests before removal.
+
 ## 2026-08-31 — Post-simplification exact reproduction
 
 **Status:** final Project 1 executable state verified

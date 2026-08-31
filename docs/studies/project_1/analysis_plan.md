@@ -1,10 +1,10 @@
 # Project 1 Analysis Plan
 
 **Status:** frozen and implemented in schema `scs-project1-outcome/v1.0.0` and aggregate bundle
-schema `scs-project1-analysis-bundle/v1.0.0` on 2026-08-31.
+schema `scs-project1-analysis-bundle/v1.1.0` on 2026-08-31.
 
 The canonical artifact-only analysis completed 140/140 runs. Its local analysis-manifest SHA-256 is
-`773f07fcb61d3f9616666e514e0a67c8c8299bfea3f03126dd11a0c28bab983a`.
+`e1793afcdace33780563039ee89e40dcaa7df427cb07d2516421fb5d6c7bc52a`.
 
 ## Authority and inputs
 
@@ -99,10 +99,16 @@ No scalar ranking or hidden weights are permitted.
 
 ## Experimental summaries
 
-The raw table has one row per run. Condition summaries include replicate count, mean, median, standard
-deviation, minimum, and maximum for each defined continuous measure. Paired contrasts subtract outcomes
-within seed. Undefined values remain null with reasons and are excluded only from that measure's
-summary; counts of defined/undefined runs are always retained.
+The raw table has one row per run. Condition summaries include defined and undefined replicate counts,
+mean, median, sample standard deviation, minimum, and maximum for each continuous measure. Sample
+standard deviation is null with fewer than two defined values. Every pair of conditions within an
+experiment receives a seed-matched contrast in declared order: `later condition - earlier condition`.
+Undefined values remain null with reasons and are excluded only from that measure's summary; counts of
+defined/undefined runs are always retained.
+
+The frozen bundle contains 140 raw rows, 448 condition–measure summaries, and 4,480 paired
+condition–seed–measure differences. JSON and explicitly typed Parquet representations are validated
+against one another and recomputed from the raw outcome records during bundle validation.
 
 Any inferential interval added later must be preregistered, use the seed as the replicate unit, and
 appear alongside raw outcomes. Tick or agent resampling cannot masquerade as independent replication.
