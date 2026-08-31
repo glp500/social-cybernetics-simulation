@@ -69,64 +69,75 @@ def _validate_intent(intent: ActionIntent, shape: tuple[int, ...]) -> None:
             raise InvariantViolationError("movement destination is outside resource array")
 
 
-def resolve_actions(
-    resource_stock: FloatArray, decisions: Sequence[GateDecision]
-) -> ResolutionBatch:
-    """Resolve all allowed actions from one stage snapshot, by cell."""
-
-    updated = np.asarray(resource_stock, dtype=np.float64).copy()
-    if updated.ndim != 2 or not np.isfinite(updated).all() or (updated < 0).any():
-        raise InvariantViolationError("resource stock must be a finite nonnegative 2D array")
-
-    by_agent: dict[int, ActionResolution] = {}
-    seen_agents: set[int] = set()
+def _collect_requests(
+    decisions: Sequence[GateDecision], shape: tuple[int, ...]
+) -> tuple[dict[int, ActionResolution], dict[Position, list[ActionIntent]]]:
+    resolutions: dict[int, ActionResolution] = {}
     requests: dict[Position, list[ActionIntent]] = defaultdict(list)
+    seen_agents: set[int] = set()
     for decision in sorted(decisions, key=lambda item: item.agent_id):
         intent = decision.intent
         if decision.agent_id != intent.agent_id or intent.agent_id in seen_agents:
             raise InvariantViolationError("each gate decision must identify one unique agent")
         seen_agents.add(intent.agent_id)
-        _validate_intent(intent, updated.shape)
+        _validate_intent(intent, shape)
         if not decision.allowed:
-            by_agent[intent.agent_id] = ActionResolution(
+            resolutions[intent.agent_id] = ActionResolution(
                 intent.agent_id, intent.kind, rejected=True
             )
         elif intent.kind is ActionKind.HARVEST:
             requests[intent.position].append(intent)
         elif intent.kind is ActionKind.MOVE:
-            by_agent[intent.agent_id] = ActionResolution(
+            resolutions[intent.agent_id] = ActionResolution(
                 intent.agent_id,
                 intent.kind,
                 moved=True,
                 destination=intent.destination,
             )
         else:
-            by_agent[intent.agent_id] = ActionResolution(intent.agent_id, intent.kind)
+            resolutions[intent.agent_id] = ActionResolution(intent.agent_id, intent.kind)
+    return resolutions, requests
 
+
+def _allocate_requests(
+    updated: FloatArray,
+    requests: dict[Position, list[ActionIntent]],
+    resolutions: dict[int, ActionResolution],
+) -> None:
     for position, cell_requests in sorted(requests.items()):
         ordered = sorted(cell_requests, key=lambda item: item.agent_id)
         total_requested = math.fsum(item.amount for item in ordered)
         available = float(updated[position])
         target = min(available, total_requested)
-        allocations = (
-            [
-                item.amount
-                if total_requested <= available
-                else available * item.amount / total_requested
-                for item in ordered
-            ]
-            if total_requested
-            else [0.0 for _ in ordered]
-        )
+        allocations = [
+            0.0 if total_requested == 0.0 else min(1.0, available / total_requested) * item.amount
+            for item in ordered
+        ]
         if allocations:
             allocations[-1] += target - math.fsum(allocations)
         for intent, allocated in zip(ordered, allocations, strict=True):
-            by_agent[intent.agent_id] = ActionResolution(
+            resolutions[intent.agent_id] = ActionResolution(
                 intent.agent_id, intent.kind, harvested=allocated
             )
         updated[position] = available - target
 
+
+def _validated_stock_copy(resource_stock: FloatArray) -> FloatArray:
+    updated = np.asarray(resource_stock, dtype=np.float64).copy()
+    if updated.ndim != 2 or not np.isfinite(updated).all() or (updated < 0).any():
+        raise InvariantViolationError("resource stock must be a finite nonnegative 2D array")
+    return updated
+
+
+def resolve_actions(
+    resource_stock: FloatArray, decisions: Sequence[GateDecision]
+) -> ResolutionBatch:
+    """Resolve all allowed actions from one stage snapshot, by cell."""
+
+    updated = _validated_stock_copy(resource_stock)
+    resolutions, requests = _collect_requests(decisions, updated.shape)
+    _allocate_requests(updated, requests, resolutions)
     if (updated < -1e-12).any() or not np.isfinite(updated).all():
         raise InvariantViolationError("physical resolution produced invalid resource stock")
     updated[updated < 0] = 0
-    return ResolutionBatch.create(updated, by_agent)
+    return ResolutionBatch.create(updated, resolutions)
