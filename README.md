@@ -1,49 +1,61 @@
 # Social Cybernetics Sugarscape
 
-A research-first agent-based model of cognitive tools, adaptive behaviour, norm diffusion, and
-institutional emergence. The scientific model is specified independently of its Mesa runtime.
+A research-first agent-based modelling programme that separates three transformations of material
+opportunity:
 
-The executable target now includes the verified deterministic material control plus the v0.2
-ecological core: explicit heterogeneous landscapes, recoverable independent/correlated/system shocks,
-normalized event evidence, local observation, simultaneous harvest competition, metabolism, and
-mortality. It can also publish validated provenance-rich run bundles with Parquet records and complete
-streamed NetCDF spatial history, deterministic sequential batches, and validated paired-seed Morris
-sensitivity designs.
+1. objective ecological opportunity;
+2. privately perceived and adaptively actionable opportunity;
+3. socially accessible opportunity.
+
+Project 1 is fully implemented and frozen. Projects 2 and 3 are fully specified but intentionally
+non-executable until their own evidence gates open. The active programme does not model institutions,
+governance, firms, markets, class, demographic reproduction, or LLM agents.
+
+## Project status
+
+| Project | Scientific specification | Implementation | Evidence gates |
+| --- | --- | --- | --- |
+| Project 1 — ecology, provisioning, inequality | complete | complete | 7/7 frozen |
+| Project 2 — private perception and action | complete | not started | 0/7 frozen |
+| Project 3 — social information and circulation | complete | not started | 0/7 frozen |
+
+Project 1 includes heterogeneous renewable landscapes; a literal local harvest-or-move policy;
+simultaneous competition; metabolism and mortality; recoverable independent, correlated, and system
+shocks; registered RNG streams; immutable evidence; atomic Parquet/NetCDF run and batch bundles;
+Morris sensitivity; artifact-only analysis; and the executed 140-run P1-A–E experiment.
 
 ## Quick start
 
 ```bash
 conda-lock install --name social-cybernetics conda-lock.yml
 conda run -n social-cybernetics python -m pip install -e . --no-deps --no-build-isolation
-conda run -n social-cybernetics playwright install chromium
 conda run -n social-cybernetics scs validate --config configs/baseline.yml
 conda run -n social-cybernetics scs run --config configs/baseline.yml
-mkdir -p results
-conda run -n social-cybernetics scs run --config configs/baseline.yml --output results/run-001
-conda run -n social-cybernetics scs batch --spec configs/batch-v0.2.yml --output results/batch-v0.2
-conda run -n social-cybernetics scs batch --spec configs/verification-v0.2.yml --output results/verification-v0.2
-conda run -n social-cybernetics scs sensitivity --spec configs/sensitivity-v0.2.yml --output results/sensitivity-v0.2
 ```
 
-Output directories must not already exist. Run and batch bundles are validated in hidden sibling
-staging directories and atomically published only when complete; commands never overwrite prior
-results. A batch continues after individual run failures, publishes their typed index records without
-partial child bundles, and exits 1 if any run failed. Generated `results/` remain local and are
-ignored by Git.
-
-The checked sensitivity command is intentionally broad: it validates and then sequentially executes
-600 runs (180 independent, 240 correlated, and 180 system). Use its small test fixtures when checking
-the interface; run the canonical design only when the full experiment cost is intended.
-
-After `conda activate social-cybernetics`, the `just` recipes wrap the same commands:
+Run the complete Project 1 design and artifact-only analysis only when their full cost is intended:
 
 ```bash
-just test
+mkdir -p results
+conda run -n social-cybernetics scs project1-run \
+  --spec configs/project-1.yml --output results/project1-batch
+conda run -n social-cybernetics scs project1-analyze \
+  --spec configs/project-1.yml \
+  --batch results/project1-batch \
+  --output results/project1-analysis
+```
+
+Output destinations must not exist. Scientific directories are written into unique sibling staging
+directories, validated completely, and atomically published without overwrite. Generated `results/`
+remain local and are ignored by Git.
+
+Useful development commands:
+
+```bash
 just check
 just run
-just batch
-just verification
-just sensitivity
+just project1
+just project1-analysis
 just viz
 just browser-check
 ```
@@ -51,50 +63,46 @@ just browser-check
 ## Architecture
 
 ```text
-scientific specification
-        |
-CLI/config/visualisation -> Mesa runtime -> pure domain core
-                                      records -> analysis
+study specification
+      |
+CLI/config/visualization -> thin Mesa runtime -> pure Python domain
+                                      |
+                              immutable records
+                                      |
+                              artifact-only analysis
 ```
 
-- [Scientific specification](docs/model_specification.md)
+The domain never imports Mesa, Pydantic, pandas, Solara, or visualization code. Mesa cells own
+position and property-layer arrays; typed domain records own non-spatial state and evidence. Analysis
+never steps or mutates a live model.
+
+## Scientific authority
+
+- [Programme overview](docs/programme/overview.md)
+- [Canonical ODD+D specification](docs/model_specification.md)
+- [Project 1 package](docs/studies/project_1/specification.md)
+- [Project 1 frozen evidence](docs/studies/project_1/validation.md)
+- [Project 1 interpretation register](docs/studies/project_1/interpretation.md)
+- [Project 2 package](docs/studies/project_2/specification.md)
+- [Project 3 package](docs/studies/project_3/specification.md)
 - [Software architecture](docs/architecture.md)
-- [Model rules](docs/model_rules.md)
-- [Assumptions and limitations](docs/assumptions.md)
 - [Research roadmap](docs/research_roadmap.md)
-- [Architecture decisions](docs/adr/README.md)
-
-## Current scope
-
-Version 0.1 remains the no-shock control. Version 0.2 implements heterogeneous landscapes and
-recoverable ecological shocks, but still excludes adaptive learning, communication networks, norm
-diffusion, institutions, exchange, debt, and births. The literal policy intentionally has no energy
-cap, so a surviving agent's energy may grow without bound.
-
-Version 0.2 is implemented and verified. Its domain, runtime shock, persistent-output, deterministic
-batch, seeded sensitivity-design, ecological-verification, and shock-aware visualization slices are
-complete. Sensing, policy, gating, competition, and physiology stay fixed. See the completed
-[implementation plan](tasks/plan.md) and [task list](tasks/todo.md).
-
-The v0.2 debugging page is exercised in isolated Chromium and captured in the
-[stochastic-ecology reference screenshot](docs/solara-v0.2.png). It displays the heterogeneous
-resource field, living agents, energy, recovering cells, active shock events, and current damage.
-Installing Chromium is a one-time local step; the browser binary is not stored in the repository.
+- [Implementation plan and checklist](tasks/plan.md)
 
 ## Reproducibility
 
-- Python 3.12, Mesa 3.5.1, Solara 1.61, and compatible Vue 2 widgets are pinned through the project
-  metadata and Conda lock.
-- Every scientific random draw originates from a recorded model-owned substream.
-- Identical configuration, seed, stream registry, and software versions must yield an identical
-  trajectory.
-- Generated results are ignored. Each published bundle stores normalized configuration (including
-  realized explicit landscapes), seed and RNG registry, software metadata, summary, and immutable
-  record tables, plus tick-zero and every completed tick of ecological spatial state.
-- Each published batch retains its normalized base, explicit overrides, complete resolved
-  configurations, configuration hashes, ordered JSON/Parquet indexes, and successful child bundles.
-- The canonical sensitivity specification records the Morris design seed, factor ranges, and paired
-  model seeds; generated runs retain every realized configuration through the ordinary batch format.
+- Python 3.12 and Mesa 3.5.1 are pinned through project metadata and the Linux-64 Conda lock.
+- Every scientific random draw comes from a recorded model-owned substream.
+- Run bundles retain normalized configuration, software/RNG provenance, immutable Parquet records,
+  and tick-zero through final-tick NetCDF ecology.
+- Batch bundles retain ordered resolved configurations, hashes, indexes, and recursively validated
+  children.
+- Project 1 analysis cross-validates complete nested JSON outcomes against an explicit Arrow schema.
+- The final gate passed 259 tests at 90.80% branch-aware coverage, Ruff, Pyright, lock consistency, a
+  clean lock installation, baseline byte regression, and isolated browser stepping.
+
+The literal Project 1 policy intentionally has no energy cap. Model units and all experiment values
+remain abstract project choices until an empirical calibration study exists.
 
 ## License
 

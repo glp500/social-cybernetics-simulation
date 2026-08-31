@@ -1,88 +1,98 @@
-# Dependency-ordered Research Roadmap
+# Dependency-Ordered Three-Study Roadmap
 
-Calendar dates do not control this roadmap. A stage begins only when the preceding verification gate
-passes, and each experiment adds one identifiable mechanism with a matched control.
+Calendar dates and old `v0.x` labels do not control this roadmap. A project becomes executable only
+after its specification and literature gates are accepted, and it becomes complete only after all
+seven evidence gates freeze.
 
-## v0.1 — Deterministic material control
+## Programme sequence
 
-Renewable resource world, one fixed policy, explicit observation/belief/intent/gate/resolution
-boundaries, simultaneous competition, metabolism, mortality, in-memory records, CLI summary, and
-debugging visualisation.
+```text
+objective ecological opportunity
+    -> private perception and adaptive action
+        -> social information and bounded circulation
+```
 
-**Gate:** deterministic verification ladder and fixed-seed regression traces pass.
+## Project 1 — Ecology, provisioning, and inequality
 
-## v0.2 — Stochastic ecological baseline
+**Scientific status:** complete; all seven gates frozen.
 
-Add heterogeneous capacity landscapes, independent/correlated/system shocks, configuration-provenance
-bundles, Parquet event/cohort/model tables, complete NetCDF arrays, batch execution, and sensitivity
-analysis.
+**Implemented:** renewable homogeneous/explicit landscapes, literal local action, simultaneous
+competition, metabolism/mortality, independent/correlated/system recoverable shocks, isolated RNG
+streams, immutable transition/shock evidence, complete Parquet/NetCDF bundles, batches, Morris
+sensitivity, artifact-only outcomes, canonical P1-A–E execution, and bounded interpretation.
 
-**Status:** implemented and verified. Explicit realized matrices, three independent damage channels,
-finite cell-local recovery, concurrent stochastic wavefronts, normalized immutable evidence, and
-isolated RNG substreams are implemented in the pure core and Mesa runtime. Validated atomic Parquet
-bundles now persist configuration, provenance, summaries, and all immutable record types. Complete
-spatial NetCDF history now streams tick zero and every completed tick with bounded Python memory.
-Deterministic sequential batches now retain ordered resolved configuration provenance, failure-isolated
-child bundles, and equivalent JSON/Parquet indexes under one atomic publication. The seeded Morris
-workflow now validates explicit active factor paths, generates three paired-seed scope designs, and
-executes them only through that batch boundary. Published sham, mortality, and three-scope
-verification experiments now pass. The debugging page renders the heterogeneous resource field and
-live damage, recovery, and event counts without introducing alternate transitions. Final release
-reconciliation and a clean locked-environment gate passed on 2026-08-30.
+**Frozen evidence:** 140/140 canonical runs and 600/600 sensitivity runs completed. Exact identities,
+environment, commands, results, and limitations are in `docs/studies/project_1/validation.md` and
+`docs/studies/project_1/interpretation.md`.
 
-**Question:** how much inequality and mortality arise from ecology and energetic constraints alone?
+Project 1 mechanics must remain stable as the control for later projects. A change requires a new
+study/schema version and reopening affected gates.
 
-## v0.3 — Fixed cognitive-tool access
+## Project 2 — Private perception and action
 
-Compare exact local observation, shared extended observation, and unequal access while holding policy,
-ecology, and institutions fixed. Add radius before accuracy, delay, memory, or prediction.
+**Specification status:** complete.
 
-**Question:** how does exogenous information access change beliefs, action, survival, and inequality?
+**Implementation status:** not started; configuration remains fail-closed.
 
-## v0.4 — Private adaptation
+Dependency order:
 
-Add tabular Q-learning with a homeostatic private reward. Compare it to the literal fixed-policy
-control under identical tool-access conditions.
+1. freeze Project 1 control fixtures for every Project 2 comparison;
+2. implement composed Project 2 agent state and sensing channel `C=(radius, noise, delay)`;
+3. validate observation/belief histories and dedicated RNG streams;
+4. implement fixed-policy information-access comparisons;
+5. implement tabular Q-learning and matched fixed-policy controls;
+6. publish Project 2 evidence without migrating Project 1 tables silently;
+7. execute P2-A/P2-B experiments and freeze all seven gates.
 
-**Question:** which effects require learning rather than information alone?
+Project 2 excludes reports, networks, trust, diffusion, circulation, institutions, exchange, and
+demographics. Its exact mechanisms, experiments, analysis, boundaries, and implementation order are
+specified under `docs/studies/project_2/`.
 
-## v0.5 — Social tool diffusion and network feedback
+## Project 3 — Social information and bounded circulation
 
-Capabilities require repeated costly exposure. Communication edges accumulate trust from useful
-information, decay, and rewire through local exploration. Frozen-network and fixed-access runs remain
-controls.
+**Specification status:** complete.
 
-**Question:** when does information access equalise, concentrate, or fragment through social feedback?
+**Implementation status:** not started; configuration remains fail-closed.
 
-## v0.6 — Norm diffusion and enforcement
+Dependency order:
 
-Add payoff-biased imitation of a small resource-rule vocabulary. Agents may spend their principal
-action and energy to enforce an adopted rule on the current cell.
+1. select and freeze accepted Project 2 control regimes;
+2. implement report and source-provenance contracts;
+3. add trust feedback and separately controlled network rewiring;
+4. add complete-profile capability diffusion with frozen-network/fixed-access controls;
+5. verify relational accessibility, concentration, segregation, and diffusion measures;
+6. add D0–D3 bounded circulation probes with conserved physical material and conserved credit;
+7. execute the planned 330 runs and freeze all seven gates.
 
-**Question:** when do shared rules acquire persistent boundaries and enforcement?
+Project 3 credit is not money or debt. The study excludes institutions, governance, firms, wage
+labour, capital ownership, general markets, and demographic reproduction. Its exact mechanisms,
+experiments, accounting invariants, analysis, boundaries, and implementation order are specified
+under `docs/studies/project_3/`.
 
-## v0.7 — Nested governance and regime analysis
+## Protected extensions outside the active programme
 
-Permit local, regional, and system-scope rule adoption. Measure component size, rule entropy,
-connectivity, boundary persistence, enforcement, rejection/reallocation, cross-component ties, and
-nesting. Apply pre-registered Gaussian-mixture regime discovery with stability analysis.
+The following ideas are intentionally neither Project 2 nor Project 3 backlog items:
 
-**Question:** when do centralised, local, polycentric, or recursive diffusion patterns emerge?
+- norm diffusion, costly enforcement, bounded institutions, or polycentric governance;
+- stored asset ownership, firms, wage labour, prices, markets, loans, or debt ledgers;
+- births, inheritance, demographic turnover, or intergenerational reproduction;
+- productivity-changing physical tools;
+- LLM-controlled agents;
+- composite welfare or institutional-regime scores.
 
-## v0.8 — Economic relations
+They require a new programme decision, their own ontology and mechanism evidence, and a fresh
+specification. Archived source ideas and the reason for exclusion remain traceable in
+`docs/refactor_crosswalk.md`; they do not silently widen current code.
 
-Introduce stored holdings before transfer, then need-based transfer, exchange, loans, repayment,
-default, and a directed debt ledger. Every transfer preserves material accounting; debt changes future
-claims, not physical stock.
+## Seven gates per project
 
-## v0.9 — Demographic extension
+1. **Specification:** equations, ordering, state, edge cases, and exclusions are authoritative.
+2. **Literature:** supporting evidence, counterevidence/boundaries, and project choices are explicit.
+3. **Verification:** mechanism examples, invariants, properties, regressions, and architecture pass.
+4. **Sensitivity:** influential controls and non-identifiable regions are documented.
+5. **Experiment:** preregistered designs execute into validated immutable evidence.
+6. **Analysis:** artifact-only raw outcomes, summaries, contrasts, and definedness are frozen.
+7. **Interpretation:** claims, alternatives, missing mechanisms, and prohibited conclusions are frozen.
 
-Add births, migration, demographic turnover, and inheritance only after holdings and mortality
-accounting are verified. Results from this extension cannot be compared directly with fixed-cohort
-runs without an explicit demographic decomposition.
-
-## Analysis freeze
-
-After the final mechanism version is chosen, feature development stops. Work shifts to verification,
-sensitivity, replications, phase diagrams, trade-off surfaces, figures, ODD+D reconciliation, and a
-tagged reproducible release.
+A successful software build does not complete a scientific project. Conversely, a complete future
+specification does not make a mechanism executable.

@@ -1,52 +1,52 @@
 # Social Cybernetics Sugarscape Dashboard
 
-## Canonical model documents
+## Programme status
 
-- [[model_specification|Scientific specification (ODD+D)]]
+| Study | Specification | Implementation | Freeze gates |
+| --- | --- | --- | --- |
+| [[studies/project_1/specification|Project 1 — objective ecological opportunity]] | complete | complete | 7/7 frozen |
+| [[studies/project_2/specification|Project 2 — private perception and action]] | complete | not started | 0/7 |
+| [[studies/project_3/specification|Project 3 — social information and circulation]] | complete | not started | 0/7 |
+
+Project 1 completed on 2026-08-31 with 140/140 canonical runs, 600/600 Morris sensitivity runs,
+artifact-only analysis, bounded interpretation, 259 passing tests at 90.80% coverage, clean-lock and
+browser verification. Exact evidence identities are in [[studies/project_1/validation]].
+
+Projects 2 and 3 are deliberately fail-closed. Their complete documents define mechanisms,
+experiments, measures, exclusions, and implementation order without claiming executable behavior.
+
+## Canonical authority
+
+- [[programme/overview|Programme overview]]
+- [[model_specification|Canonical scientific specification (ODD+D)]]
+- [[programme/shared_ontology|Shared ontology]]
+- [[programme/causal_map|Cross-study causal map]]
+- [[programme/interpretation_protocol|Interpretation protocol]]
+- [[programme/claims_and_limits|Programme claims and limits]]
 - [[architecture|Software architecture]]
-- [[model_rules|Non-negotiable model rules]]
-- [[assumptions|Assumptions and limitations]]
-- [[research_roadmap|Dependency-ordered roadmap]]
+- [[research_roadmap|Dependency-ordered three-study roadmap]]
 - [[adr/README|Architecture decisions]]
+- [[experiment_log|Experiment log]]
 
-## Version 0.1 implementation status
+## Project 1 evidence
 
-- [x] Environment
-- [x] Agent state
-- [x] Observation and belief boundaries
-- [x] Action intents and simultaneous resolution
-- [x] Metabolism and mortality
-- [x] Mesa runtime
-- [x] CLI and in-memory records
-- [x] Debugging visualization
-- [x] Verification ladder
+- [[studies/project_1/specification|Specification]]
+- [[studies/project_1/theory|Theory]]
+- [[studies/project_1/hypotheses|Hypotheses]]
+- [[studies/project_1/experiments|Experiments]]
+- [[studies/project_1/validation|Seven-gate validation register]]
+- [[studies/project_1/analysis_plan|Analysis plan]]
+- [[studies/project_1/interpretation|Frozen result interpretation]]
+- [[studies/project_1/claims_and_limits|Claims and limits]]
 
-Version 0.1 implementation and reconciliation completed on 2026-08-29. The exact evidence and known
-limitations are recorded in [[experiment_log|the experiment log]].
+## Active implementation queue
 
-Later communication, cognitive-tool, institution, and economic layers are specified in the roadmap,
-not counted as unfinished version 0.1 work.
+Project 1 has no open implementation tasks. Before Project 2 code begins, reopen its specification and
+literature gates explicitly; do not add dormant Project 2/3 state to the shared Project 1 core.
 
-## Active version 0.2 phase
-
-- [x] Explicit heterogeneous landscape configuration
-- [x] Select shock semantics after reviewing alternatives and tradeoffs
-- [x] Pure independent, correlated, and system shocks under the selected semantics
-- [x] Runtime shock evidence and fixed-seed regressions
-- [x] Provenance-rich fail-closed Parquet bundles
-- [x] Complete streamed NetCDF spatial history
-- [x] Deterministic batch execution
-- [x] Seeded sensitivity workflow
-- [x] Ecological verification experiments
-- [x] Shock-aware debugging visualization
-- [x] Final release reconciliation
-
-Work is dependency-ordered in [[../tasks/plan|tasks/plan.md]] and tracked in
-[[../tasks/todo|tasks/todo.md]]. The shock literature, design, implementation, and runtime gates are
-complete; persistent Parquet and streamed NetCDF output are also implemented. Deterministic,
-failure-isolated batch publication, the three-scope paired-seed Morris workflow, and published
-ecological verification experiments, shock-aware browser debugging, documentation reconciliation,
-and the clean locked-environment gate are complete. Version 0.2 is verified.
+- [[../tasks/plan|Implementation plan]]
+- [[../tasks/todo|Verified task checklist]]
+- [[refactor_crosswalk|Full-refactor requirements crosswalk]]
 
 ## Active reading queue
 
@@ -57,16 +57,7 @@ WHERE type = "literature-note"
 SORT status ASC, year DESC
 ```
 
-## Mechanism backlog
-
-```dataview
-TABLE mechanisms, model_family, implementation_links
-FROM "docs/literature/items"
-WHERE type = "literature-note"
-SORT file.mtime DESC
-```
-
-## Model decision notes
+## Architecture decisions
 
 ```dataview
 LIST
