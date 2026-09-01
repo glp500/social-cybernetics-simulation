@@ -81,6 +81,8 @@ never steps or mutates a live model.
 - [Programme overview](docs/programme/overview.md)
 - [Canonical ODD+D specification](docs/model_specification.md)
 - [Project 1 package](docs/studies/project_1/specification.md)
+- [Project 1 reading guide](docs/studies/project_1/reading_guide.md)
+- [Project 1 code review](docs/studies/project_1/code_review.md)
 - [Project 1 frozen evidence](docs/studies/project_1/validation.md)
 - [Project 1 interpretation register](docs/studies/project_1/interpretation.md)
 - [Project 2 package](docs/studies/project_2/specification.md)

@@ -56,9 +56,11 @@ allow-all gating, simultaneous harvest allocation, and unrestricted movement.
 
 ## Runtime orchestration
 
-The Mesa model owns the run seed and all random generators. Its `step()` method is intentionally a
-short, readable transcription of the documented scheduler. Agent methods do not mutate environment
-layers or other agents; they produce observations, beliefs, and intents for model-level resolution.
+The Mesa model owns the run seed and all random generators. Its `step()` method is intentionally one
+explicitly numbered transcription of the documented scheduler. It stays linear—even though it is
+longer than a typical application method—so reviewers can audit scientific ordering without jumping
+between orchestration helpers. Agent methods do not mutate environment layers or other agents; they
+produce observations, beliefs, and intents for model-level resolution.
 
 Mesa-specific APIs are contained under `social_cybernetics.runtime.mesa`. A future Mesa migration must
 not change domain contracts or scientific equations.
@@ -109,6 +111,8 @@ scs run --config configs/baseline.yml
 scs run --config configs/baseline.yml --output results/run-001
 scs batch --spec configs/batch-v0.2.yml --output results/batch-v0.2
 scs sensitivity --spec configs/sensitivity-v0.2.yml --output results/sensitivity-v0.2
+scs project1-run --spec configs/project-1.yml --output results/project1-batch
+scs project1-analyze --spec configs/project-1.yml --batch results/project1-batch --output results/project1-analysis
 just viz
 ```
 
@@ -132,9 +136,10 @@ not have a sensitivity-specific implementation.
 
 ## Persistent-output boundary
 
-`social_cybernetics.persistence` consumes validated configuration, the deterministic JSON summary,
-immutable domain records, and the runtime's recorded RNG registry. It does not depend on Mesa or
-analysis data frames. Run-bundle schema v0.2 has this exact layout:
+`social_cybernetics.run_tables` owns explicit Arrow schemas and converts immutable domain records to
+tables. `social_cybernetics.persistence` owns validation, staging, provenance, manifests, and atomic
+publication. Neither depends on Mesa or analysis data frames. Run-bundle schema v1.1 has this exact
+layout:
 
 ```text
 run-001/
@@ -146,6 +151,7 @@ run-001/
   tables/
     model.parquet
     cohort.parquet
+    agent_transitions.parquet
     agent_events.parquet
     shock_events.parquet
     shock_exposures.parquet
@@ -238,7 +244,8 @@ src/social_cybernetics/
   metrics.py                pure public metrics
   analysis/                 pure Project 1 metrics, aggregation, and artifact readers
   project1_experiments.py   validated P1-A--E design expansion
-  persistence.py            run-bundle staging, manifests, Parquet, and atomic publication
+  run_tables.py             immutable record collections, Arrow schemas, and table encoding
+  persistence.py            run-bundle validation, staging, manifests, and atomic publication
   persistence_errors.py     shared fail-closed output errors
   spatial_output.py         incremental NetCDF spatial writer and validator
   domain/                   framework-independent state and mechanisms
