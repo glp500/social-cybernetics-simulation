@@ -16,6 +16,8 @@ def apply_metabolism(
     basal_cost: float,
     movement_cost: float,
 ) -> tuple[AgentState, bool]:
+    """Apply harvest conversion and costs, clamping energy to zero on death."""
+
     if not state.alive:
         raise InvariantViolationError("dead agents cannot be metabolized")
     values = (state.energy, harvested, conversion_efficiency, basal_cost, movement_cost)

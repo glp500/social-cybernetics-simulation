@@ -50,6 +50,8 @@ def literal_local_policy(
 
 
 def allow_all(intent: ActionIntent) -> GateDecision:
+    """Return Project 1's identity-like institutional control decision."""
+
     return GateDecision(intent.agent_id, True, intent)
 
 

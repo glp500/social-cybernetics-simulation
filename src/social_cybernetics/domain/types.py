@@ -15,30 +15,42 @@ type IntArray = NDArray[np.int64]
 
 
 class ActionKind(StrEnum):
+    """Mutually exclusive intents available to the physical resolver."""
+
     HARVEST = "harvest"
     MOVE = "move"
     REST = "rest"
 
 
 class ShockEventStatus(StrEnum):
+    """Lifecycle state recorded for a correlated shock event."""
+
     ACTIVE = "active"
     TERMINATED = "terminated"
 
 
 class ShockTerminationReason(StrEnum):
+    """Exhaustive reasons why a shock can stop propagating."""
+
     FRONTIER_EXHAUSTED = "frontier_exhausted"
     MAX_SPREAD_TICKS = "max_spread_ticks"
     NONSPREADING = "nonspreading"
 
 
 class ShockScope(StrEnum):
+    """Spatial correlation treatment used by an ecological shock."""
+
     INDEPENDENT = "independent"
     CORRELATED = "correlated"
     SYSTEM = "system"
 
 
+# Agent-stage contracts are deliberately separate: later studies may replace one
+# transformation without widening the authoritative material state used here.
 @dataclass(frozen=True, slots=True)
 class AgentState:
+    """Authoritative non-spatial state for one original cohort member."""
+
     agent_id: AgentId
     energy: float
     alive: bool = True
@@ -46,6 +58,8 @@ class AgentState:
 
 @dataclass(frozen=True, slots=True)
 class AgentSnapshot:
+    """Immutable stage view combining Mesa-owned position with domain state."""
+
     tick: int
     agent_id: AgentId
     position: Position
@@ -77,6 +91,8 @@ class AgentTransitionRecord:
 
 @dataclass(frozen=True, slots=True)
 class Observation:
+    """Environmental information delivered to an agent during observation."""
+
     agent_id: AgentId
     position: Position
     local_stock: float
@@ -84,12 +100,16 @@ class Observation:
 
 @dataclass(frozen=True, slots=True)
 class BeliefState:
+    """Decision-facing belief kept distinct from its source observation."""
+
     agent_id: AgentId
     believed_local_stock: float
 
 
 @dataclass(frozen=True, slots=True)
 class ActionIntent:
+    """Side-effect-free action request produced before institutional gating."""
+
     agent_id: AgentId
     kind: ActionKind
     position: Position
@@ -107,6 +127,8 @@ class ActionIntent:
 
 @dataclass(frozen=True, slots=True)
 class GateDecision:
+    """Institutional response to an intent; Project 1 always allows it."""
+
     agent_id: AgentId
     allowed: bool
     intent: ActionIntent
@@ -115,6 +137,8 @@ class GateDecision:
 
 @dataclass(frozen=True, slots=True)
 class ActionResolution:
+    """Authoritative physical result for one gated action."""
+
     agent_id: AgentId
     kind: ActionKind
     harvested: float = 0.0
@@ -125,6 +149,8 @@ class ActionResolution:
 
 @dataclass(frozen=True, slots=True)
 class ResolutionBatch:
+    """Simultaneous resource update and canonically ordered agent results."""
+
     resource_stock: FloatArray
     by_agent: Mapping[AgentId, ActionResolution]
 
@@ -135,8 +161,12 @@ class ResolutionBatch:
         return cls(resource_stock, MappingProxyType(dict(sorted(by_agent.items()))))
 
 
+# Shock state distinguishes parameters, recoverable cell state, event propagation,
+# and append-only evidence so overlapping events never create competing truths.
 @dataclass(frozen=True, slots=True)
 class DamageParameters:
+    """Dimensionless damage and recovery controls shared by shock scopes."""
+
     stock_loss_fraction: float
     capacity_loss_fraction: float
     regeneration_suppression_fraction: float
@@ -145,6 +175,8 @@ class DamageParameters:
 
 @dataclass(frozen=True, slots=True)
 class RecoveryState:
+    """Immutable effective ecology and linear increments for cell recovery."""
+
     effective_capacity: FloatArray
     effective_regeneration: FloatArray
     remaining_ticks: IntArray
@@ -174,6 +206,8 @@ class RecoveryState:
 
 @dataclass(frozen=True, slots=True)
 class CellDamageApplication:
+    """One authoritative cell transition after combining same-tick event hits."""
+
     tick: int
     position: Position
     event_ids: tuple[int, ...]
@@ -191,6 +225,8 @@ class CellDamageApplication:
 
 @dataclass(frozen=True, slots=True)
 class DamageBatch:
+    """Immutable ecological result of applying all same-tick cell damage."""
+
     resource_stock: FloatArray
     recovery: RecoveryState
     applications: tuple[CellDamageApplication, ...]
@@ -209,6 +245,8 @@ class DamageBatch:
 
 @dataclass(frozen=True, slots=True)
 class ShockEventState:
+    """Current propagation state for one run-local correlated event."""
+
     event_id: int
     initiation_tick: int
     epicenter: Position
@@ -250,6 +288,8 @@ class ShockEventState:
 
 @dataclass(frozen=True, slots=True)
 class EventCellExposure:
+    """Attempted and successful frontier transmissions to one target cell."""
+
     tick: int
     event_id: int
     position: Position
@@ -263,6 +303,8 @@ class EventCellExposure:
 
 @dataclass(frozen=True, slots=True)
 class WavefrontAdvance:
+    """Pure result of advancing one correlated event by one spread round."""
+
     event: ShockEventState
     exposures: tuple[EventCellExposure, ...]
     newly_affected: tuple[Position, ...]
@@ -270,6 +312,8 @@ class WavefrontAdvance:
 
 @dataclass(frozen=True, slots=True)
 class ShockEventSnapshot:
+    """Immutable per-tick event evidence retained for trajectory reconstruction."""
+
     tick: int
     event_id: int
     scope: ShockScope
@@ -286,8 +330,12 @@ class ShockEventSnapshot:
     termination_reason: ShockTerminationReason | None = None
 
 
+# Measurement records are append-only evidence. They are not mutable model state and
+# derived Project 1 metrics must be calculated from them after publication.
 @dataclass(frozen=True, slots=True)
 class ModelRecord:
+    """Model-level outcome snapshot at tick zero or a completed tick."""
+
     tick: int
     total_resources: float
     alive_count: int
@@ -299,12 +347,16 @@ class ModelRecord:
 
 @dataclass(frozen=True, slots=True)
 class CohortRecord:
+    """Snapshot of an original cohort member, including archived dead agents."""
+
     tick: int
     snapshot: AgentSnapshot
 
 
 @dataclass(frozen=True, slots=True)
 class EventRecord:
+    """Normalized movement, harvest, or mortality event emitted by the runtime."""
+
     tick: int
     event: str
     agent_id: AgentId | None = None

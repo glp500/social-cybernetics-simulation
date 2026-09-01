@@ -18,10 +18,14 @@ from .types import (
 
 
 class ObservationSystem(Protocol):
+    """Contract for converting an agent snapshot and environment into information."""
+
     def __call__(self, snapshot: AgentSnapshot, local_stock: float) -> Observation: ...
 
 
 class DecisionPolicy(Protocol):
+    """Contract for producing one side-effect-free intent per living agent."""
+
     def __call__(
         self,
         snapshot: AgentSnapshot,
@@ -35,10 +39,14 @@ class DecisionPolicy(Protocol):
 
 
 class InstitutionalGate(Protocol):
+    """Contract for permitting, rejecting, or later modifying action access."""
+
     def __call__(self, intent: ActionIntent) -> GateDecision: ...
 
 
 class PhysicalResolver(Protocol):
+    """Contract for resolving a complete decision stage simultaneously."""
+
     def __call__(
         self, resource_stock: FloatArray, decisions: Sequence[GateDecision]
     ) -> ResolutionBatch: ...
