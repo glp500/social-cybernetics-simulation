@@ -32,6 +32,8 @@ experiments, measures, exclusions, and implementation order without claiming exe
 ## Project 1 evidence
 
 - [[studies/project_1/specification|Specification]]
+- [[studies/project_1/reading_guide|Human reading guide]]
+- [[studies/project_1/code_review|Code review and readability audit]]
 - [[studies/project_1/theory|Theory]]
 - [[studies/project_1/hypotheses|Hypotheses]]
 - [[studies/project_1/experiments|Experiments]]

@@ -30,6 +30,19 @@
 Large bundles remain in ignored local `results/` storage. Their hashes identify the reviewed
 evidence and the commands below regenerate it, but no external archive or DOI is claimed.
 
+## Post-freeze reader-readiness maintenance
+
+On 2026-09-01, checkpoint `b60e0ea` completed a behavior-preserving readability review. Arrow
+schemas and record encoding moved to `run_tables.py`; established persistence imports remained
+compatible. Every production module and public top-level contract now has a purpose docstring, and
+dense execution/evidence files identify layer ownership and independent validation paths. The Mesa
+scheduler remained linear after a candidate helper split proved larger and harder to audit.
+
+The post-maintenance gate passed all 263 tests at 90.86% branch-aware coverage, Ruff formatting and
+lint, Pyright standard, dependency synchronization, and Linux-64 lock-input consistency. No scientific
+mechanism, configuration, schema, frozen artifact, or interpretation changed, so evidence identities
+above remain authoritative and were not regenerated.
+
 ## Exact environment and commands
 
 The normal and clean-lock checks used Linux-64, Python 3.12.14, Mesa 3.5.1, NumPy 2.5.2, Pydantic

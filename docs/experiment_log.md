@@ -1,5 +1,21 @@
 # Experiment Log
 
+## 2026-09-01 — Project 1 reader-readiness maintenance
+
+**Status:** behavior-preserving source and documentation review complete
+
+Separated immutable record-table schemas/encoding from atomic run-bundle publication without changing
+public imports or artifact schemas. Audited correctness, readability, architecture, source security,
+and intended-scale performance. No critical or required runtime defect remains open. A proposed Mesa
+scheduler helper split was rejected because it added 55 lines and hid the scientific stage sequence.
+
+Every production module and public top-level contract now states its purpose. Dense batch,
+persistence, run-table, artifact-analysis, and Mesa modules explain responsibility and reader flow;
+comments remain focused on scientific or architectural intent. Added a Project 1 reading guide and a
+durable severity-ranked review. The full gate passed 263 tests at 90.86% branch-aware coverage, Ruff,
+Pyright, dependency synchronization, and lock-input consistency. Frozen Project 1 artifacts were not
+modified or regenerated.
+
 ## 2026-08-31 — Complete aggregate-analysis evidence
 
 **Status:** final Project 1 analysis contract frozen
