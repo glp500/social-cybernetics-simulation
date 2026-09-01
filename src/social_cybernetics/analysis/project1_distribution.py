@@ -20,12 +20,16 @@ from .project1 import _validated_transitions
 
 @dataclass(frozen=True, slots=True)
 class DefinedFloat:
+    """A measure that preserves why its numeric value is mathematically undefined."""
+
     value: float | None
     reason: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
 class DistributionMetrics:
+    """Final-cohort material totals, inequality, and fixed-group incidence shares."""
+
     cumulative_harvest: tuple[tuple[int, float], ...]
     cumulative_unmet_need: tuple[tuple[int, float], ...]
     harvest_gini: float
@@ -37,6 +41,8 @@ class DistributionMetrics:
 
 @dataclass(frozen=True, slots=True)
 class RankTransition:
+    """Midpoint-to-final quartile counts with conditional row probabilities."""
+
     counts: tuple[tuple[int, ...], ...]
     probabilities: tuple[tuple[float, ...], ...]
     row_defined: tuple[bool, ...]
@@ -44,6 +50,8 @@ class RankTransition:
 
 @dataclass(frozen=True, slots=True)
 class DurationSummary:
+    """Observed advantage-spell lengths and their simple descriptive summary."""
+
     spell_lengths: tuple[int, ...]
     mean: float
     maximum: int
@@ -51,6 +59,8 @@ class DurationSummary:
 
 @dataclass(frozen=True, slots=True)
 class HalfLife:
+    """Descriptive inequality decay after the earliest observed peak."""
+
     value: int
     peak_tick: int
     right_censored: bool
@@ -58,6 +68,8 @@ class HalfLife:
 
 @dataclass(frozen=True, slots=True)
 class PersistenceMetrics:
+    """Longitudinal rank, transition, duration, and inequality-decay evidence."""
+
     material_rank_autocorrelation: DefinedFloat
     rank_transition: RankTransition
     advantage_duration: DurationSummary
@@ -103,6 +115,8 @@ def calculate_distribution(
     *,
     completed_ticks: int,
 ) -> DistributionMetrics:
+    """Calculate separate harvest, final-energy, and unmet-need distributions."""
+
     ordered = _validated_transitions(transitions, completed_ticks)
     agent_ids, final_energy = _cohort_ids_and_final_energy(cohort, completed_ticks)
     harvest = {agent_id: 0.0 for agent_id in agent_ids}
@@ -220,6 +234,8 @@ def calculate_persistence(
     *,
     completed_ticks: int,
 ) -> PersistenceMetrics:
+    """Calculate cumulative-harvest persistence across the completed run."""
+
     ordered = _validated_transitions(transitions, completed_ticks)
     agent_ids, _ = _cohort_ids_and_final_energy(cohort, completed_ticks)
     histories = _cumulative_histories(ordered, agent_ids, completed_ticks)

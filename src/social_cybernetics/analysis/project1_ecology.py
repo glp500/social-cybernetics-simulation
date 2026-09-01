@@ -14,6 +14,8 @@ type IntArray = NDArray[np.int64]
 
 @dataclass(frozen=True, slots=True)
 class SeriesSummary:
+    """A complete normalized path plus final, mean, and maximum values."""
+
     values: tuple[float, ...]
     final: float
     mean: float
@@ -22,6 +24,8 @@ class SeriesSummary:
 
 @dataclass(frozen=True, slots=True)
 class RecoverySpell:
+    """One cell's consecutive observed recovery interval."""
+
     position: tuple[int, int]
     start_tick: int
     end_tick: int
@@ -31,6 +35,8 @@ class RecoverySpell:
 
 @dataclass(frozen=True, slots=True)
 class EcologyMetrics:
+    """Resource, effective-ecology, and recovery outcomes kept as a vector."""
+
     resource_depletion: SeriesSummary
     capacity_deficit: SeriesSummary
     regeneration_deficit: SeriesSummary

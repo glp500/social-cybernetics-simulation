@@ -11,6 +11,8 @@ from social_cybernetics.domain import AgentTransitionRecord
 
 @dataclass(frozen=True, slots=True)
 class ShortfallSpell:
+    """One consecutive period of positive post-metabolism viability shortfall."""
+
     agent_id: int
     start_tick: int
     end_tick: int
@@ -20,6 +22,8 @@ class ShortfallSpell:
 
 @dataclass(frozen=True, slots=True)
 class SubsistenceSecurity:
+    """Separate frequency, duration, depth, and catastrophe security measures."""
+
     shortfall_frequency: float
     spells: tuple[ShortfallSpell, ...]
     mean_spell_length: float

@@ -22,6 +22,8 @@ from .project1_ecology import EcologyMetrics, calculate_ecology
 
 @dataclass(frozen=True, slots=True)
 class Project1Outcome:
+    """One run's non-composite material, security, distribution, and ecology vector."""
+
     seed: int
     completed_ticks: int
     cohort_size: int
@@ -34,6 +36,8 @@ class Project1Outcome:
     ecology: EcologyMetrics
 
     def as_payload(self) -> dict[str, Any]:
+        """Return the immutable outcome as a schema-versioned JSON-safe mapping."""
+
         return {"schema_version": "scs-project1-outcome/v1.0.0", **asdict(self)}
 
 
