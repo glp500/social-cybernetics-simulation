@@ -1,3 +1,5 @@
+"""Small public distribution metrics shared by runtime and Project 1 analysis."""
+
 from __future__ import annotations
 
 import math
@@ -8,6 +10,8 @@ import numpy as np
 
 @dataclass(frozen=True, slots=True)
 class RankedShare:
+    """A fixed-size group share plus selection and cutoff-tie metadata."""
+
     value: float
     group_size: int
     cutoff_tie_count: int

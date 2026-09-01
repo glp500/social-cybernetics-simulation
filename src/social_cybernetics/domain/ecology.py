@@ -23,6 +23,8 @@ class InvariantViolationError(ValueError):
 
 
 def validate_resource_arrays(stock: FloatArray, capacity: FloatArray) -> None:
+    """Require matching finite 2D arrays with stock inside baseline capacity."""
+
     if stock.shape != capacity.shape or stock.ndim != 2:
         raise InvariantViolationError("resource stock and capacity must be equal-shaped 2D arrays")
     if not np.isfinite(stock).all() or not np.isfinite(capacity).all():
