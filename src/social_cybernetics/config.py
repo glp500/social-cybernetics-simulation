@@ -18,6 +18,8 @@ class StrictModel(BaseModel):
 
 
 class WorldConfig(StrictModel):
+    """Project 1 grid geometry and its fixed unlimited-occupancy rule."""
+
     width: int = Field(default=5, ge=1)
     height: int = Field(default=5, ge=1)
     torus: bool = True
@@ -25,6 +27,8 @@ class WorldConfig(StrictModel):
 
 
 class ResourceConfig(StrictModel):
+    """Uniform baseline capacity, initial stock, and relaxation rate."""
+
     kind: Literal["uniform"] = "uniform"
     capacity: float = Field(default=10.0, ge=0)
     initial_stock: float = Field(default=10.0, ge=0)
@@ -76,6 +80,8 @@ type ResourceVariant = Annotated[
 
 
 class AgentConfig(StrictModel):
+    """Initial cohort, viability, movement, harvest, and conversion controls."""
+
     count: int = Field(default=1, ge=0)
     initial_positions: tuple[Position, ...] = ((2, 2),)
     initial_energy: float = Field(default=10.0, ge=0)
@@ -94,10 +100,14 @@ class AgentConfig(StrictModel):
 
 
 class LiteralLocalPolicyConfig(StrictModel):
+    """Discriminator for Project 1's only implemented decision policy."""
+
     kind: Literal["literal_local"] = "literal_local"
 
 
 class NoShockConfig(StrictModel):
+    """Explicit ecological control with no disturbance draws or damage."""
+
     kind: Literal["none"] = "none"
 
 
@@ -112,16 +122,22 @@ class DamageShockConfig(StrictModel):
 
 
 class IndependentShockConfig(DamageShockConfig):
+    """Per-cell independent Bernoulli disturbance configuration."""
+
     kind: Literal["independent"] = "independent"
 
 
 class CorrelatedShockConfig(DamageShockConfig):
+    """Concurrent stochastic wavefront disturbance configuration."""
+
     kind: Literal["correlated"] = "correlated"
     spread_probability: float = Field(ge=0, le=1)
     max_spread_ticks: int = Field(ge=0)
 
 
 class SystemShockConfig(DamageShockConfig):
+    """Whole-grid Bernoulli disturbance configuration."""
+
     kind: Literal["system"] = "system"
 
 
@@ -132,6 +148,8 @@ type ShockVariant = Annotated[
 
 
 class AllowAllGateConfig(StrictModel):
+    """Discriminator for Project 1's identity-like institutional control."""
+
     kind: Literal["allow_all"] = "allow_all"
 
 

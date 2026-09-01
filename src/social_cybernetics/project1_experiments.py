@@ -112,6 +112,8 @@ class Project1ExperimentSpecification(_StrictProject1Model):
 
 @dataclass(frozen=True, slots=True)
 class ResolvedProject1Run:
+    """One study-labelled run backed by a fully resolved batch contract."""
+
     experiment_id: str
     condition_id: str
     seed: int
@@ -124,6 +126,8 @@ class ResolvedProject1Run:
 
 @dataclass(frozen=True, slots=True)
 class ResolvedProject1Design:
+    """Validated Project 1 plan, ordinary batch plan, and ordered run crosswalk."""
+
     source_path: Path
     specification: Project1ExperimentSpecification
     batch: ResolvedBatchSpecification

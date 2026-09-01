@@ -14,6 +14,8 @@ from social_cybernetics.runtime.mesa.model import SugarscapeModel
 
 
 def agent_portrayal(agent: ForagerAgent) -> AgentPortrayalStyle:
+    """Render one living wrapper using its Mesa position and domain energy."""
+
     cell = agent.cell
     if cell is None:
         raise ValueError("only living spatial agents may be portrayed")
@@ -30,6 +32,8 @@ def agent_portrayal(agent: ForagerAgent) -> AgentPortrayalStyle:
 
 
 def property_layer_portrayal(layer: PropertyLayer) -> PropertyLayerStyle | None:
+    """Render resource intensity without changing the property layer."""
+
     if layer.name != "resource_stock":
         return None
     return PropertyLayerStyle(
@@ -42,6 +46,8 @@ def property_layer_portrayal(layer: PropertyLayer) -> PropertyLayerStyle | None:
 
 
 def metric_values(model: SugarscapeModel) -> dict[str, float | int]:
+    """Expose read-only debugging measures derived from records and layers."""
+
     latest = model.model_records[-1]
     tick = model.completed_ticks
     return {
