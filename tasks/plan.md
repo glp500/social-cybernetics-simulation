@@ -150,6 +150,25 @@ prohibited conclusions.
 28. Run focused tests after every slice, then `just check`, isolated browser verification, baseline
     byte regression, bundle validation, and a clean lock installation.
 
+## Phase G — Reader-readiness maintenance
+
+29. Re-review Project 1 across correctness, readability, architecture, security, and performance.
+30. Separate record-table encoding from atomic publication without changing public imports or evidence.
+31. Audit source documentation and explain public contracts and dense module boundaries without
+    narrating self-evident syntax.
+32. Publish a human-first theory-to-code-to-results reading path and reconcile architectural details.
+33. Repeat the full repository quality gate after the maintenance slice.
+
+### Checkpoint G
+
+- No critical or required code-review finding remains open.
+- Project 1's scheduler remains a direct, numbered transcription of the scientific order.
+- Every production module and public top-level contract states its purpose; dense files identify their
+  responsibility and reader path.
+- A new reader can trace configuration, mechanisms, records, analysis, and claim boundaries from one
+  maintained guide.
+- Readability-only changes preserve schemas, deterministic trajectories, and frozen evidence identities.
+
 ## Risks and mitigations
 
 | Risk | Impact | Mitigation |

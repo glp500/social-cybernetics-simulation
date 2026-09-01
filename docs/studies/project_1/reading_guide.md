@@ -68,6 +68,9 @@ published records and never steps a model. The domain imports neither Mesa nor a
 | Which behavior is protected? | `tests/integration/test_mesa_runtime.py`, `tests/property/`, `tests/architecture/` | These lock scheduler order, deterministic trajectories, invariants, and boundaries. |
 
 All source paths in this guide are relative to `src/social_cybernetics/` unless stated otherwise.
+Each production module and public top-level contract has a purpose docstring. In dense files, section
+comments mark ownership and the transition from writing to independent validation; use those as the
+next level of navigation after this table.
 
 ## One tick, from theory to evidence
 

@@ -267,3 +267,35 @@ verification evidence, not merely code presence.
     100% specification, 0% implementation, and zero of seven frozen evidence gates; overall executable
     programme implementation is one of three studies (about 33%), while the requested refactor scope
     itself is complete.
+
+## Phase G — Reader-readiness maintenance
+
+- [x] G1. Apply a fresh simplification and multi-axis review to Project 1 production code.
+  - Acceptance: responsibilities are explainable, scientific stages remain auditable, established
+    imports remain compatible, and no behavior or artifact schema changes.
+  - Evidence: Arrow schemas/encoding moved to `run_tables.py`; fail-closed publication remains in
+    `persistence.py`; 41 focused persistence/CLI/architecture tests, Ruff, and Pyright pass. A proposed
+    scheduler-helper split was discarded because it added 55 lines and obscured the linear protocol.
+  - Files: `src/social_cybernetics/run_tables.py`, `src/social_cybernetics/persistence.py`,
+    `docs/studies/project_1/code_review.md`.
+- [x] G2. Publish and link a human-first Project 1 reading path.
+  - Acceptance: a reader can move from theory through the eleven stages, authoritative state,
+    artifacts, metrics, interpretation, safe changes, and a data-update workflow.
+  - Evidence: the reading guide maps questions to code and tests; architecture now records run-bundle
+    v1.1, the transition table, Project 1 CLI commands, and the intentional linear scheduler.
+  - Files: `docs/studies/project_1/reading_guide.md`, `docs/architecture.md`, `README.md`.
+- [x] G3. Document public source contracts and dense module boundaries.
+  - Acceptance: every production module and public top-level class/function has a useful purpose
+    statement; comments explain scientific or architectural intent rather than obvious syntax.
+  - Evidence: an AST documentation audit reports no missing production-module or public-contract
+    docstrings; dense batch, persistence, artifact-analysis, run-table, and Mesa files now explain
+    ownership and independent validation paths; 222 unit/property/architecture tests, Ruff, and
+    Pyright pass.
+  - Files: completed in separate documentation-only slices of no more than five source files.
+- [x] G4. Repeat the full repository quality gate after reader-readiness maintenance.
+  - Acceptance: formatting, linting, Pyright, all tests, at least 90% coverage, dependency sync, lock
+    consistency, and a clean worktree pass without changing frozen scientific evidence.
+  - Evidence: 129 files pass Ruff formatting and lint; Pyright reports zero errors/warnings; all 263
+    tests pass at 90.86% branch-aware coverage including dependency synchronization; Conda-lock reports
+    the Linux-64 specification hash already locked. Documentation-only changes leave frozen artifacts
+    and schemas unchanged.

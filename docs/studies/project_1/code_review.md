@@ -14,21 +14,22 @@ orchestration, stage contracts are typed and immutable, random streams are owned
 analysis is reconstructed from validated artifacts rather than live objects.
 
 One maintainability issue was resolved: Arrow record schemas and encoding were separated from atomic
-publication. Four architecture-document inaccuracies were also corrected. The scheduler was tested
-against a helper-based refactor and deliberately left linear because the extra abstraction increased
-code and hid the scientific order.
+publication. Four architecture-document inaccuracies and one source-documentation gap were also
+corrected. The scheduler was tested against a helper-based refactor and deliberately left linear
+because the extra abstraction increased code and hid the scientific order.
 
 ## Severity summary
 
 | Severity | Open | Resolved in review | Meaning |
 | --- | ---: | ---: | --- |
 | Critical | 0 | 0 | Data loss, invalid science, security failure, or broken execution. |
-| Required | 0 | 4 | Must be corrected before using the code as an architectural guide. |
+| Required | 0 | 5 | Must be corrected before using the code as an architectural guide. |
 | Suggestion | 2 | 1 | Maintainability opportunities that do not compromise Project 1. |
 
-The four resolved required items were documentation defects: the architecture described run-bundle
+Four resolved required items were architecture-document defects: the architecture described run-bundle
 v0.2 instead of v1.1, omitted `agent_transitions.parquet`, omitted both Project 1 CLI commands, and
-called the deliberately linear scheduler “short.”
+called the deliberately linear scheduler “short.” The fifth was incomplete source-level orientation:
+several public scientific record/result contracts were typed but had no purpose docstring.
 
 ## Correctness
 
@@ -72,6 +73,11 @@ remain delegated to the pure core, while ordering and evidence assembly remain t
 Comments are generally proportionate. The scheduler's numbered comments intentionally repeat the
 ODD+D stage names so executable and documented order can be compared directly. Elsewhere, comments
 mostly explain invariants or non-obvious publication constraints rather than narrating syntax.
+
+The source-documentation audit now confirms that every production module and public top-level
+class/function has a purpose docstring. Domain record types explain whether they are authoritative
+state, stage values, or append-only evidence. The five densest execution/evidence files identify
+their reader path, layer ownership, and the boundary between writing and independent validation.
 
 ## Architecture
 
@@ -155,6 +161,8 @@ or navigation without removing more complexity than it introduces.
 
 ## Verification record
 
-The persistence extraction passed 41 focused persistence, CLI, and architecture tests, Ruff, and
-Pyright. The final repository gate is recorded in the associated task checklist and validation log;
-the scientific output and frozen evidence identities were not modified by this review.
+The persistence extraction passed 41 focused persistence, CLI, and architecture tests. The
+source-documentation slice passed 222 unit, property, and architecture tests. The final gate passed
+all 263 tests at 90.86% branch-aware coverage, Ruff formatting and lint, Pyright with zero findings,
+dependency synchronization, and Linux-64 lock-input consistency. Scientific output, schemas, and
+frozen evidence identities were not modified by this review.
