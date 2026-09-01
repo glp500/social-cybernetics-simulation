@@ -1,4 +1,10 @@
-"""Read validated published artifacts into pure Project 1 analysis contracts."""
+"""Bridge validated Project 1 artifacts and pure analysis contracts.
+
+The upper path validates and reconstructs one run before calling pure metric functions. The middle
+path analyzes every run in a matching study batch and publishes aggregate evidence. The lower path
+independently reopens that aggregate bundle, checks JSON/Parquet agreement, and recomputes summaries
+and contrasts from raw outcomes.
+"""
 
 from __future__ import annotations
 
@@ -138,6 +144,7 @@ _PAIRED_DIFFERENCE_SCHEMA = pa.schema(
 )
 
 
+# Run reconstruction converts storage rows back to domain evidence before calculating any metric.
 def _read_transitions(bundle: Path) -> tuple[AgentTransitionRecord, ...]:
     rows = pq.read_table(bundle / "tables/agent_transitions.parquet").to_pylist()
     return tuple(
@@ -333,6 +340,7 @@ def _analysis_file_descriptors(staging: Path) -> dict[str, dict[str, object]]:
     }
 
 
+# Aggregate publication retains raw outcomes as the authority for every derived comparison.
 def analyze_project1_batch(
     design: ResolvedProject1Design, batch: Path, destination: Path
 ) -> dict[str, object]:
@@ -395,6 +403,7 @@ def analyze_project1_batch(
     return summary
 
 
+# Aggregate validation starts here and never reuses the writer's in-memory rows.
 def _validated_json_rows(
     bundle: Path, filename: str, schema_version: str, collection: str
 ) -> list[object]:

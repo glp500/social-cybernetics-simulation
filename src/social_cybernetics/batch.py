@@ -1,4 +1,9 @@
-"""Sequential deterministic batch execution and validated aggregate bundles."""
+"""Sequential deterministic batch execution and validated aggregate bundles.
+
+The first half converts resolved runs into child run bundles and an aggregate index. The second half
+reopens those published files and validates them independently. Keeping the reader and writer paths
+separate makes successful publication evidence rather than an assumption made by the writer.
+"""
 
 from __future__ import annotations
 
@@ -125,6 +130,7 @@ _INDEX_SCHEMA = pa.schema(
 )
 
 
+# Execution and publication produce ordinary validated run bundles plus one typed index.
 @dataclass(frozen=True, slots=True)
 class BatchExecutionResult:
     """Stable process result returned after a complete batch attempt is published."""
@@ -345,6 +351,7 @@ def execute_batch(
     return outcome[0]
 
 
+# Published-bundle validation starts here and does not trust the in-memory writer state above.
 def _require_mapping(value: object, *, name: str) -> Mapping[str, Any]:
     if not isinstance(value, Mapping):
         raise BundleValidationError(f"{name} must be an object")

@@ -1,4 +1,10 @@
-"""Thin Mesa orchestration whose step method mirrors the ODD+D schedule."""
+"""Thin Mesa orchestration whose step method mirrors the ODD+D schedule.
+
+Mesa owns cells, activation wrappers, and property layers. Pure domain functions own equations and
+stage contracts. This module owns only ordering, explicit RNG substreams, transfer of validated
+results back to Mesa, and assembly of immutable evidence. The long numbered ``step`` method is kept
+linear so scientific order can be audited in one place.
+"""
 
 from __future__ import annotations
 
@@ -467,6 +473,7 @@ class SugarscapeModel(Model):
         if self.completed_ticks >= self.config.duration:
             self.running = False
 
+    # Shock orchestration translates config and runtime event state into pure ecology calls.
     def _damage_parameters(self) -> DamageParameters | None:
         shock = self.config.shock
         if isinstance(shock, NoShockConfig):

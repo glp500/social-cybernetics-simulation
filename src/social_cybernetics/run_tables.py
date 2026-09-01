@@ -1,4 +1,9 @@
-"""Arrow schemas and serialization for immutable scientific run records."""
+"""Arrow schemas and serialization for immutable scientific run records.
+
+Domain records remain the scientific types. This boundary gives each record collection an explicit,
+versioned storage schema and performs the mechanical field mapping used by persistence. It contains
+no publication, filesystem, runtime, or analysis behavior.
+"""
 
 from __future__ import annotations
 
@@ -16,6 +21,7 @@ from social_cybernetics.domain import (
     ShockEventSnapshot,
 )
 
+# Table order is canonical: manifests, paths, and empty-table publication all use this registry.
 TABLE_SCHEMA_VERSIONS = {
     "model": "scs-table/model/v0.1.0",
     "cohort": "scs-table/cohort/v1.0.0",

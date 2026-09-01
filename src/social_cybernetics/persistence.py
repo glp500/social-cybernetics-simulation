@@ -1,4 +1,10 @@
-"""Fail-closed publication and persistent run-bundle serialization."""
+"""Fail-closed validation and atomic publication of one scientific run bundle.
+
+Arrow record definitions live in ``run_tables`` and streamed NetCDF mechanics live in
+``spatial_output``. This module cross-validates their evidence, builds manifests and provenance, and
+publishes only a complete sibling staging directory. Reader validation intentionally does not trust
+objects retained by the writer.
+"""
 
 from __future__ import annotations
 
@@ -94,6 +100,7 @@ _PROVENANCE_PACKAGES = {
 type DirectoryBuilder = Callable[[Path], None]
 
 
+# Typed checks run before serialization, while relationships between records are easiest to express.
 def _validate_agent_transition_records(records: RunRecords, completed_ticks: int) -> None:
     """Cross-check transitions before serialization while records remain typed."""
 
@@ -251,6 +258,8 @@ def _provenance_payload(
 
 
 def validate_summary_payload(summary: Mapping[str, object]) -> None:
+    """Fail closed unless a CLI summary exactly matches its versioned contract."""
+
     if set(summary) != _SUMMARY_FIELDS:
         raise BundleValidationError("run summary fields differ from its schema")
     if summary.get("schema_version") != SUMMARY_SCHEMA_VERSION:
@@ -443,6 +452,7 @@ def _validate_table_contracts(bundle: Path, tables: Mapping[str, Any]) -> None:
             raise BundleValidationError(f"Parquet row count differs from manifest: {name}")
 
 
+# Published-bundle validation reopens every artifact and treats its manifest as untrusted input.
 def validate_run_bundle(bundle: Path) -> dict[str, Any]:
     """Validate schemas, digests, row counts, and cross-artifact provenance."""
 
@@ -466,6 +476,7 @@ def validate_run_bundle(bundle: Path) -> dict[str, Any]:
     return manifest
 
 
+# Staged writing below is shared by the streaming session and the one-shot compatibility API.
 def _write_staged_bundle(
     staging: Path,
     *,
